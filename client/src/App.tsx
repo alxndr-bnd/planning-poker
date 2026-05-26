@@ -8,6 +8,41 @@ import {
 } from "@pp/shared";
 import { PokerSocket, newRoomId } from "./ws.js";
 
+const REPO = "alxndr-bnd/planning-poker";
+const REPO_URL = `https://github.com/${REPO}`;
+
+// Official GitHub badge (shields.io) — image only, no external JS/tracking.
+function GitHubBadge() {
+  return (
+    <a
+      className="gh-badge"
+      href={REPO_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="GitHub repository"
+    >
+      <img
+        alt="GitHub repo"
+        height="28"
+        src={`https://img.shields.io/github/stars/${REPO}?style=social&logo=github&label=GitHub`}
+      />
+    </a>
+  );
+}
+
+function SerbitoSponsor({ short = false }: { short?: boolean }) {
+  return (
+    <a
+      className="sponsor"
+      href="https://serbito.rs"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {short ? "by serbito.rs" : "Sponsored by serbito.rs"}
+    </a>
+  );
+}
+
 function useHashRoom(): string | null {
   const [roomId, setRoomId] = useState(parseHash);
   useEffect(() => {
@@ -70,6 +105,10 @@ function Lobby({
       <button onClick={go} disabled={!input.trim()}>
         {roomId ? "Join room" : "Create room"}
       </button>
+      <div className="lobby-links">
+        <GitHubBadge />
+        <SerbitoSponsor />
+      </div>
     </div>
   );
 }
@@ -123,13 +162,25 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
     <div className="room">
       <header className="room-top">
         <div className="brand">
-          <button className="ghost" onClick={() => { location.hash = ""; }} title="Back to start — change name or create a new room">
-            ← Home
+          <button
+            className="ghost home-btn"
+            onClick={() => {
+              location.hash = "";
+            }}
+            title="Back to start — change name or create a new room"
+          >
+            <svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true">
+              <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z" />
+              <path d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z" />
+            </svg>
+            <span>Home</span>
           </button>
           <h1>Planning Poker</h1>
         </div>
         <div className="room-actions">
           <button onClick={copyLink}>{copied ? "Copied!" : "Copy invite link"}</button>
+          <GitHubBadge />
+          <SerbitoSponsor short />
         </div>
       </header>
 
@@ -156,40 +207,45 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
         <div className="table">
           {itemTitle && <h2 className="item">{itemTitle}</h2>}
           <Participants participants={participants} youId={youId} phase={phase} />
-          {summary && phase === "revealed" && <SummaryView summary={summary} />}
+          {/* Always reserved so the table is the same height in voting & results */}
+          <div className="summary-slot">
+            {summary && phase === "revealed" && <SummaryView summary={summary} />}
+          </div>
         </div>
       </div>
 
-      {/* Your own hand of cards — bottom of the screen.
-          Observer mode is itself a card here; picking it hides the voting cards. */}
-      {phase === "voting" && (
-        <div className="hand">
-          {/* Observer card — pinned left; position stays put when selected */}
-          <button
-            className={`card observer-card ${isObserver ? "active" : ""}`}
-            onClick={() => send({ type: "setObserver", isObserver: !isObserver })}
-            title={
-              isObserver
-                ? "You are observing — click to join voting"
-                : "Observe (don't vote)"
-            }
-          >
-            <span className="mic-off">🎤</span>
-          </button>
-          {!isObserver && (
-            <Deck
-              selected={me?.vote ?? null}
-              onPick={(v) =>
-                send(
-                  v === (me?.vote ?? null)
-                    ? { type: "unvote" }
-                    : { type: "vote", value: v },
-                )
+      {/* Your hand — always rendered (fixed height) so the layout/table height
+          doesn't change between voting and results. Cards only show while voting. */}
+      <div className="hand">
+        {phase === "voting" && (
+          <>
+            {/* Observer card — pinned left; position stays put when selected */}
+            <button
+              className={`card observer-card ${isObserver ? "active" : ""}`}
+              onClick={() => send({ type: "setObserver", isObserver: !isObserver })}
+              title={
+                isObserver
+                  ? "You are observing — click to join voting"
+                  : "Observe (don't vote)"
               }
-            />
-          )}
-        </div>
-      )}
+            >
+              <span className="mic-off">🎤</span>
+            </button>
+            {!isObserver && (
+              <Deck
+                selected={me?.vote ?? null}
+                onPick={(v) =>
+                  send(
+                    v === (me?.vote ?? null)
+                      ? { type: "unvote" }
+                      : { type: "vote", value: v },
+                  )
+                }
+              />
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

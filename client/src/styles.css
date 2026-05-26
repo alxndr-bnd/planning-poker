@@ -64,7 +64,14 @@ input[type="text"], input:not([type]) {
 .brand { display: flex; align-items: center; gap: 1rem; }
 .ghost { background: transparent; border-color: transparent; color: var(--muted); }
 .ghost:hover { color: var(--ink); border-color: var(--line); }
+.home-btn { display: inline-flex; align-items: center; gap: 0.4rem; line-height: 1; }
+.home-btn svg { display: block; }
 .room-actions { display: flex; gap: 1rem; align-items: center; }
+.gh-badge { display: inline-flex; align-items: center; }
+.gh-badge img { display: block; }
+.lobby-links { display: flex; flex-direction: column; align-items: center; gap: 0.6rem; margin-top: 0.5rem; }
+.sponsor { color: var(--muted); font-size: 0.85rem; text-decoration: none; }
+.sponsor:hover { color: var(--accent); text-decoration: underline; }
 
 /* Reveal / New vote — top of the screen, centered */
 .reveal-bar {
@@ -85,6 +92,12 @@ input[type="text"], input:not([type]) {
   display: flex; flex-direction: column; align-items: center; gap: 1.25rem;
 }
 .item { color: #d8f3e3; font-weight: 600; margin: 0; text-align: center; }
+
+/* Reserved space so the table is the same height in voting & results */
+.summary-slot {
+  width: 100%; min-height: 6.5rem;
+  display: flex; align-items: center; justify-content: center;
+}
 
 .participants {
   list-style: none; padding: 0; margin: 0;
@@ -113,7 +126,7 @@ input[type="text"], input:not([type]) {
 .mic-off { position: relative; display: inline-block; line-height: 1; }
 .mic-off::after {
   content: ""; position: absolute; left: 2%; top: 46%; width: 96%; height: 3px;
-  background: #e5534b; border-radius: 2px; transform: rotate(-45deg);
+  background: #e5534b; border-radius: 2px; transform: rotate(45deg);
 }
 
 /* Your hand at the bottom — larger cards, like sitting at the table */
@@ -152,7 +165,7 @@ input[type="text"], input:not([type]) {
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 1rem 1.25rem;
-  margin: 1rem 0;
+  margin: 0; /* spacing is owned by .summary-slot so table height stays constant */
 }
 .summary-stats { display: flex; gap: 1.5rem; align-items: center; font-size: 1.05rem; }
 .consensus { color: #3fb950; }
