@@ -124,7 +124,7 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
 
   return (
     <div className="room">
-      <header>
+      <header className="room-top">
         <h1>Planning Poker</h1>
         <div className="room-actions">
           <button onClick={copyLink}>{copied ? "Copied!" : "Copy invite link"}</button>
@@ -139,17 +139,8 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
         </div>
       </header>
 
-      {itemTitle && <h2 className="item">{itemTitle}</h2>}
-
-      <Participants participants={participants} youId={youId} hostId={hostId} phase={phase} />
-
-      {summary && phase === "revealed" && <SummaryView summary={summary} />}
-
-      {!isObserver && phase === "voting" && (
-        <Deck myVote={me?.hasVoted ? "voted" : null} onVote={(v) => send({ type: "vote", value: v })} />
-      )}
-
-      <div className="controls">
+      {/* Reveal / New vote button — top of the screen */}
+      <div className="reveal-bar">
         {isHost ? (
           phase === "voting" ? (
             <button className="primary" onClick={() => send({ type: "reveal" })}>
@@ -161,9 +152,35 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
             </button>
           )
         ) : (
-          <span className="muted">Waiting for the host to {phase === "voting" ? "reveal" : "start a new vote"}…</span>
+          <span className="muted">
+            Waiting for the host to {phase === "voting" ? "reveal" : "start a new vote"}…
+          </span>
         )}
       </div>
+
+      {/* Green table with the players around it, centered */}
+      <div className="table-wrap">
+        <div className="table">
+          {itemTitle && <h2 className="item">{itemTitle}</h2>}
+          <Participants
+            participants={participants}
+            youId={youId}
+            hostId={hostId}
+            phase={phase}
+          />
+          {summary && phase === "revealed" && <SummaryView summary={summary} />}
+        </div>
+      </div>
+
+      {/* Your own hand of cards — bottom of the screen */}
+      {!isObserver && phase === "voting" && (
+        <div className="hand">
+          <Deck
+            myVote={me?.hasVoted ? "voted" : null}
+            onVote={(v) => send({ type: "vote", value: v })}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -183,14 +200,18 @@ function Participants({
     <ul className="participants">
       {participants.map((p) => (
         <li key={p.id} className={p.connected ? "" : "offline"}>
-          <span className="card-slot">
-            {p.isObserver
-              ? "👁"
-              : phase === "revealed"
-                ? (p.vote ?? "–")
-                : p.hasVoted
-                  ? "✓"
-                  : "…"}
+          <span className={`card-slot ${p.isObserver ? "observer" : ""}`}>
+            {p.isObserver ? (
+              <span className="mic-off" title="Observer (not voting)">
+                🎤
+              </span>
+            ) : phase === "revealed" ? (
+              (p.vote ?? "–")
+            ) : p.hasVoted ? (
+              "✓"
+            ) : (
+              "…"
+            )}
           </span>
           <span className="pname">
             {p.name}
