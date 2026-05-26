@@ -73,6 +73,22 @@ input[type="text"], input:not([type]) {
 .sponsor { color: var(--muted); font-size: 0.85rem; text-decoration: none; }
 .sponsor:hover { color: var(--accent); text-decoration: underline; }
 
+.room-footer { display: flex; justify-content: center; padding: 0.25rem 1.5rem 1.25rem; }
+
+/* Collapsible info block — collapsed by default, no extra space when closed */
+.learn { width: 100%; max-width: 440px; margin-top: 0.75rem; text-align: left; }
+.learn summary {
+  cursor: pointer; color: var(--muted); font-size: 0.9rem; text-align: center;
+  padding: 0.4rem; list-style: none;
+}
+.learn summary:hover { color: var(--ink); }
+.learn[open] summary { color: var(--ink); margin-bottom: 0.5rem; }
+.learn-body { font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
+.learn-body a { color: var(--accent); text-decoration: none; }
+.learn-body a:hover { text-decoration: underline; }
+.learn-body ul { margin: 0.3rem 0 0.9rem; padding-left: 1.1rem; }
+.learn-body li { margin: 0.2rem 0; }
+
 /* Reveal / New vote — top of the screen, centered */
 .reveal-bar {
   display: flex; align-items: center; justify-content: center; gap: 0.75rem;

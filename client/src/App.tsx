@@ -109,7 +109,66 @@ function Lobby({
         <GitHubBadge />
         <SerbitoSponsor />
       </div>
+      <LearnMore />
     </div>
+  );
+}
+
+function LearnMore() {
+  return (
+    <details className="learn">
+      <summary>How Planning Poker works — theory & resources</summary>
+      <div className="learn-body">
+        <p>
+          Planning Poker is a consensus-based, gamified estimation technique for agile
+          teams. For each item, everyone privately picks a card; all votes are revealed
+          at the same time to avoid anchoring on the first number said out loud. The team
+          discusses the highest and lowest estimates, then re-votes until it converges.
+          The Fibonacci-like scale (1, 2, 3, 5, 8, 13, 21, 34, 55) reflects that bigger
+          items carry proportionally more uncertainty.
+        </p>
+        <p>
+          <b>Books</b>
+        </p>
+        <ul>
+          <li>
+            <a href="https://www.mountaingoatsoftware.com/books/agile-estimating-and-planning" target="_blank" rel="noopener noreferrer">
+              Mike Cohn — Agile Estimating and Planning
+            </a>
+          </li>
+          <li>
+            <a href="https://www.mountaingoatsoftware.com/books/user-stories-applied" target="_blank" rel="noopener noreferrer">
+              Mike Cohn — User Stories Applied
+            </a>
+          </li>
+        </ul>
+        <p>
+          <b>Read &amp; watch</b>
+        </p>
+        <ul>
+          <li>
+            <a href="https://en.wikipedia.org/wiki/Planning_poker" target="_blank" rel="noopener noreferrer">
+              Planning Poker — Wikipedia (overview)
+            </a>
+          </li>
+          <li>
+            <a href="https://www.mountaingoatsoftware.com/agile/planning-poker" target="_blank" rel="noopener noreferrer">
+              Mountain Goat Software — Planning Poker guide
+            </a>
+          </li>
+          <li>
+            <a href="https://wingman-sw.com/articles/planning-poker" target="_blank" rel="noopener noreferrer">
+              James Grenning — the origin of Planning Poker
+            </a>
+          </li>
+          <li>
+            <a href="https://www.youtube.com/results?search_query=planning+poker+agile+explained" target="_blank" rel="noopener noreferrer">
+              Videos: “Planning Poker explained” (YouTube)
+            </a>
+          </li>
+        </ul>
+      </div>
+    </details>
   );
 }
 
@@ -251,6 +310,10 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
           </>
         )}
       </div>
+
+      <footer className="room-footer">
+        <LearnMore />
+      </footer>
     </div>
   );
 }
