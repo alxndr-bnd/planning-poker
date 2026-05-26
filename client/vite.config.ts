@@ -8,7 +8,8 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      "/ws": { target: "ws://localhost:8080", ws: true },
+      // Local dev server runs on 8090 (8080 may be taken by other local apps).
+      "/ws": { target: "ws://localhost:8090", ws: true },
     },
     // allow importing the workspace `shared` package source from outside client/
     fs: { allow: [".."] },

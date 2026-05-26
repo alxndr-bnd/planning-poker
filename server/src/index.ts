@@ -52,17 +52,24 @@ function send(ws: WebSocket, msg: ServerMessage) {
 function broadcastState(roomId: string) {
   const room = getRoom(roomId);
   if (!room) return;
-  const state: ServerMessage = {
-    type: "state",
-    roomId: room.id,
-    phase: room.phase,
-    itemTitle: room.itemTitle,
-    hostId: room.hostId ?? "",
-    participants: room.toViews(),
-  };
+  const base = room.toViews();
   for (const p of room.participants.values()) {
     const ws = sockets.get(p.id);
-    if (ws) send(ws, state);
+    if (!ws) continue;
+    // Each recipient always sees their OWN vote value (so they can see/change/
+    // cancel their pick); other people's votes stay hidden until reveal.
+    const participants = base.map((v) =>
+      v.id === p.id ? { ...v, vote: p.vote } : v,
+    );
+    const state: ServerMessage = {
+      type: "state",
+      roomId: room.id,
+      phase: room.phase,
+      itemTitle: room.itemTitle,
+      hostId: room.hostId ?? "",
+      participants,
+    };
+    send(ws, state);
   }
   if (room.phase === "revealed") {
     const summary: ServerMessage = { type: "summary", summary: room.summary() };
@@ -120,6 +127,9 @@ wss.on("connection", (ws: WebSocket, _req: IncomingMessage) => {
     switch (msg.type) {
       case "vote":
         room.vote(conn.id, msg.value);
+        break;
+      case "unvote":
+        room.unvote(conn.id);
         break;
       case "reveal":
         room.reveal();

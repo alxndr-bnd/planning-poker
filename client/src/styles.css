@@ -61,12 +61,14 @@ input[type="text"], input:not([type]) {
   padding: 0.9rem 1.5rem; border-bottom: 1px solid var(--line);
 }
 .room-top h1 { font-size: 1.15rem; margin: 0; }
+.brand { display: flex; align-items: center; gap: 1rem; }
+.ghost { background: transparent; border-color: transparent; color: var(--muted); }
+.ghost:hover { color: var(--ink); border-color: var(--line); }
 .room-actions { display: flex; gap: 1rem; align-items: center; }
-.observer-toggle { color: var(--muted); display: flex; gap: 0.4rem; align-items: center; }
 
 /* Reveal / New vote — top of the screen, centered */
 .reveal-bar {
-  display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: center; justify-content: center; gap: 0.75rem;
   min-height: 3.6rem; padding: 1rem;
 }
 .reveal-bar .primary { font-size: 1.05rem; padding: 0.7rem 1.9rem; }
@@ -89,17 +91,22 @@ input[type="text"], input:not([type]) {
   display: flex; flex-wrap: wrap; gap: 1.25rem;
   justify-content: center; /* centered */
 }
-.participants li { display: flex; flex-direction: column; align-items: center; gap: 0.45rem; width: 78px; }
+.participants li { display: flex; flex-direction: column; align-items: center; gap: 0.45rem; width: 96px; }
 .participants li.offline { opacity: 0.45; }
 .card-slot {
-  width: 60px; height: 84px;
+  width: 84px; height: 120px; /* same size as the hand voting cards */
   display: flex; align-items: center; justify-content: center;
   background: #fff; color: #15603b;
-  border: 1px solid rgba(0, 0, 0, 0.2); border-radius: 10px;
-  font-size: 1.6rem; font-weight: 800;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0, 0, 0, 0.2); border-radius: 12px;
+  font-size: 2rem; font-weight: 800;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
-.card-slot.observer { background: #2a3543; color: #e6edf3; box-shadow: none; }
+/* expected-but-not-cast vote: dashed italic placeholder frame */
+.card-slot.pending {
+  background: transparent; color: rgba(255, 255, 255, 0.7);
+  border: 2px dashed rgba(255, 255, 255, 0.55); box-shadow: none;
+  font-style: italic; font-weight: 600;
+}
 .pname { font-size: 0.85rem; color: #eafaf0; text-align: center; }
 
 /* crossed-out microphone = observer */
@@ -111,8 +118,10 @@ input[type="text"], input:not([type]) {
 
 /* Your hand at the bottom — larger cards, like sitting at the table */
 .hand {
+  position: relative;
   display: flex; flex-wrap: wrap; justify-content: center; gap: 0.8rem;
   padding: 1.25rem 1.5rem 2rem;
+  min-height: 172px; /* fits a 120px card + padding even when the deck is hidden */
   border-top: 1px solid var(--line);
   background: #0c1118;
 }
@@ -125,7 +134,18 @@ input[type="text"], input:not([type]) {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 .card:hover { transform: translateY(-8px); transition: transform 0.1s; }
-.card.dim { opacity: 0.55; }
+.card.dim { opacity: 0.5; }
+.card.selected { outline: 3px solid var(--accent); outline-offset: 2px; transform: translateY(-12px); }
+
+/* Observer mode = a card in your hand, pinned to the LEFT (white, like a card).
+   Absolutely positioned so its place never shifts — including when selected
+   (which only hides the voting cards). */
+.observer-card {
+  position: absolute; left: 1.5rem; top: 1.25rem;
+  background: #fff; color: #15603b; border-color: rgba(0, 0, 0, 0.2);
+}
+.observer-card.active { outline: 3px solid var(--accent); outline-offset: 2px; }
+.observer-card:hover { transform: none; } /* keep position fixed */
 
 .summary {
   background: var(--panel);

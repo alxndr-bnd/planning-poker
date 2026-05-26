@@ -79,7 +79,6 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
   const [youId, setYouId] = useState<string>("");
   const [phase, setPhase] = useState<Phase>("voting");
   const [itemTitle, setItemTitle] = useState<string | null>(null);
-  const [hostId, setHostId] = useState<string>("");
   const [participants, setParticipants] = useState<ParticipantView[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [copied, setCopied] = useState(false);
@@ -94,7 +93,6 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
           case "state":
             setPhase(msg.phase);
             setItemTitle(msg.itemTitle);
-            setHostId(msg.hostId);
             setParticipants(msg.participants);
             if (msg.phase === "voting") setSummary(null);
             break;
@@ -112,7 +110,6 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
 
   const send = (m: Parameters<PokerSocket["send"]>[0]) => sockRef.current?.send(m);
   const me = participants.find((p) => p.id === youId);
-  const isHost = youId === hostId;
   const isObserver = me?.isObserver ?? false;
 
   function copyLink() {
@@ -125,36 +122,32 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
   return (
     <div className="room">
       <header className="room-top">
-        <h1>Planning Poker</h1>
+        <div className="brand">
+          <button className="ghost" onClick={() => { location.hash = ""; }} title="Back to start — change name or create a new room">
+            ← Home
+          </button>
+          <h1>Planning Poker</h1>
+        </div>
         <div className="room-actions">
           <button onClick={copyLink}>{copied ? "Copied!" : "Copy invite link"}</button>
-          <label className="observer-toggle">
-            <input
-              type="checkbox"
-              checked={isObserver}
-              onChange={(e) => send({ type: "setObserver", isObserver: e.target.checked })}
-            />
-            Observer
-          </label>
         </div>
       </header>
 
-      {/* Reveal / New vote button — top of the screen */}
+      {/* Reveal / New vote button — top of the screen, anyone in the room can press */}
       <div className="reveal-bar">
-        {isHost ? (
-          phase === "voting" ? (
+        {phase === "voting" ? (
+          <>
             <button className="primary" onClick={() => send({ type: "reveal" })}>
               Reveal
             </button>
-          ) : (
-            <button className="primary" onClick={() => send({ type: "reset" })}>
-              New vote
+            <button onClick={() => send({ type: "reset" })} title="Restart the voting round">
+              Reset
             </button>
-          )
+          </>
         ) : (
-          <span className="muted">
-            Waiting for the host to {phase === "voting" ? "reveal" : "start a new vote"}…
-          </span>
+          <button className="primary" onClick={() => send({ type: "reset" })}>
+            New vote
+          </button>
         )}
       </div>
 
@@ -162,23 +155,39 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
       <div className="table-wrap">
         <div className="table">
           {itemTitle && <h2 className="item">{itemTitle}</h2>}
-          <Participants
-            participants={participants}
-            youId={youId}
-            hostId={hostId}
-            phase={phase}
-          />
+          <Participants participants={participants} youId={youId} phase={phase} />
           {summary && phase === "revealed" && <SummaryView summary={summary} />}
         </div>
       </div>
 
-      {/* Your own hand of cards — bottom of the screen */}
-      {!isObserver && phase === "voting" && (
+      {/* Your own hand of cards — bottom of the screen.
+          Observer mode is itself a card here; picking it hides the voting cards. */}
+      {phase === "voting" && (
         <div className="hand">
-          <Deck
-            myVote={me?.hasVoted ? "voted" : null}
-            onVote={(v) => send({ type: "vote", value: v })}
-          />
+          {/* Observer card — pinned left; position stays put when selected */}
+          <button
+            className={`card observer-card ${isObserver ? "active" : ""}`}
+            onClick={() => send({ type: "setObserver", isObserver: !isObserver })}
+            title={
+              isObserver
+                ? "You are observing — click to join voting"
+                : "Observe (don't vote)"
+            }
+          >
+            <span className="mic-off">🎤</span>
+          </button>
+          {!isObserver && (
+            <Deck
+              selected={me?.vote ?? null}
+              onPick={(v) =>
+                send(
+                  v === (me?.vote ?? null)
+                    ? { type: "unvote" }
+                    : { type: "vote", value: v },
+                )
+              }
+            />
+          )}
         </div>
       )}
     </div>
@@ -188,51 +197,58 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
 function Participants({
   participants,
   youId,
-  hostId,
   phase,
 }: {
   participants: ParticipantView[];
   youId: string;
-  hostId: string;
   phase: Phase;
 }) {
   return (
     <ul className="participants">
-      {participants.map((p) => (
-        <li key={p.id} className={p.connected ? "" : "offline"}>
-          <span className={`card-slot ${p.isObserver ? "observer" : ""}`}>
-            {p.isObserver ? (
-              <span className="mic-off" title="Observer (not voting)">
-                🎤
-              </span>
-            ) : phase === "revealed" ? (
-              (p.vote ?? "–")
+      {/* Observers are hidden entirely (no frame, no name); the rest stay centered. */}
+      {participants
+        .filter((p) => !p.isObserver)
+        .map((p) => (
+          <li key={p.id} className={p.connected ? "" : "offline"}>
+            {phase === "revealed" ? (
+              <span className="card-slot">{p.vote ?? "–"}</span>
             ) : p.hasVoted ? (
-              "✓"
+              <span className="card-slot">✓</span>
             ) : (
-              "…"
+              // Expected-but-not-yet-cast vote: dashed placeholder frame
+              <span className="card-slot pending">…</span>
             )}
-          </span>
-          <span className="pname">
-            {p.name}
-            {p.id === youId && " (you)"}
-            {p.id === hostId && " ⭐"}
-          </span>
-        </li>
-      ))}
+            <span className="pname">
+              {p.name}
+              {p.id === youId && " (you)"}
+            </span>
+          </li>
+        ))}
     </ul>
   );
 }
 
-function Deck({ myVote, onVote }: { myVote: string | null; onVote: (v: CardValue) => void }) {
+function Deck({
+  selected,
+  onPick,
+}: {
+  selected: CardValue | null;
+  onPick: (v: CardValue) => void;
+}) {
+  // Cards are direct flex children of `.hand` so they lay out in a row.
+  // Click the selected card again to cancel; click another to change.
   return (
-    <div className="deck">
+    <>
       {FIBONACCI_DECK.map((v) => (
-        <button key={v} className={`card ${myVote ? "dim" : ""}`} onClick={() => onVote(v)}>
+        <button
+          key={v}
+          className={`card ${selected === v ? "selected" : selected ? "dim" : ""}`}
+          onClick={() => onPick(v)}
+        >
           {v}
         </button>
       ))}
-    </div>
+    </>
   );
 }
 

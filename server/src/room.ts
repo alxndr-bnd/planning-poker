@@ -70,6 +70,14 @@ export class Room {
     return true;
   }
 
+  unvote(id: string): boolean {
+    const p = this.participants.get(id);
+    if (!p || p.isObserver || this.phase !== "voting") return false;
+    p.vote = null;
+    this.touch();
+    return true;
+  }
+
   setObserver(id: string, isObserver: boolean) {
     const p = this.participants.get(id);
     if (!p) return;

@@ -1,7 +1,6 @@
 // Single source of truth for the WebSocket protocol, shared by client and server.
 
 export const FIBONACCI_DECK = [
-  "0",
   "1",
   "2",
   "3",
@@ -40,6 +39,7 @@ export interface Summary {
 export type ClientMessage =
   | { type: "join"; roomId: string; name: string; asObserver?: boolean }
   | { type: "vote"; value: CardValue }
+  | { type: "unvote" }
   | { type: "reveal" }
   | { type: "reset"; itemTitle?: string }
   | { type: "setObserver"; isObserver: boolean }
