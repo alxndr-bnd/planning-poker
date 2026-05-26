@@ -1,0 +1,22 @@
+{
+  "name": "planning-poker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": ["shared", "client", "server"],
+  "scripts": {
+    "dev": "concurrently -n server,client -c blue,green \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "npm -w @pp/server run dev",
+    "dev:client": "npm -w @pp/client run dev",
+    "build": "npm -w @pp/client run build",
+    "start": "npm -w @pp/server run start",
+    "test": "npm -w @pp/server run test",
+    "typecheck": "npm -w @pp/server run typecheck"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

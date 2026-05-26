@@ -1,0 +1,11 @@
+{
+  "name": "@pp/shared",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./protocol.ts",
+  "types": "./protocol.ts",
+  "exports": {
+    ".": "./protocol.ts"
+  }
+}
