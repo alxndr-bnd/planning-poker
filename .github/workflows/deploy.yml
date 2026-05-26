@@ -1,22 +1,24 @@
 name: Deploy to Cloud Run
 
-# Tag-based deploys: push a version tag to ship (clean rollbacks = redeploy an older tag).
+# Tag-based deploys: push a v*.*.* tag (e.g. via scripts/release_minor.sh) to ship.
+# Keyless auth via Workload Identity Federation — no service-account JSON key.
 on:
   workflow_dispatch:
   push:
     tags:
       - "v*.*.*"
 
-# Required repository secrets:
-#   GCP_PROJECT_ID        - GCP project id
-#   GCP_SA_KEY            - JSON key of a deployer service account
-#                           (roles: run.admin, artifactregistry.writer, iam.serviceAccountUser)
-# Adjust REGION / SERVICE / AR_REPO to your setup.
+permissions:
+  contents: read
+  id-token: write # required for WIF / OIDC
+
 env:
+  PROJECT_ID: serbito
   REGION: europe-west1
   SERVICE: planning-poker
-  AR_REPO: planning-poker
-  IMAGE: europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/planning-poker/planning-poker:${{ github.sha }}
+  AR_IMAGE: europe-west1-docker.pkg.dev/serbito/planning-poker/planning-poker
+  WIF_PROVIDER: projects/488744139718/locations/global/workloadIdentityPools/github-pool/providers/github
+  DEPLOYER_SA: pp-deployer@serbito.iam.gserviceaccount.com
 
 jobs:
   deploy:
@@ -27,22 +29,29 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          workload_identity_provider: ${{ env.WIF_PROVIDER }}
+          service_account: ${{ env.DEPLOYER_SA }}
 
       - uses: google-github-actions/setup-gcloud@v2
 
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
+      - uses: docker/setup-buildx-action@v3
+
       - name: Build & push image
-        run: |
-          docker build -t "$IMAGE" .
-          docker push "$IMAGE"
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ env.AR_IMAGE }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.AR_IMAGE }}:buildcache
+          cache-to: type=registry,ref=${{ env.AR_IMAGE }}:buildcache,mode=max
 
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy "$SERVICE" \
-            --image "$IMAGE" \
+            --image "$AR_IMAGE:${{ github.sha }}" \
             --region "$REGION" \
             --platform managed \
             --allow-unauthenticated \
@@ -51,6 +60,4 @@ jobs:
             --concurrency=250 \
             --port=8080 \
             --timeout=3600
-        # Domain mapping poker.serbito.rs is configured once, out-of-band:
-        #   gcloud run domain-mappings create --service planning-poker \
-        #     --domain poker.serbito.rs --region europe-west1
+        # One-time domain mapping (poker.serbito.rs -> service) is configured out-of-band.
