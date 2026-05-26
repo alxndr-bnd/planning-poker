@@ -1,0 +1,20 @@
+# Runs the test suite (and typecheck) before every commit.
+# Setup once per clone:  pre-commit install
+minimum_pre_commit_version: "3.5.0"
+repos:
+  - repo: local
+    hooks:
+      - id: vitest
+        name: tests (vitest)
+        entry: npm test
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+      - id: typecheck
+        name: typecheck (tsc)
+        entry: npm run typecheck
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]

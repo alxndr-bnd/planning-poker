@@ -30,7 +30,8 @@ Requires Node ≥ 20.
 
 ```bash
 npm install
-npm run dev     # server on :8080, client on :5173 (Vite proxies /ws → :8080)
+pre-commit install   # run tests + typecheck before every commit (needs `pre-commit`)
+npm run dev          # server on :8080, client on :5173 (Vite proxies /ws → :8080)
 ```
 
 Open http://localhost:5173.
