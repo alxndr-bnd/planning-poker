@@ -76,34 +76,41 @@ input[type="text"], input:not([type]) {
 /* Reveal / New vote — top of the screen, centered */
 .reveal-bar {
   display: flex; align-items: center; justify-content: center; gap: 0.75rem;
-  min-height: 3.6rem; padding: 1rem;
+  padding: 2rem 1rem; /* moved lower; equal gap above (from header) and below (to field) */
 }
 .reveal-bar .primary { font-size: 1.05rem; padding: 0.7rem 1.9rem; }
 
 /* Green poker table, centered, players around it */
-.table-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+.table-wrap { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 0 1.5rem 1.5rem; }
 .table {
-  background: radial-gradient(ellipse at center, #1f7a4d 0%, #15603b 70%, #114e31 100%);
+  background:
+    radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.4) 100%),
+    url(/table-felt.jpg) center / cover;
+  background-color: #15603b; /* fallback while image loads */
   border: 6px solid #0c3a24;
-  border-radius: 180px / 120px;
+  border-radius: 24px;
   box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.35), 0 10px 30px rgba(0, 0, 0, 0.45);
   padding: 2.5rem 3rem;
   min-width: min(60%, 720px); max-width: 900px;
+  min-height: 20rem; /* constant height across phases */
   display: flex; flex-direction: column; align-items: center; gap: 1.25rem;
 }
 .item { color: #d8f3e3; font-weight: 600; margin: 0; text-align: center; }
 
 /* Reserved space so the table is the same height in voting & results */
 .summary-slot {
-  width: 100%; min-height: 6.5rem;
+  flex: 1; width: 100%; min-height: 0;
   display: flex; align-items: center; justify-content: center;
 }
 
 .participants {
   list-style: none; padding: 0; margin: 0;
+  flex: 0 0 auto;
   display: flex; flex-wrap: wrap; gap: 1.25rem;
-  justify-content: center; /* centered */
+  justify-content: center; align-items: center;
 }
+/* equal flexible zones above & below the cards → vertical centering */
+.table-spacer { flex: 1; }
 .participants li { display: flex; flex-direction: column; align-items: center; gap: 0.45rem; width: 96px; }
 .participants li.offline { opacity: 0.45; }
 .card-slot {

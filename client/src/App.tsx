@@ -178,7 +178,9 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
           <h1>Planning Poker</h1>
         </div>
         <div className="room-actions">
-          <button onClick={copyLink}>{copied ? "Copied!" : "Copy invite link"}</button>
+          <button className="primary" onClick={copyLink}>
+            {copied ? "Copied!" : "Invite teammates"}
+          </button>
           <GitHubBadge />
           <SerbitoSponsor short />
         </div>
@@ -206,8 +208,11 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
       <div className="table-wrap">
         <div className="table">
           {itemTitle && <h2 className="item">{itemTitle}</h2>}
+          {/* Equal flex:1 zones above (spacer) and below (summary-slot) center the
+              cards while voting. On reveal the summary fills the lower zone, so the
+              cards shift up; table height stays constant via min-height. */}
+          <div className="table-spacer" aria-hidden="true" />
           <Participants participants={participants} youId={youId} phase={phase} />
-          {/* Always reserved so the table is the same height in voting & results */}
           <div className="summary-slot">
             {summary && phase === "revealed" && <SummaryView summary={summary} />}
           </div>

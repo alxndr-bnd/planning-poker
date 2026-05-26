@@ -13,7 +13,7 @@ export interface Participant {
   vote: CardValue | null; // kept server-side; never sent to clients during "voting"
 }
 
-const NUMERIC = new Set(["0", "1", "2", "3", "5", "8", "13", "21"]);
+const NUMERIC = new Set(["1", "2", "3", "5", "8", "13", "21", "34", "55"]);
 
 /**
  * A single estimation room. Holds all state in memory. The state machine is:

@@ -8,6 +8,8 @@ export const FIBONACCI_DECK = [
   "8",
   "13",
   "21",
+  "34",
+  "55",
   "?",
   "☕", // coffee / break
 ] as const;
