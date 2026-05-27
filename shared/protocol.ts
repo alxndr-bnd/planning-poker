@@ -44,9 +44,7 @@ export type ClientMessage =
   | { type: "unvote" }
   | { type: "reveal" }
   | { type: "reset"; itemTitle?: string }
-  | { type: "setObserver"; isObserver: boolean }
-  | { type: "rename"; name: string }
-  | { type: "ping" };
+  | { type: "setObserver"; isObserver: boolean };
 
 // ---- Server -> Client ----
 export type ServerMessage =
@@ -56,11 +54,9 @@ export type ServerMessage =
       roomId: string;
       phase: Phase;
       itemTitle: string | null;
-      hostId: string;
       participants: ParticipantView[];
     }
   | { type: "summary"; summary: Summary }
-  | { type: "error"; code: string; message: string }
-  | { type: "pong" };
+  | { type: "error"; code: string; message: string };
 
 export const WS_PATH = "/ws";

@@ -11,7 +11,7 @@
     "build": "npm -w @pp/client run build",
     "start": "npm -w @pp/server run start",
     "test": "npm -w @pp/server run test",
-    "typecheck": "npm -w @pp/server run typecheck"
+    "typecheck": "npm -w @pp/server run typecheck && npm -w @pp/client run typecheck"
   },
   "devDependencies": {
     "concurrently": "^9.0.1"

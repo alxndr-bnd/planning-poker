@@ -336,6 +336,9 @@ function Participants({
           <li key={p.id} className={p.connected ? "" : "offline"}>
             {phase === "revealed" ? (
               <span className="card-slot">{p.vote ?? "–"}</span>
+            ) : p.vote === "?" || p.vote === "☕" ? (
+              // Abstain cards are shown immediately (they don't anchor estimates)
+              <span className="card-slot">{p.vote}</span>
             ) : p.hasVoted ? (
               <span className="card-slot">✓</span>
             ) : (

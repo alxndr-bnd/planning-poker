@@ -14,6 +14,8 @@ export interface Participant {
 }
 
 const NUMERIC = new Set(["1", "2", "3", "5", "8", "13", "21", "34", "55"]);
+// Non-estimate "abstain" cards — shown immediately (they don't anchor estimates).
+const ABSTAIN = new Set(["?", "☕"]);
 
 /**
  * A single estimation room. Holds all state in memory. The state machine is:
@@ -24,7 +26,6 @@ export class Room {
   readonly id: string;
   phase: Phase = "voting";
   itemTitle: string | null = null;
-  hostId: string | null = null;
   lastActivityAt = Date.now();
   readonly participants = new Map<string, Participant>();
 
@@ -39,27 +40,13 @@ export class Room {
   addParticipant(id: string, name: string, isObserver: boolean): Participant {
     const p: Participant = { id, name, isObserver, connected: true, vote: null };
     this.participants.set(id, p);
-    if (!this.hostId) this.hostId = id;
     this.touch();
     return p;
   }
 
   removeParticipant(id: string) {
     this.participants.delete(id);
-    if (this.hostId === id) {
-      // transfer host to the next connected participant (soft role, no auth)
-      const next = [...this.participants.values()].find((p) => p.connected);
-      this.hostId = next ? next.id : null;
-    }
     this.touch();
-  }
-
-  setConnected(id: string, connected: boolean) {
-    const p = this.participants.get(id);
-    if (p) {
-      p.connected = connected;
-      this.touch();
-    }
   }
 
   vote(id: string, value: CardValue): boolean {
@@ -86,14 +73,6 @@ export class Room {
     this.touch();
   }
 
-  rename(id: string, name: string) {
-    const p = this.participants.get(id);
-    if (p) {
-      p.name = name;
-      this.touch();
-    }
-  }
-
   reveal() {
     this.phase = "revealed";
     this.touch();
@@ -114,17 +93,23 @@ export class Room {
     return [...this.participants.values()].some((p) => p.connected);
   }
 
-  /** Build the per-phase view: vote values are exposed ONLY when revealed. */
+  /**
+   * Build the per-phase view. Numeric vote values are exposed only when revealed;
+   * "abstain" cards (? and ☕) are shown immediately since they can't anchor estimates.
+   */
   toViews(): ParticipantView[] {
     const revealed = this.phase === "revealed";
-    return [...this.participants.values()].map((p) => ({
-      id: p.id,
-      name: p.name,
-      isObserver: p.isObserver,
-      connected: p.connected,
-      hasVoted: p.vote !== null,
-      ...(revealed ? { vote: p.vote } : {}),
-    }));
+    return [...this.participants.values()].map((p) => {
+      const showVote = revealed || (p.vote !== null && ABSTAIN.has(p.vote));
+      return {
+        id: p.id,
+        name: p.name,
+        isObserver: p.isObserver,
+        connected: p.connected,
+        hasVoted: p.vote !== null,
+        ...(showVote ? { vote: p.vote } : {}),
+      };
+    });
   }
 
   summary(): Summary {

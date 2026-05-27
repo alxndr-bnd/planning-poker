@@ -21,15 +21,6 @@ describe("Room", () => {
     expect(revealed.find((p) => p.id === "b")!.vote).toBe("8");
   });
 
-  it("first joiner is host; host transfers when host leaves", () => {
-    const room = new Room("abcdef");
-    room.addParticipant("a", "Alice", false);
-    room.addParticipant("b", "Bob", false);
-    expect(room.hostId).toBe("a");
-    room.removeParticipant("a");
-    expect(room.hostId).toBe("b");
-  });
-
   it("observers cannot vote and are excluded from summary", () => {
     const room = new Room("abcdef");
     room.addParticipant("a", "Alice", false);
@@ -52,6 +43,22 @@ describe("Room", () => {
     const s = room.summary();
     expect(s.average).toBe(5); // (2+8)/2
     expect(s.consensus).toBe(false);
+  });
+
+  it("shows abstain cards (?, coffee) during voting but hides numeric votes", () => {
+    const room = new Room("abcdef");
+    room.addParticipant("a", "A", false);
+    room.addParticipant("b", "B", false);
+    room.addParticipant("c", "C", false);
+    room.vote("a", "5"); // numeric -> hidden during voting
+    room.vote("b", "?"); // abstain -> shown immediately
+    room.vote("c", "☕"); // abstain -> shown immediately
+
+    const v = room.toViews();
+    expect(v.find((p) => p.id === "a")!.vote).toBeUndefined();
+    expect(v.find((p) => p.id === "a")!.hasVoted).toBe(true);
+    expect(v.find((p) => p.id === "b")!.vote).toBe("?");
+    expect(v.find((p) => p.id === "c")!.vote).toBe("☕");
   });
 
   it("reset clears votes and returns to voting", () => {
