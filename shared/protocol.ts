@@ -10,6 +10,11 @@ export const FIBONACCI_DECK = [
   "21",
   "34",
   "55",
+  "89",
+  "144",
+  "233",
+  "377",
+  "610",
   "?",
   "☕", // coffee / break
 ] as const;

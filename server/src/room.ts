@@ -13,7 +13,7 @@ export interface Participant {
   vote: CardValue | null; // kept server-side; never sent to clients during "voting"
 }
 
-const NUMERIC = new Set(["1", "2", "3", "5", "8", "13", "21", "34", "55"]);
+const NUMERIC = new Set(["1", "2", "3", "5", "8", "13", "21", "34", "55", "89", "144", "233", "377", "610"]);
 // Non-estimate "abstain" cards — shown immediately (they don't anchor estimates).
 const ABSTAIN = new Set(["?", "☕"]);
 

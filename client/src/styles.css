@@ -155,11 +155,25 @@ input[type="text"], input:not([type]) {
 /* Your hand at the bottom — larger cards, like sitting at the table */
 .hand {
   position: relative;
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 0.8rem;
+  display: flex; justify-content: center;
   padding: 1.25rem 1.5rem 2rem;
   min-height: 172px; /* fits a 120px card + padding even when the deck is hidden */
   border-top: 1px solid var(--line);
   background: #0c1118;
+}
+/* The fan of voting cards. Cards sit in a single row; when they'd overflow the
+   available width the inter-card margin goes negative so they overlap like cards
+   held in a hand. `--n` (card count) and `--cw` (card width) come from the card
+   geometry; `min(...)` caps the gap at 0.8rem when there's room to spare. */
+.fan {
+  container-type: inline-size;
+  width: 100%;
+  display: flex; flex-wrap: nowrap; justify-content: center; align-items: flex-start;
+  --cw: 84px;
+}
+.fan .card { flex: 0 0 auto; }
+.fan .card:not(:first-child) {
+  margin-left: min(0.8rem, calc((100cqi - var(--n) * var(--cw)) / (var(--n) - 1)));
 }
 .card {
   width: 84px; height: 120px;
@@ -169,6 +183,17 @@ input[type="text"], input:not([type]) {
   border: 1px solid rgba(0, 0, 0, 0.2); border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
+/* The expand/collapse card that hides the high estimates — tinted so it reads as
+   a control rather than a value. */
+.card.toggle {
+  background: #16324a; color: #cfe3f5;
+  border-color: rgba(255, 255, 255, 0.18);
+  font-size: 0.95rem; font-weight: 700; line-height: 1.2;
+  text-align: center; padding: 0 6px;
+}
+/* Raise the hovered/selected card above its neighbours so an overlapped card is
+   fully readable when you point at it. */
+.fan .card:hover, .fan .card.selected { position: relative; z-index: 2; }
 .card:hover { transform: translateY(-8px); transition: transform 0.1s; }
 .card.dim { opacity: 0.5; }
 .card.selected { outline: 3px solid var(--accent); outline-offset: 2px; transform: translateY(-12px); }

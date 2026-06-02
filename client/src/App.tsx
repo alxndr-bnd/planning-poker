@@ -124,7 +124,7 @@ function LearnMore() {
           teams. For each item, everyone privately picks a card; all votes are revealed
           at the same time to avoid anchoring on the first number said out loud. The team
           discusses the highest and lowest estimates, then re-votes until it converges.
-          The Fibonacci-like scale (1, 2, 3, 5, 8, 13, 21, 34, 55) reflects that bigger
+          The Fibonacci-like scale (1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610) reflects that bigger
           items carry proportionally more uncertainty.
         </p>
         <p>
@@ -355,6 +355,10 @@ function Participants({
   );
 }
 
+// The high estimates are tucked behind an "expand" card so the default hand
+// stays compact; they fan out when you need them.
+const EXTENDED_CARDS: readonly CardValue[] = ["89", "144", "233", "377", "610"];
+
 function Deck({
   selected,
   onPick,
@@ -362,20 +366,47 @@ function Deck({
   selected: CardValue | null;
   onPick: (v: CardValue) => void;
 }) {
-  // Cards are direct flex children of `.hand` so they lay out in a row.
-  // Click the selected card again to cancel; click another to change.
+  const [expanded, setExpanded] = useState(false);
+  // Keep the high cards visible whenever one of them is the current pick.
+  const showExtended = expanded || (selected != null && EXTENDED_CARDS.includes(selected));
+
+  // Cards in display order: low numbers, [high numbers when expanded], the
+  // expand/collapse toggle, then the abstain cards. The toggle sits at the end
+  // of the number run, exactly where the hidden cards fan out.
+  const numbers = FIBONACCI_DECK.filter(
+    (v) => v !== "?" && v !== "☕" && (showExtended || !EXTENDED_CARDS.includes(v)),
+  );
+  // +1 for the toggle card so the overlap math (`--n`) counts it too.
+  const n = numbers.length + 2 /* ? and ☕ */ + 1;
+
+  const renderCard = (v: CardValue) => (
+    <button
+      key={v}
+      className={`card ${selected === v ? "selected" : selected ? "dim" : ""}`}
+      onClick={() => onPick(v)}
+    >
+      {v}
+    </button>
+  );
+
+  // Cards lay out in a single row inside `.fan`. When the row is wider than the
+  // available space the cards overlap (negative margin) like a real hand — see
+  // `.fan` in styles.css. Click the selected card again to cancel; click another
+  // to change.
   return (
-    <>
-      {FIBONACCI_DECK.map((v) => (
-        <button
-          key={v}
-          className={`card ${selected === v ? "selected" : selected ? "dim" : ""}`}
-          onClick={() => onPick(v)}
-        >
-          {v}
-        </button>
-      ))}
-    </>
+    <div className="fan" style={{ ["--n" as string]: n }}>
+      {numbers.map(renderCard)}
+      {/* Toggle card: reveals the high estimates (89–610) on demand. */}
+      <button
+        className="card toggle"
+        onClick={() => setExpanded((e) => !e)}
+        title={showExtended ? "Hide high cards" : "Show high cards (89–610)"}
+      >
+        {showExtended ? "«" : "More 🤪🫠"}
+      </button>
+      {renderCard("?")}
+      {renderCard("☕")}
+    </div>
   );
 }
 
