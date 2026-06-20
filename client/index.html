@@ -110,6 +110,18 @@
       }
     </script>
 
+    <!-- Structured data: organization / brand -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Serbito Planning Poker",
+        "url": "https://poker.serbito.rs/",
+        "description": "Free, open-source online planning poker for agile Scrum teams.",
+        "sameAs": ["https://github.com/alxndr-bnd/planning-poker"]
+      }
+    </script>
+
     <style>
       /* Static SEO landing shown before the React app mounts. Googlebot's first
          crawl wave reads this; on mount, React replaces #root with the live app,
@@ -209,6 +221,28 @@
         <p><a href="https://poker.serbito.rs/">Start a free Planning Poker room →</a></p>
       </main>
     </div>
+    <!-- Visible footer OUTSIDE #root — React only controls #root, so this stays
+         on screen for real users (the static landing above is replaced on mount,
+         and serves crawlers). Self-contained styles so it doesn't depend on app CSS. -->
+    <footer
+      style="
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        padding: 0.85rem 1rem;
+        text-align: center;
+        font: 0.85rem/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        color: #5b6b62;
+        background: #f4f7f5;
+      "
+    >
+      Free &amp; open-source planning poker — no ads, no sign-up. ·
+      <a href="https://github.com/alxndr-bnd/planning-poker" rel="noopener" style="color: #15603b; font-weight: 600;">Open source on GitHub</a>
+      ·
+      <a
+        href="https://github.com/alxndr-bnd/planning-poker/issues?q=is%3Aissue+is%3Aopen+label%3Afeature-vote+sort%3Areactions-%2B1-desc"
+        rel="noopener"
+        style="color: #15603b; font-weight: 600;"
+      >🗳️ Vote on what we build next</a>
+    </footer>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
