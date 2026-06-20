@@ -73,7 +73,10 @@ input[type="text"], input:not([type]) {
 .sponsor { color: var(--muted); font-size: 0.85rem; text-decoration: none; }
 .sponsor:hover { color: var(--accent); text-decoration: underline; }
 
-.room-footer { display: flex; justify-content: center; padding: 0.25rem 1.5rem 1.25rem; }
+.room-footer {
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  padding: 0.25rem 1.5rem 1.25rem;
+}
 
 /* Collapsible info block — collapsed by default, no extra space when closed */
 .learn { width: 100%; max-width: 440px; margin-top: 0.75rem; text-align: left; }
@@ -95,6 +98,8 @@ input[type="text"], input:not([type]) {
   padding: 2rem 1rem; /* moved lower; equal gap above (from header) and below (to field) */
 }
 .reveal-bar .primary { font-size: 1.05rem; padding: 0.7rem 1.9rem; }
+/* Shown to non-holders: who gets to reveal this round. */
+.reveal-hint { color: var(--muted); font-size: 0.95rem; }
 
 /* Green poker table, centered, players around it */
 .table-wrap { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 0 1.5rem 1.5rem; }
@@ -219,3 +224,44 @@ input[type="text"], input:not([type]) {
 .consensus { color: #3fb950; }
 .distribution { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.75rem; }
 .dist-item { color: var(--muted); }
+
+/* Reveal "star" next to the current round's reveal holder; gently pulses so it
+   reads as something that moves each round. */
+.star { margin-right: 0.25rem; display: inline-block; animation: star-pulse 1.8s ease-in-out infinite; }
+@keyframes star-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.25); opacity: 1; }
+}
+
+/* Estimate log — collapsible, same visual language as .learn. */
+.estimate-log { width: 100%; max-width: 560px; text-align: left; }
+.estimate-log summary {
+  cursor: pointer; color: var(--muted); font-size: 0.9rem; text-align: center;
+  padding: 0.4rem; list-style: none;
+}
+.estimate-log summary:hover { color: var(--ink); }
+.estimate-log[open] summary { color: var(--ink); margin-bottom: 0.4rem; }
+.log-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; }
+.log-list li {
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr) auto;
+  grid-template-areas: "round title avg" "round dist dist";
+  gap: 0.15rem 0.6rem; align-items: center;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  padding: 0.4rem 0.7rem; font-size: 0.85rem;
+}
+.log-round { grid-area: round; color: var(--muted); font-variant-numeric: tabular-nums; }
+.log-title { grid-area: title; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.log-avg { grid-area: avg; color: var(--accent); white-space: nowrap; }
+.log-dist { grid-area: dist; display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.log-chip {
+  color: var(--muted); background: #0c1118; border: 1px solid var(--line);
+  border-radius: 6px; padding: 0.05rem 0.4rem; font-variant-numeric: tabular-nums;
+}
+
+/* Lobby: "copy link on create" checkbox. */
+.copy-on-create {
+  display: flex; align-items: center; gap: 0.5rem;
+  color: var(--muted); font-size: 0.85rem; cursor: pointer;
+}
+.copy-on-create input { width: auto; margin: 0; cursor: pointer; }

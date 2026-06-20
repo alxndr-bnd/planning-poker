@@ -15,7 +15,7 @@ describe("Room", () => {
     expect(voting.find((p) => p.id === "a")!.hasVoted).toBe(true);
 
     // revealed: values exposed
-    room.reveal();
+    room.reveal(room.revealerId!);
     const revealed = room.toViews();
     expect(revealed.find((p) => p.id === "a")!.vote).toBe("5");
     expect(revealed.find((p) => p.id === "b")!.vote).toBe("8");
@@ -27,7 +27,7 @@ describe("Room", () => {
     room.addParticipant("o", "Obs", true);
     expect(room.vote("o", "5")).toBe(false);
     room.vote("a", "3");
-    room.reveal();
+    room.reveal(room.revealerId!);
     expect(room.summary().distribution).toEqual({ "3": 1 });
   });
 
@@ -39,7 +39,7 @@ describe("Room", () => {
     room.vote("a", "2");
     room.vote("b", "8");
     room.vote("c", "?"); // non-numeric ignored in average
-    room.reveal();
+    room.reveal(room.revealerId!);
     const s = room.summary();
     expect(s.average).toBe(5); // (2+8)/2
     expect(s.consensus).toBe(false);
@@ -65,10 +65,45 @@ describe("Room", () => {
     const room = new Room("abcdef");
     room.addParticipant("a", "A", false);
     room.vote("a", "13");
-    room.reveal();
+    room.reveal(room.revealerId!);
     room.reset("next item");
     expect(room.phase).toBe("voting");
     expect(room.itemTitle).toBe("next item");
     expect(room.toViews()[0].hasVoted).toBe(false);
+  });
+
+  it("only the star holder may reveal", () => {
+    const room = new Room("abcdef");
+    room.addParticipant("a", "A", false);
+    room.addParticipant("b", "B", false);
+    const nonHolder = room.revealerId === "a" ? "b" : "a";
+    expect(room.reveal(nonHolder)).toBe(false);
+    expect(room.phase).toBe("voting");
+    expect(room.reveal(room.revealerId!)).toBe(true);
+    expect(room.phase).toBe("revealed");
+  });
+
+  it("assigns a star holder and hands it off when the holder leaves", () => {
+    const room = new Room("abcdef");
+    room.addParticipant("a", "A", false);
+    expect(room.revealerId).toBe("a"); // sole participant holds it
+    room.addParticipant("b", "B", false);
+    room.removeParticipant(room.revealerId!); // holder leaves
+    expect(room.revealerId).not.toBeNull();
+    expect(room.participants.has(room.revealerId!)).toBe(true);
+  });
+
+  it("records each revealed round in the log (results only)", () => {
+    const room = new Room("abcdef");
+    room.addParticipant("a", "A", false);
+    room.addParticipant("b", "B", false);
+    room.reset("Story A"); // sets itemTitle, picks a fresh holder
+    room.vote("a", "8");
+    room.vote("b", "8");
+    room.reveal(room.revealerId!);
+    expect(room.log).toHaveLength(1);
+    expect(room.log[0].itemTitle).toBe("Story A");
+    expect(room.log[0].summary.average).toBe(8);
+    expect(room.log[0].summary.consensus).toBe(true);
   });
 });

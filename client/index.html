@@ -140,6 +140,28 @@
       .pp-seo ol { padding-left: 1.25rem; }
       .pp-seo .faq dt { font-weight: 600; margin-top: 1rem; }
       .pp-seo a { color: #15603b; }
+
+      /* App layout fixes that pair with the fixed footer below (global, so they
+         don't need to touch the app's own styles.css). The fixed footer is ~3rem
+         tall — reserve space at the bottom of each top-level view so it never
+         covers content (e.g. the "How Planning Poker works" disclosure). */
+      .room,
+      .lobby {
+        padding-bottom: 3.5rem;
+      }
+      /* Expand/collapse chevron for the "How Planning Poker works" <summary>. */
+      .learn summary::-webkit-details-marker {
+        display: none;
+      }
+      .learn summary::after {
+        content: "▾";
+        display: inline-block;
+        margin-left: 0.4rem;
+        transition: transform 0.15s ease;
+      }
+      .learn[open] summary::after {
+        transform: rotate(180deg);
+      }
     </style>
   </head>
   <body>

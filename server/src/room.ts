@@ -2,6 +2,7 @@ import type {
   CardValue,
   ParticipantView,
   Phase,
+  RoundLog,
   Summary,
 } from "@pp/shared";
 
@@ -28,6 +29,10 @@ export class Room {
   itemTitle: string | null = null;
   lastActivityAt = Date.now();
   readonly participants = new Map<string, Participant>();
+  /** Holder of the reveal "star" — the only participant allowed to reveal. */
+  revealerId: string | null = null;
+  /** Results of every revealed round, oldest first. */
+  readonly log: RoundLog[] = [];
 
   constructor(id: string) {
     this.id = id;
@@ -37,15 +42,41 @@ export class Room {
     this.lastActivityAt = Date.now();
   }
 
+  /** Voting (non-observer) participants — the only ones who can hold the star. */
+  private eligibleRevealers(): Participant[] {
+    return [...this.participants.values()].filter(
+      (p) => p.connected && !p.isObserver,
+    );
+  }
+
+  /** Pick a fresh random star holder (used at the start of each round). */
+  assignRevealer() {
+    const eligible = this.eligibleRevealers();
+    this.revealerId =
+      eligible.length > 0
+        ? eligible[Math.floor(Math.random() * eligible.length)].id
+        : null;
+  }
+
+  /** Reassign only if the current holder is gone or no longer eligible. */
+  private ensureRevealer() {
+    const cur = this.revealerId
+      ? this.participants.get(this.revealerId)
+      : undefined;
+    if (!cur || !cur.connected || cur.isObserver) this.assignRevealer();
+  }
+
   addParticipant(id: string, name: string, isObserver: boolean): Participant {
     const p: Participant = { id, name, isObserver, connected: true, vote: null };
     this.participants.set(id, p);
+    this.ensureRevealer();
     this.touch();
     return p;
   }
 
   removeParticipant(id: string) {
     this.participants.delete(id);
+    this.ensureRevealer();
     this.touch();
   }
 
@@ -70,18 +101,24 @@ export class Room {
     if (!p) return;
     p.isObserver = isObserver;
     if (isObserver) p.vote = null;
+    this.ensureRevealer(); // a holder who became an observer must hand off the star
     this.touch();
   }
 
-  reveal() {
+  /** Only the star holder may reveal. Records the round's results in the log. */
+  reveal(by: string): boolean {
+    if (this.phase !== "voting" || by !== this.revealerId) return false;
     this.phase = "revealed";
+    this.log.push({ itemTitle: this.itemTitle, summary: this.summary() });
     this.touch();
+    return true;
   }
 
   reset(itemTitle?: string) {
     this.phase = "voting";
     this.itemTitle = itemTitle ?? null;
     for (const p of this.participants.values()) p.vote = null;
+    this.assignRevealer(); // fresh random star holder each round
     this.touch();
   }
 

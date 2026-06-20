@@ -66,6 +66,8 @@ export function createPokerServer(staticDir: string = DEFAULT_STATIC_DIR): Serve
         phase: room.phase,
         itemTitle: room.itemTitle,
         participants,
+        revealerId: room.revealerId,
+        log: room.log,
       });
     }
     if (room.phase === "revealed") {
@@ -123,7 +125,7 @@ export function createPokerServer(staticDir: string = DEFAULT_STATIC_DIR): Serve
           room.unvote(conn.id);
           break;
         case "reveal":
-          room.reveal();
+          room.reveal(conn.id); // ignored unless this conn holds the star
           break;
         case "reset":
           room.reset(msg.itemTitle?.trim().slice(0, 120));

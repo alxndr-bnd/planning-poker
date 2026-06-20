@@ -42,6 +42,15 @@ export interface Summary {
   consensus: boolean;
 }
 
+/** One finished (revealed) round, recorded in the room's estimate log. Results
+ *  only — no per-person votes. The most recent entry is "the votes before the
+ *  last reset". */
+export interface RoundLog {
+  /** the item title at reveal time, if any */
+  itemTitle: string | null;
+  summary: Summary;
+}
+
 // ---- Client -> Server ----
 export type ClientMessage =
   | { type: "join"; roomId: string; name: string; asObserver?: boolean }
@@ -60,6 +69,10 @@ export type ServerMessage =
       phase: Phase;
       itemTitle: string | null;
       participants: ParticipantView[];
+      /** participant who currently holds the reveal "star"; only they may reveal */
+      revealerId: string | null;
+      /** results of every revealed round so far, oldest first */
+      log: RoundLog[];
     }
   | { type: "summary"; summary: Summary }
   | { type: "error"; code: string; message: string };

@@ -4,6 +4,7 @@ import {
   type CardValue,
   type ParticipantView,
   type Phase,
+  type RoundLog,
   type Summary,
 } from "@pp/shared";
 import { PokerSocket, newRoomId } from "./ws.js";
@@ -79,13 +80,26 @@ function Lobby({
   setName: (n: string) => void;
 }) {
   const [input, setInput] = useState(name);
+  // Whether to copy the invite link to the clipboard on room creation. Default on,
+  // remembered across visits.
+  const [copyOnCreate, setCopyOnCreate] = useState(
+    () => localStorage.getItem("pp_copy_on_create") !== "0",
+  );
 
   function go() {
     const n = input.trim();
     if (!n) return;
     localStorage.setItem("pp_name", n);
     setName(n);
-    if (!roomId) location.hash = `#/r/${newRoomId()}`;
+    if (!roomId) {
+      const id = newRoomId();
+      if (copyOnCreate) {
+        // Must run inside this click handler to satisfy the clipboard gesture rule.
+        const url = `${location.origin}${location.pathname}#/r/${id}`;
+        navigator.clipboard?.writeText(url).catch(() => {});
+      }
+      location.hash = `#/r/${id}`;
+    }
   }
 
   return (
@@ -105,6 +119,19 @@ function Lobby({
       <button onClick={go} disabled={!input.trim()}>
         {roomId ? "Join room" : "Create room"}
       </button>
+      {!roomId && (
+        <label className="copy-on-create">
+          <input
+            type="checkbox"
+            checked={copyOnCreate}
+            onChange={(e) => {
+              setCopyOnCreate(e.target.checked);
+              localStorage.setItem("pp_copy_on_create", e.target.checked ? "1" : "0");
+            }}
+          />
+          Copy invite link to clipboard on create
+        </label>
+      )}
       <div className="lobby-links">
         <GitHubBadge />
         <SerbitoSponsor />
@@ -180,6 +207,8 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
   const [participants, setParticipants] = useState<ParticipantView[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [copied, setCopied] = useState(false);
+  const [revealerId, setRevealerId] = useState<string | null>(null);
+  const [log, setLog] = useState<RoundLog[]>([]);
 
   useEffect(() => {
     const sock = new PokerSocket(
@@ -192,6 +221,8 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
             setPhase(msg.phase);
             setItemTitle(msg.itemTitle);
             setParticipants(msg.participants);
+            setRevealerId(msg.revealerId);
+            setLog(msg.log);
             if (msg.phase === "voting") setSummary(null);
             break;
           case "summary":
@@ -245,13 +276,20 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
         </div>
       </header>
 
-      {/* Reveal / New vote button — top of the screen, anyone in the room can press */}
+      {/* Reveal / New vote bar. Only the star holder (revealerId, reshuffled each
+          round) may reveal; everyone can reset. */}
       <div className="reveal-bar">
         {phase === "voting" ? (
           <>
-            <button className="primary" onClick={() => send({ type: "reveal" })}>
-              Reveal
-            </button>
+            {youId === revealerId ? (
+              <button className="primary" onClick={() => send({ type: "reveal" })}>
+                Reveal
+              </button>
+            ) : (
+              <span className="reveal-hint">
+                ⭐ {participants.find((p) => p.id === revealerId)?.name ?? "—"} reveals this round
+              </span>
+            )}
             <button onClick={() => send({ type: "reset" })} title="Restart the voting round">
               Reset
             </button>
@@ -271,7 +309,12 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
               cards while voting. On reveal the summary fills the lower zone, so the
               cards shift up; table height stays constant via min-height. */}
           <div className="table-spacer" aria-hidden="true" />
-          <Participants participants={participants} youId={youId} phase={phase} />
+          <Participants
+            participants={participants}
+            youId={youId}
+            phase={phase}
+            revealerId={revealerId}
+          />
           <div className="summary-slot">
             {summary && phase === "revealed" && <SummaryView summary={summary} />}
           </div>
@@ -312,6 +355,7 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
       </div>
 
       <footer className="room-footer">
+        <EstimateLog log={log} />
         <LearnMore />
       </footer>
     </div>
@@ -322,10 +366,12 @@ function Participants({
   participants,
   youId,
   phase,
+  revealerId,
 }: {
   participants: ParticipantView[];
   youId: string;
   phase: Phase;
+  revealerId: string | null;
 }) {
   return (
     <ul className="participants">
@@ -346,12 +392,50 @@ function Participants({
               <span className="card-slot pending">…</span>
             )}
             <span className="pname">
+              {/* The reveal "star" — hops to a random player each round. */}
+              {p.id === revealerId && (
+                <span className="star" title="Reveals this round">
+                  ⭐
+                </span>
+              )}
               {p.name}
               {p.id === youId && " (you)"}
             </span>
           </li>
         ))}
     </ul>
+  );
+}
+
+function EstimateLog({ log }: { log: RoundLog[] }) {
+  if (log.length === 0) return null;
+  // Newest round first; round numbers count up in chronological order.
+  const rounds = log.map((r, i) => ({ r, n: i + 1 })).reverse();
+  return (
+    <details className="estimate-log">
+      <summary>Estimate log ({log.length})</summary>
+      <ol className="log-list">
+        {rounds.map(({ r, n }) => (
+          <li key={n}>
+            <span className="log-round">#{n}</span>
+            <span className="log-title">{r.itemTitle || "—"}</span>
+            <span className="log-avg">
+              {r.summary.consensus && <span className="consensus">✓ </span>}
+              avg {r.summary.average ?? "–"}
+            </span>
+            <span className="log-dist">
+              {Object.entries(r.summary.distribution)
+                .sort((a, b) => b[1] - a[1])
+                .map(([value, count]) => (
+                  <span key={value} className="log-chip">
+                    {value}×{count}
+                  </span>
+                ))}
+            </span>
+          </li>
+        ))}
+      </ol>
+    </details>
   );
 }
 
