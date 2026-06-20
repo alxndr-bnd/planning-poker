@@ -59,5 +59,10 @@ jobs:
             --max-instances=1 \
             --concurrency=250 \
             --port=8080 \
-            --timeout=3600
+            --timeout=300
+        # NB: keep --timeout low (300s, Cloud Run default). A WebSocket is one HTTP
+        # request that never returns, so a high timeout (was 3600) lets an abandoned
+        # client pin a billable instance up to an hour and blocks scale-to-zero
+        # (this caused a ~$2/day Cloud Run cost spike). The client auto-reconnects, so
+        # a 5-min cap is safe; it bounds how long a stray socket keeps an instance warm.
         # One-time domain mapping (poker.serbito.rs -> service) is configured out-of-band.
