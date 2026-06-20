@@ -106,4 +106,26 @@ describe("Room", () => {
     expect(room.log[0].summary.average).toBe(8);
     expect(room.log[0].summary.consensus).toBe(true);
   });
+
+  // --- Security hardening (docs/SECURITY-REVIEW-2026-06-21.md) ---
+  it("rejects a vote value that is not in the deck", () => {
+    const room = new Room("abcdef");
+    room.addParticipant("a", "A", false);
+    // arbitrary client-supplied values must not be stored
+    expect(room.vote("a", "999" as never)).toBe(false);
+    expect(room.vote("a", "<script>" as never)).toBe(false);
+    expect(room.vote("a", "5")).toBe(true); // valid card still works
+    room.reveal(room.revealerId!);
+    expect(room.summary().distribution).toEqual({ "5": 1 });
+  });
+
+  it("caps participants at MAX_PARTICIPANTS (isFull)", () => {
+    const room = new Room("abcdef");
+    expect(room.isFull()).toBe(false);
+    for (let i = 0; i < Room.MAX_PARTICIPANTS; i++) {
+      room.addParticipant("p" + i, "P", false);
+    }
+    expect(room.participants.size).toBe(Room.MAX_PARTICIPANTS);
+    expect(room.isFull()).toBe(true);
+  });
 });

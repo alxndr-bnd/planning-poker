@@ -17,6 +17,9 @@ export interface Participant {
 const NUMERIC = new Set(["1", "2", "3", "5", "8", "13", "21", "34", "55", "89", "144", "233", "377", "610"]);
 // Non-estimate "abstain" cards — shown immediately (they don't anchor estimates).
 const ABSTAIN = new Set(["?", "☕"]);
+// Every legal card a client may submit. Votes outside this set are rejected so a
+// malicious client can't pollute the distribution/stats (docs/SECURITY-REVIEW-2026-06-21).
+const ALLOWED_VOTES = new Set<string>([...NUMERIC, ...ABSTAIN]);
 
 /**
  * A single estimation room. Holds all state in memory. The state machine is:
@@ -24,6 +27,8 @@ const ABSTAIN = new Set(["?", "☕"]);
  * Votes are hidden (server-side) until the room is revealed.
  */
 export class Room {
+  /** Hard cap on participants per room (DoS / memory bound). */
+  static readonly MAX_PARTICIPANTS = 100;
   readonly id: string;
   phase: Phase = "voting";
   itemTitle: string | null = null;
@@ -66,6 +71,10 @@ export class Room {
     if (!cur || !cur.connected || cur.isObserver) this.assignRevealer();
   }
 
+  isFull(): boolean {
+    return this.participants.size >= Room.MAX_PARTICIPANTS;
+  }
+
   addParticipant(id: string, name: string, isObserver: boolean): Participant {
     const p: Participant = { id, name, isObserver, connected: true, vote: null };
     this.participants.set(id, p);
@@ -83,6 +92,7 @@ export class Room {
   vote(id: string, value: CardValue): boolean {
     const p = this.participants.get(id);
     if (!p || p.isObserver || this.phase !== "voting") return false;
+    if (!ALLOWED_VOTES.has(value)) return false; // reject cards not in the deck
     p.vote = value;
     this.touch();
     return true;

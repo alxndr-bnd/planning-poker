@@ -4,7 +4,13 @@ import { dirname, join } from "node:path";
 import { randomUUID } from "node:crypto";
 import { WebSocketServer, WebSocket } from "ws";
 import { WS_PATH, type ClientMessage, type ServerMessage } from "@pp/shared";
-import { deleteRoom, getOrCreateRoom, getRoom, sweepIdleRooms } from "./rooms.js";
+import {
+  deleteRoom,
+  getOrCreateRoom,
+  getRoom,
+  roomCount,
+  sweepIdleRooms,
+} from "./rooms.js";
 import { serveStatic } from "./static.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -12,6 +18,25 @@ const DEFAULT_STATIC_DIR =
   process.env.STATIC_DIR ?? join(__dirname, "../../client/dist");
 const ROOM_ID_RE = /^[A-Za-z0-9_-]{6,32}$/;
 const IDLE_SWEEP_MS = 5 * 60 * 1000;
+
+// --- Security / DoS hardening (docs/SECURITY-REVIEW-2026-06-21.md) ---
+const MAX_PAYLOAD = 16 * 1024; // WS frame cap (messages are tiny; ws default is 100MB)
+const MAX_ROOMS = 5000; // cap total live rooms (single-instance memory bound)
+const RATE_LIMIT_MSGS = 30; // max messages per connection...
+const RATE_LIMIT_WINDOW_MS = 5000; // ...per 5s sliding window
+
+/** Allow browser WS only from our own origins; non-browser clients send no Origin. */
+function originAllowed(origin: string | undefined): boolean {
+  if (!origin) return true; // native / server-to-server clients send no Origin
+  try {
+    const { hostname, protocol } = new URL(origin);
+    if (hostname === "poker.serbito.rs" && protocol === "https:") return true;
+    if (hostname === "localhost" || hostname === "127.0.0.1") return true; // dev
+    return false;
+  } catch {
+    return false;
+  }
+}
 
 interface ConnState {
   id: string;
@@ -35,10 +60,14 @@ export function createPokerServer(staticDir: string = DEFAULT_STATIC_DIR): Serve
     res.writeHead(404).end("Not found");
   });
 
-  const wss = new WebSocketServer({ noServer: true });
+  const wss = new WebSocketServer({ noServer: true, maxPayload: MAX_PAYLOAD });
   httpServer.on("upgrade", (req, socket, head) => {
     if ((req.url ?? "").split("?")[0] !== WS_PATH) {
       socket.destroy();
+      return;
+    }
+    if (!originAllowed(req.headers.origin)) {
+      socket.destroy(); // reject cross-site WebSocket hijacking attempts
       return;
     }
     wss.handleUpgrade(req, socket, head, (ws) => wss.emit("connection", ws, req));
@@ -81,8 +110,22 @@ export function createPokerServer(staticDir: string = DEFAULT_STATIC_DIR): Serve
 
   wss.on("connection", (ws: WebSocket) => {
     const conn: ConnState = { id: randomUUID(), roomId: null };
+    // Per-connection sliding-window rate limiter (DoS guard).
+    let msgTimes: number[] = [];
+
+    // Without an 'error' listener a socket error throws and can crash the process.
+    ws.on("error", () => {});
 
     ws.on("message", (raw) => {
+      // Rate limit before doing any work.
+      const now = Date.now();
+      msgTimes = msgTimes.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+      if (msgTimes.length >= RATE_LIMIT_MSGS) {
+        send(ws, { type: "error", code: "rate_limited", message: "Too many messages" });
+        return;
+      }
+      msgTimes.push(now);
+
       let msg: ClientMessage;
       try {
         msg = JSON.parse(raw.toString());
@@ -91,50 +134,69 @@ export function createPokerServer(staticDir: string = DEFAULT_STATIC_DIR): Serve
         return;
       }
 
-      if (msg.type === "join") {
-        const name = (msg.name ?? "").trim().slice(0, 40);
-        if (!ROOM_ID_RE.test(msg.roomId)) {
-          send(ws, { type: "error", code: "bad_room", message: "Invalid room id" });
+      // Defensive: never let a crafted message crash the process.
+      try {
+        if (msg.type === "join") {
+          const name = (msg.name ?? "").trim().slice(0, 40);
+          if (!ROOM_ID_RE.test(msg.roomId)) {
+            send(ws, { type: "error", code: "bad_room", message: "Invalid room id" });
+            return;
+          }
+          if (!name) {
+            send(ws, { type: "error", code: "no_name", message: "Name is required" });
+            return;
+          }
+          // Cap total live rooms — don't create a new one past the limit.
+          if (!getRoom(msg.roomId) && roomCount() >= MAX_ROOMS) {
+            send(ws, {
+              type: "error",
+              code: "server_full",
+              message: "Too many active rooms, try again later",
+            });
+            return;
+          }
+          const room = getOrCreateRoom(msg.roomId);
+          // Cap participants per room (a freshly created room is never full).
+          if (room.isFull()) {
+            send(ws, { type: "error", code: "room_full", message: "This room is full" });
+            return;
+          }
+          conn.roomId = msg.roomId;
+          room.addParticipant(conn.id, name, Boolean(msg.asObserver));
+          sockets.set(conn.id, ws);
+          send(ws, { type: "joined", youId: conn.id, roomId: room.id });
+          broadcastState(room.id);
           return;
         }
-        if (!name) {
-          send(ws, { type: "error", code: "no_name", message: "Name is required" });
+
+        if (!conn.roomId) {
+          send(ws, { type: "error", code: "not_joined", message: "Join a room first" });
           return;
         }
-        conn.roomId = msg.roomId;
-        const room = getOrCreateRoom(msg.roomId);
-        room.addParticipant(conn.id, name, Boolean(msg.asObserver));
-        sockets.set(conn.id, ws);
-        send(ws, { type: "joined", youId: conn.id, roomId: room.id });
+        const room = getRoom(conn.roomId);
+        if (!room) return;
+
+        switch (msg.type) {
+          case "vote":
+            room.vote(conn.id, msg.value);
+            break;
+          case "unvote":
+            room.unvote(conn.id);
+            break;
+          case "reveal":
+            room.reveal(conn.id); // ignored unless this conn holds the star
+            break;
+          case "reset":
+            room.reset(msg.itemTitle?.trim().slice(0, 120));
+            break;
+          case "setObserver":
+            room.setObserver(conn.id, msg.isObserver);
+            break;
+        }
         broadcastState(room.id);
-        return;
+      } catch {
+        send(ws, { type: "error", code: "internal", message: "Server error" });
       }
-
-      if (!conn.roomId) {
-        send(ws, { type: "error", code: "not_joined", message: "Join a room first" });
-        return;
-      }
-      const room = getRoom(conn.roomId);
-      if (!room) return;
-
-      switch (msg.type) {
-        case "vote":
-          room.vote(conn.id, msg.value);
-          break;
-        case "unvote":
-          room.unvote(conn.id);
-          break;
-        case "reveal":
-          room.reveal(conn.id); // ignored unless this conn holds the star
-          break;
-        case "reset":
-          room.reset(msg.itemTitle?.trim().slice(0, 120));
-          break;
-        case "setObserver":
-          room.setObserver(conn.id, msg.isObserver);
-          break;
-      }
-      broadcastState(room.id);
     });
 
     ws.on("close", () => {

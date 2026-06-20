@@ -3,6 +3,14 @@
 Scope: repo `alxndr-bnd/planning-poker` (public), the Node WS+SPA server, CI/CD, container,
 GitHub settings. Reviewed by Claude. No live exploitation — static review + config checks.
 
+**Status — applied in v0.13.0 (test-first, all green):** ✅ HIGH-1 `maxPayload` ·
+✅ HIGH-2 room + participant caps + per-connection rate limit · ✅ MED-1 try/catch around
+message handling + `ws.on('error')` + `process` guards · ✅ MED-2 vote validated against the
+deck · ✅ MED-3 WS Origin allowlist · ✅ LOW `npm ci` + non-root `USER node` in Dockerfile ·
+✅ LOW CodeQL workflow. **Remaining (owner, optional):** branch protection on `main`;
+compile TS→JS + `--omit=dev` to drop dev deps/tsx from the runtime image. Tests:
+`server/test/security.test.ts` (+5) and `rooms.test.ts` (+2).
+
 ## Summary
 
 | Area | Result |
