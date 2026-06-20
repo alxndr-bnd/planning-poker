@@ -46,7 +46,7 @@
       content="Free, open-source, no sign-up Planning Poker for agile teams. Real-time story-point estimation."
     />
 
-    <!-- Structured data -->
+    <!-- Structured data: the app -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -59,9 +59,142 @@
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
       }
     </script>
+
+    <!-- Structured data: FAQ (rich results + keyword coverage) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is Planning Poker?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Planning Poker (also called Scrum Poker) is a consensus-based, gamified estimation technique used by agile teams to estimate the effort of product backlog items. Each member privately picks a card, everyone reveals at once, and the team discusses any spread before agreeing on a story-point estimate."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is the Fibonacci sequence used for in estimation?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Most Planning Poker decks use a Fibonacci-like scale (0, 1, 2, 3, 5, 8, 13, 21, …). The growing gaps reflect rising uncertainty in larger tasks, so teams don't waste time debating whether something is a 6 or a 7. Our cards use this Fibonacci scale by default."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is this Planning Poker tool free and does it require sign-up?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes — it is completely free and open-source, with no registration, no paywall, and unlimited rooms. Just create a room, share the link, and start estimating."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does Planning Poker fit into Scrum sprint planning?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "During sprint planning, the Scrum team uses Planning Poker to size user stories in story points. The shared estimates feed the team's velocity and help decide how much work fits into the upcoming sprint."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can remote and distributed agile teams use it?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Absolutely. Estimates are revealed in real time over a live connection, so co-located, hybrid, and fully remote teams can run the same Planning Poker session by sharing one room link."
+            }
+          }
+        ]
+      }
+    </script>
+
+    <style>
+      /* Static SEO landing shown before the React app mounts. Googlebot's first
+         crawl wave reads this; on mount, React replaces #root with the live app,
+         so real users go straight to the tool. */
+      .pp-seo {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 2.5rem 1.25rem 4rem;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        line-height: 1.6;
+        color: #0e2a1d;
+      }
+      .pp-seo h1 { font-size: 2rem; margin: 0 0 0.5rem; color: #15603b; }
+      .pp-seo h2 { font-size: 1.25rem; margin: 2rem 0 0.5rem; color: #15603b; }
+      .pp-seo .lead { font-size: 1.1rem; }
+      .pp-seo ol { padding-left: 1.25rem; }
+      .pp-seo .faq dt { font-weight: 600; margin-top: 1rem; }
+      .pp-seo a { color: #15603b; }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static, crawlable landing content. Replaced by the React app on mount. -->
+      <main class="pp-seo">
+        <h1>Free Online Planning Poker for Agile Teams</h1>
+        <p class="lead">
+          Real-time <strong>Scrum Poker</strong> for agile estimation — create a
+          room, share the link, and estimate <strong>story points</strong>
+          together using <strong>Fibonacci</strong> cards. Free, open-source,
+          <strong>no sign-up</strong>, unlimited rooms.
+        </p>
+
+        <h2>How it works</h2>
+        <ol>
+          <li><strong>Create a room</strong> — one click, no registration.</li>
+          <li><strong>Share the link</strong> with your Scrum team.</li>
+          <li>
+            <strong>Estimate together</strong> — everyone picks a Fibonacci
+            card, reveal at once, discuss, and agree on the story-point estimate.
+          </li>
+        </ol>
+
+        <h2>Why teams use it</h2>
+        <p>
+          Planning Poker turns sprint planning into fast, consensus-based agile
+          estimation. It works for co-located, hybrid, and remote teams, keeps
+          estimates unbiased (cards are revealed simultaneously), and uses the
+          Fibonacci scale (0, 1, 2, 3, 5, 8, 13, 21…) to reflect uncertainty in
+          larger tasks.
+        </p>
+
+        <h2>Frequently asked questions</h2>
+        <dl class="faq">
+          <dt>What is Planning Poker?</dt>
+          <dd>
+            A consensus-based, gamified estimation technique where agile teams
+            estimate the effort of backlog items by privately choosing a card and
+            revealing all at once.
+          </dd>
+          <dt>What is the Fibonacci sequence used for?</dt>
+          <dd>
+            The Fibonacci-like deck (1, 2, 3, 5, 8, 13…) gives growing gaps that
+            reflect rising uncertainty in bigger stories — our cards use it by
+            default.
+          </dd>
+          <dt>Is it free? Do I need to sign up?</dt>
+          <dd>
+            Completely free and open-source — no registration, no paywall,
+            unlimited rooms.
+          </dd>
+          <dt>How does it fit into Scrum sprint planning?</dt>
+          <dd>
+            Teams size user stories in story points during sprint planning; the
+            estimates feed velocity and sprint scope.
+          </dd>
+          <dt>Can remote teams use it?</dt>
+          <dd>
+            Yes — estimates are revealed in real time, so distributed teams share
+            one room link and estimate together.
+          </dd>
+        </dl>
+
+        <p><a href="https://poker.serbito.rs/">Start a free Planning Poker room →</a></p>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
