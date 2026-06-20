@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { get as httpGetRaw } from "node:http";
-import { mkdtempSync, writeFileSync, readFileSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -49,6 +49,12 @@ describe("static file serving (SEO assets + SPA fallback)", () => {
       join(dist, "sitemap.xml"),
       '<?xml version="1.0"?><urlset><url><loc>https://poker.serbito.rs/</loc></url></urlset>',
     );
+    // A prerendered SEO landing page served at a clean URL (/<slug>).
+    mkdirSync(join(dist, "what-is-planning-poker"));
+    writeFileSync(
+      join(dist, "what-is-planning-poker", "index.html"),
+      "<!doctype html><h1>WHAT IS PLANNING POKER</h1>",
+    );
     server = createPokerServer(dist);
     await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
     const { port } = server.address() as AddressInfo;
@@ -79,6 +85,15 @@ describe("static file serving (SEO assets + SPA fallback)", () => {
     expect(res.status).toBe(200);
     expect(res.contentType).toContain("text/html");
     expect(res.body).toContain("app shell");
+  });
+
+  it("serves a clean-URL static page (/<slug> -> <slug>/index.html)", async () => {
+    const res = await httpGet(`${base}/what-is-planning-poker`);
+    expect(res.status).toBe(200);
+    expect(res.contentType).toContain("text/html");
+    expect(res.body).toContain("WHAT IS PLANNING POKER");
+    // must NOT fall through to the SPA shell
+    expect(res.body).not.toContain("app shell");
   });
 });
 

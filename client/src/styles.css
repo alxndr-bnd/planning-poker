@@ -261,7 +261,8 @@ input[type="text"], input:not([type]) {
 
 /* Lobby: "copy link on create" checkbox. */
 .copy-on-create {
-  display: flex; align-items: center; gap: 0.5rem;
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
   color: var(--muted); font-size: 0.85rem; cursor: pointer;
+  margin-bottom: 2.5rem; /* push GitHub / sponsor / "How it works" further down */
 }
 .copy-on-create input { width: auto; margin: 0; cursor: pointer; }

@@ -37,9 +37,14 @@ export function serveStatic(
     return true;
   }
 
-  // Directory or unknown path -> SPA fallback to index.html.
+  // Unknown path or directory: try a prerendered clean-URL SEO page
+  // (/<slug> -> <slug>/index.html or <slug>.html) before the SPA fallback.
   if (!existsSync(filePath) || statSync(filePath).isDirectory()) {
-    filePath = join(dist, "index.html");
+    const candidates = [join(filePath, "index.html"), `${filePath}.html`];
+    const page = candidates.find(
+      (c) => c.startsWith(dist) && existsSync(c) && statSync(c).isFile(),
+    );
+    filePath = page ?? join(dist, "index.html");
     if (!existsSync(filePath)) return false;
   }
 
