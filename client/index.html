@@ -226,10 +226,16 @@
          and serves crawlers). Self-contained styles so it doesn't depend on app CSS. -->
     <footer
       style="
-        border-top: 1px solid rgba(0, 0, 0, 0.08);
-        padding: 0.85rem 1rem;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 50;
+        border-top: 1px solid rgba(0, 0, 0, 0.12);
+        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.12);
+        padding: 0.5rem 1rem;
         text-align: center;
-        font: 0.85rem/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        font: 0.82rem/1.3 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
         color: #5b6b62;
         background: #f4f7f5;
       "
