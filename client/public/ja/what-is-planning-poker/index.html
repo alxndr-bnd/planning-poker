@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>プランニングポーカーとは？ スクラム見積もりガイド（無料ツール）</title>
+    <meta
+      name="description"
+      content="プランニングポーカー（スクラムポーカー）とは何か、手順、フィボナッチスケール、ストーリーポイント、チームの役割を解説。無料・登録不要のアジャイル見積もりガイド。"
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://poker.serbito.rs/ja/what-is-planning-poker" />
+    <meta property="og:title" content="プランニングポーカーとは？ スクラム見積もりの完全ガイド" />
+    <meta property="og:description" content="プランニングポーカーの進め方を手順で解説：フィボナッチスケール、ストーリーポイント、役割、合意形成。無料・オープンソース・登録不要。" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://poker.serbito.rs/ja/what-is-planning-poker" />
+    <meta property="og:image" content="https://poker.serbito.rs/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://poker.serbito.rs/og-image.png" />
+    <link rel="alternate" hreflang="en" href="https://poker.serbito.rs/what-is-planning-poker" />
+    <link rel="alternate" hreflang="es" href="https://poker.serbito.rs/es/what-is-planning-poker" />
+    <link rel="alternate" hreflang="de" href="https://poker.serbito.rs/de/what-is-planning-poker" />
+    <link rel="alternate" hreflang="fr" href="https://poker.serbito.rs/fr/what-is-planning-poker" />
+    <link rel="alternate" hreflang="pt-BR" href="https://poker.serbito.rs/pt/what-is-planning-poker" />
+    <link rel="alternate" hreflang="ru" href="https://poker.serbito.rs/ru/what-is-planning-poker" />
+    <link rel="alternate" hreflang="sr" href="https://poker.serbito.rs/sr/what-is-planning-poker" />
+    <link rel="alternate" hreflang="ja" href="https://poker.serbito.rs/ja/what-is-planning-poker" />
+    <link rel="alternate" hreflang="zh" href="https://poker.serbito.rs/zh/what-is-planning-poker" />
+    <link rel="alternate" hreflang="x-default" href="https://poker.serbito.rs/what-is-planning-poker" />
+    <style>
+      *{box-sizing:border-box}
+      body{margin:0;font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1a2b22;background:#fff}
+      header.site{background:#15603b;padding:.8rem 1rem}
+      header.site a{color:#fff;text-decoration:none;font-weight:700}
+      main.page{max-width:760px;margin:0 auto;padding:1.5rem 1.1rem 2.5rem}
+      main.page h1{color:#15603b;font-size:1.9rem;line-height:1.25;margin:.2rem 0 1rem}
+      main.page h2{color:#15603b;font-size:1.3rem;margin-top:2rem}
+      main.page a{color:#15603b}
+      main.page dt{font-weight:600;margin-top:1rem}
+      main.page dd{margin:.25rem 0 0}
+      footer.site{border-top:1px solid #e3e9e5;background:#f4f7f5;padding:1rem;text-align:center;font-size:.85rem;color:#5b6b62;line-height:1.9}
+      footer.site a{color:#15603b;font-weight:600}
+    </style>
+  </head>
+  <body>
+    <header class="site"><a href="https://poker.serbito.rs/">🃏 Serbito Planning Poker</a></header>
+    <main class="page">
+      <article>
+        <h1>プランニングポーカーとは？ スクラム見積もりの完全ガイド</h1>
+
+        <p>プランニングポーカーは、スクラムポーカーとも呼ばれ、ソフトウェアチームがバックログの作業規模を見積もるための、合意形成型のアジャイル見積もり手法です。一人がタスクにかかる時間を当てずっぽうで決めるのではなく、チーム全員が数字の書かれたカードを使って同時に見積もります。目的は完璧な数字ではなく、作業に対する共通理解と、各項目が実際に何を含むのかについての率直な対話です。</p>
+
+        <p>この手法は2002年にJames Grenning氏によって広められ、その後Mike Cohn氏のアジャイル見積もりに関する著作を通じて広く普及しました。今日では、<strong>スプリントプランニング</strong>やバックログリファインメントで<strong>ストーリーポイント</strong>を割り当てる最も一般的な方法の一つとなっています。このガイドを読みながら、数秒で<a href="https://poker.serbito.rs/">無料のルームを始めて</a>チームで試すことができます。</p>
+
+        <h2>チームがプランニングポーカーを使う理由</h2>
+        <p>見積もりは難しく、人は最初に発言した人の影響を受けがちです。プランニングポーカーはそれを打ち消すために設計されています。全員が同時にカードを公開するため、最初に挙がった数字が後の見積もりすべてを引き寄せてしまうバイアスである<strong>アンカリング</strong>を減らせます。チームが最もよく挙げる効果は次のとおりです。</p>
+        <ul>
+          <li><strong>より良い対話：</strong>見積もりの大きなばらつきは、コーディングを始める前に隠れた前提、不足している受け入れ基準、リスクを浮き彫りにします。</li>
+          <li><strong>共有された当事者意識：</strong>リードやマネージャーだけでなく、チーム全員が見積もりにコミットします。</li>
+          <li><strong>相対見積もり：</strong>項目どうしを比較するほうが、正確な時間を予測するより速く、信頼性も高くなります。</li>
+          <li><strong>関与の促進：</strong>カードを出すというシンプルな行為が、おとなしいメンバーも巻き込み、全員に平等な発言権を与えます。</li>
+        </ul>
+
+        <h2>プランニングポーカーの進め方（手順）</h2>
+        <p>チームがリズムをつかめば、<strong>アジャイル見積もり</strong>の1ラウンドはすぐ終わります。標準的な流れは次のとおりです。</p>
+        <ul>
+          <li><strong>1. 項目を提示する。</strong>プロダクトオーナーがバックログ項目やユーザーストーリーを読み上げ、目的と受け入れ基準を明確にします。</li>
+          <li><strong>2. 簡潔に議論する。</strong>チームはスコープを理解するために質問します。これは明確化のためであり、まだ数字を提案する段階ではありません。</li>
+          <li><strong>3. 各自で見積もる。</strong>各メンバーがストーリーポイントでの見積もりを表すカードを選び、隠したままにします。</li>
+          <li><strong>4. 同時に公開する。</strong>誰も他人の影響を受けないよう、全員が同じ瞬間にカードを見せます。</li>
+          <li><strong>5. ばらつきを議論する。</strong>見積もりが大きく異なる場合、最高値と最低値を出した人が理由を説明します。</li>
+          <li><strong>6. 再投票する。</strong>議論のあとに再び見積もり、チームが<strong>合意</strong>に達するまで繰り返します。</li>
+          <li><strong>7. 記録して次へ進む。</strong>合意した見積もりを記録し、次の項目に取りかかります。</li>
+        </ul>
+
+        <h2>フィボナッチスケールと間隔が広がる理由</h2>
+        <p>多くのチームは修正版<strong>フィボナッチ</strong>数列で見積もります：1、2、3、5、8、13、20、40、100に、いくつかの特別なカードが加わります。間隔が広がっていくのがまさに肝心な点です。タスクが大きいほど誰も正確には見積もれないので、13の隣に14を用意しても意味がありません。広がっていく間隔は、誤った精度ではなく、おおまかに理解したまとまりの中から選ぶことを促します。</p>
+        <p>よく使われる非数値のカードには次のものがあります。</p>
+        <ul>
+          <li><strong>0</strong>：すでに完了している、または些細な作業。</li>
+          <li><strong>?</strong>（クエスチョンマーク）：「見積もれるほど理解できていない」という意味。</li>
+          <li><strong>コーヒーカップ</strong>：休憩を求めるとき。</li>
+          <li><strong>無限大</strong>：そのままでは見積もるには大きすぎるもの。</li>
+        </ul>
+        <p>20や40といった高い見積もりは、スプリントに入れる前に項目をより小さなストーリーに分割すべきという合図であることが多いです。これらの用語の短い定義は<a href="/ja/glossary">用語集</a>で確認できます。</p>
+
+        <h2>ストーリーポイント vs 時間</h2>
+        <p><strong>ストーリーポイント</strong>は、作業にかかる時計上の時間ではなく、その相対的な労力・複雑さ・不確実性を測るものです。2ポイントのタスクは、1ポイントのタスクのおよそ2倍の規模に感じられることを意図しています。チームが時間よりポイントを好む理由はいくつかあります。人は正確な所要時間を予測するより規模を比較するほうがはるかに得意であること、速い人でも遅い人でも作業を引き受けたときにポイントが安定していること、そして「8時間」という見積もりが生む誤った安心感を避けられることです。数スプリントを経ると、チームは自分たちの<em>ベロシティ</em>、つまり通常完了できるポイント数を学び、見積もり時間を合計するよりはるかに信頼できる予測ができるようになります。</p>
+
+        <h2>再投票のタイミングと高低差の議論</h2>
+        <p>意見の違いは抑え込むべき問題ではなく、セッションから得られる最も価値ある成果です。カードを公開して差が出たら、最高値を出した人と最低値を出した人に考えを説明してもらいましょう。多くの場合、高く見積もった人は他の人が見落としたエッジケースや依存関係を知っており、低く見積もった人は近道を知っています。短い議論のあとにチームは再投票します。見積もりが収束するまで繰り返しますが、完璧な一致を追い求めてはいけません。隣り合う1〜2枚のカードに収まったら、高いほうの値かおおよその多数を採って先へ進みましょう。延々と再投票するのは、この手法が節約しようとしている時間を無駄にします。</p>
+
+        <h2>プランニングポーカーセッションの役割</h2>
+        <ul>
+          <li><strong>スクラムマスター（またはファシリテーター）：</strong>セッションを進行し、時間を区切り、カードが同時に公開されるようにし、一つの声が支配しないようにします。スクラムマスターは通常、見積もりには参加しません。</li>
+          <li><strong>プロダクトオーナー：</strong>各項目を提示し、スコープや優先順位の質問に答え、受け入れ基準を明確にします。プロダクトオーナーは答えますが、実装は行わないため投票はしません。</li>
+          <li><strong>開発チーム：</strong>実際に作業を作るエンジニア、テスター、デザイナーです。カードを出し、見積もりに責任を持つのは彼らです。</li>
+          <li><strong>オブザーバー：</strong>ステークホルダーやゲストは文脈を把握するために見学できますが、チームにバイアスを与えないよう投票中は沈黙を保ちます。</li>
+        </ul>
+
+        <h2>ライブ見積もり vs 非同期見積もり</h2>
+        <p>プランニングポーカーには2つのモードがあります。<strong>ライブ</strong>セッションは、同じ部屋でもビデオ通話でも、活気を保ち議論が自然に流れます。全員が同じ数分のうちに投票します。<strong>非同期</strong>見積もりはタイムゾーンをまたぐ分散チームに向いています。メンバーは都合のよいときにバックログ項目へ投票し、大きな食い違いはファシリテーターが後でフォローアップします。非同期は即時のやり取りを柔軟性と引き換えにするため、ストーリーがすでにきちんと書かれているときに最も効果的です。リモート特有のヒントは<a href="/ja/planning-poker-for-remote-teams">リモートチームのためのプランニングポーカー</a>のガイドをご覧ください。</p>
+
+        <h2>避けるべきよくある間違い</h2>
+        <ul>
+          <li><strong>声に出してアンカリングする：</strong>カードを公開する前に誰かが数字を口にするのを決して許さないこと。手法の目的を台無しにします。</li>
+          <li><strong>ポイントを時間として扱う：</strong>ポイントを固定の時間数に戻すと、その最大の利点を捨てることになります。</li>
+          <li><strong>不明瞭なストーリーを見積もる：</strong>チームの半分がクエスチョンマークを出すなら、まずストーリーを精緻化しましょう。</li>
+          <li><strong>議論しすぎる：</strong>各項目に時間を区切ること。数分の議論は健全ですが、20分は違います。</li>
+          <li><strong>チーム間でベロシティを比較する：</strong>ポイントは一つのチームのスケールに対する相対値であり、チームをまたぐと意味を持ちません。</li>
+          <li><strong>マネージャーに投票させる：</strong>作業を行う人だけが見積もるべきです。</li>
+        </ul>
+
+        <h2>よくある質問</h2>
+        <dl>
+          <dt>プランニングポーカーとスクラムポーカーは同じものですか？</dt>
+          <dd>はい。どちらの名前も同じ合意形成型の見積もり手法を指します。「スクラムポーカー」は、スクラムフレームワーク内でよく使われることを強調しているだけです。</dd>
+          <dt>プランニングポーカーのセッションはどれくらいかかりますか？</dt>
+          <dd>チームが慣れてくれば、1項目あたり1〜2分を目安にしましょう。バックログリファインメントのセッションは、チームの集中を保つために1時間に区切られることがよくあります。</dd>
+          <dt>チームが合意に達しない場合はどうすればよいですか？</dt>
+          <dd>高い見積もりと低い見積もりについて議論し、再投票します。それでもばらつきが続くなら、そのストーリーはおそらく不明瞭か大きすぎるので、数字を無理に決めるのではなく分割するか、もっと情報を集めましょう。</dd>
+          <dt>プレイするには何かインストールが必要ですか？</dt>
+          <dd>いいえ。当ツールのようなウェブベースのツールなら、インストールするものは何もなく、登録も不要です。ルームを開き、リンクを共有して見積もりを始めましょう。</dd>
+          <dt>リモートチームでもプランニングポーカーを使えますか？</dt>
+          <dd>もちろんです。オンラインルームでは、分散チームがリアルタイムでも非同期でも一緒に投票でき、全員が投票するまでカードは隠されています。</dd>
+        </dl>
+
+        <p><strong>チームで見積もる準備はできましたか？</strong>プランニングポーカーは無料で速く、どんなアジャイルプロセスでも使えます。<a href="https://poker.serbito.rs/">今すぐ無料のルームを始めて</a>（登録不要）、チームにリンクを共有し、次のスプリントプランニングを、これからの作業についての集中した率直な対話に変えましょう。</p>
+      </article>
+    </main>
+    <footer class="site">
+      無料・オープンソースのプランニングポーカー — 広告なし、登録なし。<br />
+      <a href="https://poker.serbito.rs/">ルームを始める</a> ·
+      <a href="/ja/what-is-planning-poker">ガイド</a> ·
+      <a href="/ja/glossary">用語集</a> ·
+      <a href="/ja/planning-poker-for-jira">Jira向け</a> ·
+      <a href="/ja/planning-poker-for-remote-teams">リモートチーム</a> ·
+      <a href="https://github.com/alxndr-bnd/planning-poker">GitHub</a>
+    </footer>
+  </body>
+</html>

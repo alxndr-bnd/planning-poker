@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>¿Qué es el Planning Poker? Guía de estimación Scrum (herramienta gratuita)</title>
+    <meta
+      name="description"
+      content="Descubre qué es el Planning Poker (Scrum Poker), cómo jugar paso a paso, la escala de Fibonacci, los story points y los roles del equipo. Guía de estimación ágil gratuita y sin registro."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://poker.serbito.rs/es/what-is-planning-poker" />
+    <meta property="og:title" content="¿Qué es el Planning Poker? Guía completa de estimación Scrum" />
+    <meta property="og:description" content="Cómo jugar al Planning Poker paso a paso: la escala de Fibonacci, los story points, los roles y el consenso. Gratis, de código abierto y sin registro." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://poker.serbito.rs/es/what-is-planning-poker" />
+    <meta property="og:image" content="https://poker.serbito.rs/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://poker.serbito.rs/og-image.png" />
+    <link rel="alternate" hreflang="en" href="https://poker.serbito.rs/what-is-planning-poker" />
+    <link rel="alternate" hreflang="es" href="https://poker.serbito.rs/es/what-is-planning-poker" />
+    <link rel="alternate" hreflang="de" href="https://poker.serbito.rs/de/what-is-planning-poker" />
+    <link rel="alternate" hreflang="fr" href="https://poker.serbito.rs/fr/what-is-planning-poker" />
+    <link rel="alternate" hreflang="pt-BR" href="https://poker.serbito.rs/pt/what-is-planning-poker" />
+    <link rel="alternate" hreflang="ru" href="https://poker.serbito.rs/ru/what-is-planning-poker" />
+    <link rel="alternate" hreflang="sr" href="https://poker.serbito.rs/sr/what-is-planning-poker" />
+    <link rel="alternate" hreflang="ja" href="https://poker.serbito.rs/ja/what-is-planning-poker" />
+    <link rel="alternate" hreflang="zh" href="https://poker.serbito.rs/zh/what-is-planning-poker" />
+    <link rel="alternate" hreflang="x-default" href="https://poker.serbito.rs/what-is-planning-poker" />
+    <style>
+      *{box-sizing:border-box}
+      body{margin:0;font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1a2b22;background:#fff}
+      header.site{background:#15603b;padding:.8rem 1rem}
+      header.site a{color:#fff;text-decoration:none;font-weight:700}
+      main.page{max-width:760px;margin:0 auto;padding:1.5rem 1.1rem 2.5rem}
+      main.page h1{color:#15603b;font-size:1.9rem;line-height:1.25;margin:.2rem 0 1rem}
+      main.page h2{color:#15603b;font-size:1.3rem;margin-top:2rem}
+      main.page a{color:#15603b}
+      main.page dt{font-weight:600;margin-top:1rem}
+      main.page dd{margin:.25rem 0 0}
+      footer.site{border-top:1px solid #e3e9e5;background:#f4f7f5;padding:1rem;text-align:center;font-size:.85rem;color:#5b6b62;line-height:1.9}
+      footer.site a{color:#15603b;font-weight:600}
+    </style>
+  </head>
+  <body>
+    <header class="site"><a href="https://poker.serbito.rs/">🃏 Serbito Planning Poker</a></header>
+    <main class="page">
+      <article>
+        <h1>¿Qué es el Planning Poker? Guía completa de estimación Scrum</h1>
+
+        <p>El Planning Poker, también llamado Scrum Poker, es una técnica de estimación ágil basada en el consenso que ayuda a los equipos de software a dimensionar el trabajo de su backlog. En lugar de que una sola persona adivine cuánto tardará una tarea, todos los miembros del equipo estiman al mismo tiempo usando cartas numeradas. El objetivo no es un número perfecto, sino un entendimiento compartido del trabajo y una conversación honesta sobre lo que cada elemento realmente implica.</p>
+
+        <p>El método fue popularizado por James Grenning en 2002 y más tarde se extendió ampliamente gracias a los textos de Mike Cohn sobre estimación ágil. Hoy es una de las formas más habituales de asignar <strong>story points</strong> durante la <strong>planificación del sprint</strong> y el refinamiento del backlog. Puedes <a href="https://poker.serbito.rs/">crear una sala gratis</a> en segundos y probarlo con tu equipo mientras lees esta guía.</p>
+
+        <h2>Por qué los equipos usan Planning Poker</h2>
+        <p>Estimar es difícil, y la gente se deja influir por quien habla primero. El Planning Poker está diseñado para contrarrestarlo. Como todos revelan su carta simultáneamente, reduce el <strong>anclaje</strong>, ese sesgo por el que el primer número mencionado arrastra hacia él todas las estimaciones posteriores. Los beneficios que los equipos mencionan con más frecuencia son:</p>
+        <ul>
+          <li><strong>Mejores conversaciones:</strong> una gran dispersión de estimaciones saca a la luz suposiciones ocultas, criterios de aceptación que faltan y riesgos antes de empezar a programar.</li>
+          <li><strong>Responsabilidad compartida:</strong> todo el equipo se compromete con una estimación, no solo un líder o un mánager.</li>
+          <li><strong>Tamaño relativo:</strong> comparar elementos entre sí es más rápido y fiable que predecir horas exactas.</li>
+          <li><strong>Participación:</strong> el simple gesto de jugar una carta mantiene implicados a los miembros más callados y da a todos una voz por igual.</li>
+        </ul>
+
+        <h2>Cómo jugar al Planning Poker, paso a paso</h2>
+        <p>Una sola ronda de <strong>estimación ágil</strong> es rápida una vez que el equipo coge el ritmo. Este es el flujo estándar:</p>
+        <ul>
+          <li><strong>1. Presentar el elemento.</strong> El Product Owner lee un elemento del backlog o una historia de usuario y aclara el objetivo y los criterios de aceptación.</li>
+          <li><strong>2. Comentar brevemente.</strong> El equipo hace preguntas para entender el alcance. Esto es para aclarar, no para proponer números todavía.</li>
+          <li><strong>3. Estimar en privado.</strong> Cada miembro elige una carta que representa su estimación en story points, manteniéndola oculta.</li>
+          <li><strong>4. Revelar a la vez.</strong> Todos muestran su carta en el mismo momento para que nadie se vea influido por los demás.</li>
+          <li><strong>5. Comentar la dispersión.</strong> Si las estimaciones difieren mucho, quienes votaron más alto y más bajo explican su razonamiento.</li>
+          <li><strong>6. Volver a votar.</strong> Estimar de nuevo tras la conversación, repitiendo hasta que el equipo alcance el <strong>consenso</strong>.</li>
+          <li><strong>7. Registrar y continuar.</strong> Anotar la estimación acordada y pasar al siguiente elemento.</li>
+        </ul>
+
+        <h2>La escala de Fibonacci y por qué crecen los saltos</h2>
+        <p>La mayoría de los equipos estiman con una secuencia de <strong>Fibonacci</strong> modificada: 1, 2, 3, 5, 8, 13, 20, 40, 100, más algunas cartas especiales. Los saltos crecientes son justamente la clave. Cuanto mayor es una tarea, con menos precisión puede dimensionarla nadie, así que no tiene sentido ofrecer un 14 junto a un 13. Los intervalos cada vez más amplios obligan a elegir entre categorías aproximadas en lugar de una falsa precisión.</p>
+        <p>Entre las cartas no numéricas más habituales están:</p>
+        <ul>
+          <li><strong>0</strong> para trabajo ya hecho o trivial.</li>
+          <li><strong>?</strong> (signo de interrogación) para "no lo entiendo lo suficiente como para estimarlo".</li>
+          <li><strong>Taza de café</strong> para pedir un descanso.</li>
+          <li><strong>Infinito</strong> para algo demasiado grande de estimar tal cual.</li>
+        </ul>
+        <p>Una estimación alta como 20 o 40 suele ser una señal para dividir el elemento en historias más pequeñas antes de que entre en un sprint. Puedes encontrar definiciones breves de estos términos en nuestro <a href="/es/glossary">glosario</a>.</p>
+
+        <h2>Story points frente a horas</h2>
+        <p>Los <strong>story points</strong> miden el esfuerzo, la complejidad y la incertidumbre relativos de un trabajo, en lugar del tiempo de reloj que lleva. Una tarea de dos puntos debería sentirse aproximadamente el doble de grande que una de un punto. Los equipos prefieren los puntos a las horas por varias razones: las personas son mucho mejores comparando tamaños que prediciendo duraciones exactas, los puntos se mantienen estables aunque sea una persona más rápida o más lenta quien tome el trabajo, y evitan la falsa confianza que genera una estimación de "8 horas". A lo largo de unos cuantos sprints, el equipo aprende su <em>velocidad</em>, el número de puntos que suele completar, lo que hace que las previsiones sean mucho más fiables que sumar horas adivinadas.</p>
+
+        <h2>Cuándo volver a votar y comentar las diferencias alto-bajo</h2>
+        <p>Las diferencias no son un problema que haya que silenciar; son el resultado más valioso de la sesión. Cuando las cartas revelan una división, pide a la persona con la estimación más alta y a la de la más baja que expliquen su razonamiento. A menudo quien votó alto conoce un caso límite o una dependencia que los demás pasaron por alto, o quien votó bajo conoce un atajo. Tras una breve conversación, el equipo vuelve a votar. Repite hasta que las estimaciones converjan, pero no persigas el acuerdo perfecto: una vez que el equipo está dentro de una o dos cartas contiguas, toma el valor más alto o la mayoría aproximada y sigue adelante. Votar sin fin desperdicia el tiempo que la técnica pretende ahorrar.</p>
+
+        <h2>Roles en una sesión de Planning Poker</h2>
+        <ul>
+          <li><strong>Scrum Master (o facilitador):</strong> dirige la sesión, la mantiene acotada en el tiempo, garantiza que las cartas se revelen a la vez e impide que una sola voz domine. El Scrum Master normalmente no estima.</li>
+          <li><strong>Product Owner:</strong> presenta cada elemento, responde preguntas de alcance y prioridad, y aclara los criterios de aceptación. El Product Owner responde pero no vota, ya que no realiza la implementación.</li>
+          <li><strong>Equipo de desarrollo:</strong> los ingenieros, testers y diseñadores que de verdad construirán el trabajo. Son quienes juegan las cartas y son dueños de las estimaciones.</li>
+          <li><strong>Observadores:</strong> los stakeholders o invitados pueden mirar para coger contexto, pero permanecen en silencio durante la votación para no sesgar al equipo.</li>
+        </ul>
+
+        <h2>Estimación en vivo frente a asíncrona</h2>
+        <p>El Planning Poker funciona de dos formas. Las sesiones <strong>en vivo</strong>, ya sea en una sala o en una videollamada, mantienen alta la energía y dejan que la conversación fluya con naturalidad; todos votan en los mismos pocos minutos. La estimación <strong>asíncrona</strong> encaja con equipos distribuidos en distintas zonas horarias: los miembros emiten sus votos sobre los elementos del backlog cuando les conviene, y el facilitador retoma más tarde los grandes desacuerdos. La modalidad asíncrona cambia el ida y vuelta instantáneo por flexibilidad, por lo que funciona mejor cuando las historias ya están bien redactadas. Para consejos específicos sobre trabajo remoto, consulta nuestra guía de <a href="/es/planning-poker-for-remote-teams">Planning Poker para equipos remotos</a>.</p>
+
+        <h2>Errores comunes que conviene evitar</h2>
+        <ul>
+          <li><strong>Anclar en voz alta:</strong> nunca dejes que alguien anuncie un número antes de revelar las cartas. Anula el propósito.</li>
+          <li><strong>Tratar los puntos como horas:</strong> convertir los puntos de nuevo en un número fijo de horas tira por la borda su principal ventaja.</li>
+          <li><strong>Estimar historias poco claras:</strong> si la mitad del equipo juega un signo de interrogación, refina la historia primero.</li>
+          <li><strong>Debatir en exceso:</strong> acota cada elemento en el tiempo; unos minutos de debate son sanos, veinte no.</li>
+          <li><strong>Comparar la velocidad entre equipos:</strong> los puntos son relativos a la escala de un equipo y no significan nada entre equipos distintos.</li>
+          <li><strong>Dejar votar a los mánagers:</strong> solo las personas que hacen el trabajo deberían estimarlo.</li>
+        </ul>
+
+        <h2>Preguntas frecuentes</h2>
+        <dl>
+          <dt>¿Es el Planning Poker lo mismo que el Scrum Poker?</dt>
+          <dd>Sí. Ambos nombres se refieren a la misma técnica de estimación basada en el consenso. "Scrum Poker" simplemente subraya su uso habitual dentro del marco Scrum.</dd>
+          <dt>¿Cuánto debería durar una sesión de Planning Poker?</dt>
+          <dd>Apunta a uno o dos minutos por elemento una vez que el equipo está en marcha. Las sesiones de refinamiento del backlog suelen acotarse a una hora para que el equipo se mantenga concentrado.</dd>
+          <dt>¿Qué pasa si el equipo no logra llegar al consenso?</dt>
+          <dd>Comenta las estimaciones más alta y más baja, y luego vuelve a votar. Si la dispersión persiste, la historia probablemente sea poco clara o demasiado grande, así que divídela o reúne más información en lugar de forzar un número.</dd>
+          <dt>¿Necesito instalar algo para jugar?</dt>
+          <dd>No. Con una herramienta web como la nuestra no hay nada que instalar y no se requiere registro. Abre una sala, comparte el enlace y empieza a estimar.</dd>
+          <dt>¿Pueden los equipos remotos usar Planning Poker?</dt>
+          <dd>Por supuesto. Una sala online permite que los equipos distribuidos voten juntos en tiempo real o de forma asíncrona, con las cartas ocultas hasta que todos hayan votado.</dd>
+        </dl>
+
+        <p><strong>¿Listo para estimar con tu equipo?</strong> El Planning Poker es gratis, rápido y funciona con cualquier proceso ágil. <a href="https://poker.serbito.rs/">Crea una sala gratis ahora</a>, sin registro, comparte el enlace con tu equipo y convierte tu próxima planificación del sprint en una conversación honesta y concentrada sobre el trabajo que tienes por delante.</p>
+      </article>
+    </main>
+    <footer class="site">
+      Planning poker gratuito y de código abierto — sin anuncios, sin registro.<br />
+      <a href="https://poker.serbito.rs/">Crear una sala</a> ·
+      <a href="/es/what-is-planning-poker">Guía</a> ·
+      <a href="/es/glossary">Glosario</a> ·
+      <a href="/es/planning-poker-for-jira">Para Jira</a> ·
+      <a href="/es/planning-poker-for-remote-teams">Equipos remotos</a> ·
+      <a href="https://github.com/alxndr-bnd/planning-poker">GitHub</a>
+    </footer>
+  </body>
+</html>

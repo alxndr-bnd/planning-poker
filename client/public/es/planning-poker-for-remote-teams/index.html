@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Planning Poker para equipos remotos - Herramienta gratuita en tiempo real</title>
+    <meta
+      name="description"
+      content="Planning Poker gratuito y de código abierto para equipos remotos. La votación oculta en tiempo real elimina el anclaje, sin registro. Ejecuta estimación ágil distribuida en cualquier zona horaria."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://poker.serbito.rs/es/planning-poker-for-remote-teams" />
+    <meta property="og:title" content="Planning Poker para equipos remotos - Herramienta gratuita en tiempo real" />
+    <meta property="og:description" content="La votación oculta en tiempo real elimina el anclaje entre zonas horarias. Estimación ágil distribuida gratuita, de código abierto y sin registro." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://poker.serbito.rs/es/planning-poker-for-remote-teams" />
+    <meta property="og:image" content="https://poker.serbito.rs/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://poker.serbito.rs/og-image.png" />
+    <link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="es" href="https://poker.serbito.rs/es/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="de" href="https://poker.serbito.rs/de/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="fr" href="https://poker.serbito.rs/fr/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="pt-BR" href="https://poker.serbito.rs/pt/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="ru" href="https://poker.serbito.rs/ru/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="sr" href="https://poker.serbito.rs/sr/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="ja" href="https://poker.serbito.rs/ja/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="zh" href="https://poker.serbito.rs/zh/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="x-default" href="https://poker.serbito.rs/planning-poker-for-remote-teams" />
+    <style>
+      *{box-sizing:border-box}
+      body{margin:0;font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1a2b22;background:#fff}
+      header.site{background:#15603b;padding:.8rem 1rem}
+      header.site a{color:#fff;text-decoration:none;font-weight:700}
+      main.page{max-width:760px;margin:0 auto;padding:1.5rem 1.1rem 2.5rem}
+      main.page h1{color:#15603b;font-size:1.9rem;line-height:1.25;margin:.2rem 0 1rem}
+      main.page h2{color:#15603b;font-size:1.3rem;margin-top:2rem}
+      main.page a{color:#15603b}
+      main.page dt{font-weight:600;margin-top:1rem}
+      main.page dd{margin:.25rem 0 0}
+      footer.site{border-top:1px solid #e3e9e5;background:#f4f7f5;padding:1rem;text-align:center;font-size:.85rem;color:#5b6b62;line-height:1.9}
+      footer.site a{color:#15603b;font-weight:600}
+    </style>
+  </head>
+  <body>
+    <header class="site"><a href="https://poker.serbito.rs/">🃏 Serbito Planning Poker</a></header>
+    <main class="page">
+      <article>
+        <h1>Planning Poker para equipos remotos</h1>
+
+        <p>Estimar el trabajo ya es bastante difícil cuando todos están en la misma sala. Añade zonas horarias, oficinas en casa y un horario híbrido, y una simple pregunta de "¿cómo de grande es esta historia?" puede convertirse en una conversación larga y desequilibrada. El <strong>planning poker para equipos remotos</strong> devuelve la estructura: cada persona se compromete con una estimación en privado, todas las cartas se voltean a la vez y el equipo comenta las diferencias. Esta página explica cómo dirigir bien la estimación ágil distribuida y cómo usar nuestra herramienta gratuita, de código abierto y sin registro para hacerlo en tiempo real.</p>
+
+        <h2>Por qué estimar es más difícil para equipos distribuidos e híbridos</h2>
+        <p>En una sala con todos juntos, lees el lenguaje corporal, percibes la duda y detectas al ingeniero callado que claramente no está de acuerdo. El trabajo remoto elimina la mayor parte de eso. En una videollamada, la voz más alta o más veterana tiende a fijar el número primero, y todos los demás se desplazan en silencio hacia él. Eso es el anclaje, y erosiona silenciosamente el valor de tus estimaciones.</p>
+        <p>Los equipos distribuidos también afrontan fricciones prácticas: la gente se conecta desde distintas zonas horarias, algunos escuchan a medias entre tareas, y compartir una pantalla con una hoja de cálculo de números deja en evidencia quién votó qué. El resultado es un consenso apresurado en lugar de un desacuerdo honesto, y el desacuerdo es justo donde está la información útil. Si dos personas estiman la misma historia de forma muy diferente, suele significar que entienden los requisitos de forma distinta, y eso merece sacarse a la luz antes de que empiece el sprint.</p>
+
+        <h2>Cómo la votación oculta y luego revelada en tiempo real elimina el anclaje</h2>
+        <p>La mecánica central del planning poker es sencilla y potente. Cada participante selecciona una carta para su estimación, pero nadie puede ver la elección de los demás. Una vez que todos han votado, todas las cartas se revelan en el mismo momento. Como nadie ve un número hasta haber comprometido el suyo, el problema de que el ingeniero veterano vaya primero desaparece.</p>
+        <p>Nuestra herramienta ejecuta esto enteramente en tiempo real. A medida que los compañeros eligen cartas, ves quién ha votado sin ver qué eligió, de modo que el facilitador sabe cuándo la ronda está lista para revelarse. Cuando ocurre la revelación, la dispersión de <strong>story points en tiempo real</strong> aparece al instante para todos los presentes en la sala, sin importar desde qué zona horaria se conecten. La votación independiente y simultánea es lo más eficaz que puedes hacer para mantener honesta la <strong>estimación ágil distribuida</strong>. Si eres nuevo en la técnica, nuestra <a href="/es/what-is-planning-poker">guía sobre qué es el planning poker</a> repasa los conceptos básicos.</p>
+
+        <h2>Cómo dirigir una sesión compatible con lo asíncrono</h2>
+        <p>La estimación totalmente síncrona no siempre es posible a través de un abanico de zonas horarias. El planning poker sigue funcionando en un ritmo más relajado y compatible con lo asíncrono:</p>
+        <ul>
+          <li>Comparte el enlace de la sala con antelación para que la gente pueda unirse cuando esté lista, sin cuenta ni instalación.</li>
+          <li>Publica primero en tu gestor las historias que se van a estimar, para que todos lean el contexto antes de votar.</li>
+          <li>Da al equipo un margen para emitir los votos sobre la historia actual, en lugar de exigir una respuesta instantánea.</li>
+          <li>Revela una vez que todos los presentes hayan votado, y luego recoge por escrito los puntos de la conversación para quien no pudiera asistir en vivo.</li>
+          <li>Vuelve a votar tras la conversación cuando las estimaciones estaban muy separadas, para que el número final refleje un entendimiento compartido.</li>
+        </ul>
+        <p>Esto conserva los beneficios de la votación independiente respetando a la vez que no todos están despiertos a la misma hora.</p>
+
+        <h2>Compartir un enlace de sala para reunir a todos en un mismo lugar</h2>
+        <p>Meter a un equipo remoto en la misma sesión debería llevar segundos, no una guía de configuración. Con nuestra herramienta creas una sala y compartes su enlace en tu canal de chat o en una invitación de calendario. Cualquiera que lo abra se une a la misma sala en vivo, elige un nombre y empieza a votar. No hay registro, ni barrera de correo, ni muro de pago, lo que importa cuando tienes contratistas, invitados o miembros rotativos del equipo que no deberían tener que registrar una cuenta solo para estimar unas cuantas historias.</p>
+        <p>Mantener a todos en una sola sala es lo principal a vigilar. Si dos personas abren salas separadas, sus votos nunca se encuentran, así que pega siempre exactamente el mismo enlace y confirma en voz alta el nombre de la sala al principio. Una forma rápida de compartir en el móvil es un código QR que apunte a la sala; los códigos QR escaneables para las salas están en nuestro roadmap y todavía no están disponibles, así que por ahora el enlace compartido es la vía fiable de entrada.</p>
+
+        <h2>Consejos para la facilitación remota</h2>
+        <p>Un buen facilitador hace más que pulsar "revelar". Para el <strong>scrum remoto</strong> y la estimación distribuida, estos hábitos son los que más ayudan:</p>
+        <ul>
+          <li>Lee cada historia en voz alta o pide a su autor que la resuma antes de votar, para que todos partan del mismo contexto.</li>
+          <li>Espera a que cada participante vote antes de revelar; no dejes que quienes votan pronto presionen al resto.</li>
+          <li>Cuando la dispersión sea amplia, pide a quienes votaron más alto y más bajo que expliquen primero su razonamiento, no para defender un número sino para compartir lo que cada uno vio.</li>
+          <li>Acota en el tiempo la conversación para que una historia complicada no consuma toda la sesión.</li>
+          <li>Anima a que las cámaras sean opcionales pero las voces estén activas, para que los compañeros más callados sigan aportando.</li>
+          <li>Recoge por escrito las decisiones y las preguntas abiertas para los compañeros asíncronos y para tu registro del sprint.</li>
+        </ul>
+        <p>Si surge un término que no todos conocen, dirige a la gente al <a href="/es/glossary">glosario de estimación</a> para que el vocabulario no se convierta en una barrera.</p>
+
+        <h2>Por qué una herramienta gratuita y de código abierto encaja con los equipos remotos</h2>
+        <p>Los equipos remotos e híbridos cambian de forma a menudo, y una herramienta de <strong>planning poker gratuita</strong> que no necesita registro elimina la fricción de incorporar a cada nuevo participante. Ser de código abierto significa que puedes leer exactamente cómo funciona, confiar en lo que ocurre con tus datos y alojarla tú mismo si tu organización lo requiere. Combinado con la votación en tiempo real y una única sala compartida, eso la convierte en una forma de bajo coste de aportar disciplina a la estimación ágil distribuida.</p>
+
+        <h2>Preguntas frecuentes</h2>
+        <dl>
+          <dt>¿Esta herramienta de planning poker es realmente gratis?</dt>
+          <dd>Sí. Es gratuita y de código abierto, sin registro, sin cuenta y sin muro de pago. Crea una sala y comparte el enlace para empezar.</dd>
+          <dt>¿Los compañeros remotos necesitan instalar algo?</dt>
+          <dd>No. Todos se unen a través de un navegador abriendo el enlace compartido de la sala, así que no hay nada que descargar ni configurar.</dd>
+          <dt>¿Cómo evita el anclaje la votación oculta?</dt>
+          <dd>La carta de cada persona permanece oculta hasta que todos han votado, y entonces todas las cartas se revelan a la vez. Como nadie ve un número antes de comprometer el suyo, nadie queda anclado a la primera estimación ni a la más alta.</dd>
+          <dt>¿Podemos usarla en distintas zonas horarias?</dt>
+          <dd>Sí. La sala funciona en tiempo real para quien esté presente, y puedes usarla de forma compatible con lo asíncrono dando a la gente un margen para votar y recogiendo la conversación por escrito.</dd>
+          <dt>¿Puedo compartir una sala con un código QR?</dt>
+          <dd>Todavía no. Los códigos QR escaneables para las salas están en el roadmap. Por ahora, comparte el enlace de la sala directamente en el chat o en tu invitación de calendario.</dd>
+        </dl>
+
+        <h2>Empieza a estimar con tu equipo remoto</h2>
+        <p>Crea una sala, comparte el enlace y dirige tu próxima sesión de estimación distribuida en minutos, gratis y sin registro. <a href="https://poker.serbito.rs/">Abre la herramienta gratuita de Planning Poker</a> y alinea hoy mismo a tu equipo remoto en torno a los story points.</p>
+      </article>
+    </main>
+    <footer class="site">
+      Planning poker gratuito y de código abierto — sin anuncios, sin registro.<br />
+      <a href="https://poker.serbito.rs/">Crear una sala</a> ·
+      <a href="/es/what-is-planning-poker">Guía</a> ·
+      <a href="/es/glossary">Glosario</a> ·
+      <a href="/es/planning-poker-for-jira">Para Jira</a> ·
+      <a href="/es/planning-poker-for-remote-teams">Equipos remotos</a> ·
+      <a href="https://github.com/alxndr-bnd/planning-poker">GitHub</a>
+    </footer>
+  </body>
+</html>

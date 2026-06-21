@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>什么是敏捷估算扑克？Scrum 估算完全指南（免费工具）</title>
+    <meta
+      name="description"
+      content="了解什么是敏捷估算扑克（Scrum Poker），如何一步步进行、斐波那契刻度、故事点和团队角色。免费、无需注册的敏捷估算指南。"
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://poker.serbito.rs/zh/what-is-planning-poker" />
+    <link rel="alternate" hreflang="en" href="https://poker.serbito.rs/what-is-planning-poker" />
+    <link rel="alternate" hreflang="es" href="https://poker.serbito.rs/es/what-is-planning-poker" />
+    <link rel="alternate" hreflang="de" href="https://poker.serbito.rs/de/what-is-planning-poker" />
+    <link rel="alternate" hreflang="fr" href="https://poker.serbito.rs/fr/what-is-planning-poker" />
+    <link rel="alternate" hreflang="pt-BR" href="https://poker.serbito.rs/pt/what-is-planning-poker" />
+    <link rel="alternate" hreflang="ru" href="https://poker.serbito.rs/ru/what-is-planning-poker" />
+    <link rel="alternate" hreflang="sr" href="https://poker.serbito.rs/sr/what-is-planning-poker" />
+    <link rel="alternate" hreflang="ja" href="https://poker.serbito.rs/ja/what-is-planning-poker" />
+    <link rel="alternate" hreflang="zh" href="https://poker.serbito.rs/zh/what-is-planning-poker" />
+    <link rel="alternate" hreflang="x-default" href="https://poker.serbito.rs/what-is-planning-poker" />
+    <meta property="og:title" content="什么是敏捷估算扑克？Scrum 估算完全指南" />
+    <meta property="og:description" content="如何一步步进行敏捷估算扑克：斐波那契刻度、故事点、角色与共识。免费、开源、无需注册。" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://poker.serbito.rs/zh/what-is-planning-poker" />
+    <meta property="og:image" content="https://poker.serbito.rs/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://poker.serbito.rs/og-image.png" />
+    <style>
+      *{box-sizing:border-box}
+      body{margin:0;font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1a2b22;background:#fff}
+      header.site{background:#15603b;padding:.8rem 1rem}
+      header.site a{color:#fff;text-decoration:none;font-weight:700}
+      main.page{max-width:760px;margin:0 auto;padding:1.5rem 1.1rem 2.5rem}
+      main.page h1{color:#15603b;font-size:1.9rem;line-height:1.25;margin:.2rem 0 1rem}
+      main.page h2{color:#15603b;font-size:1.3rem;margin-top:2rem}
+      main.page a{color:#15603b}
+      main.page dt{font-weight:600;margin-top:1rem}
+      main.page dd{margin:.25rem 0 0}
+      footer.site{border-top:1px solid #e3e9e5;background:#f4f7f5;padding:1rem;text-align:center;font-size:.85rem;color:#5b6b62;line-height:1.9}
+      footer.site a{color:#15603b;font-weight:600}
+    </style>
+  </head>
+  <body>
+    <header class="site"><a href="https://poker.serbito.rs/">🃏 Serbito Planning Poker</a></header>
+    <main class="page">
+      <article>
+        <h1>什么是敏捷估算扑克？Scrum 估算完全指南</h1>
+
+        <p>敏捷估算扑克（Planning Poker），也称为 Scrum Poker，是一种基于共识的敏捷估算技术，帮助软件团队评估待办事项列表中工作的规模。与其让一个人猜测某项任务需要多长时间，不如让团队的每位成员同时使用编号卡片进行估算。其目标不是得出一个完美的数字，而是对工作形成共同的理解，并就每个事项究竟涉及什么展开坦诚的讨论。</p>
+
+        <p>这一方法由 James Grenning 于 2002 年推广，后来通过 Mike Cohn 关于敏捷估算的著作得到广泛传播。如今，它是在<strong>冲刺规划</strong>和待办事项梳理过程中分配<strong>故事点</strong>的最常见方式之一。你可以在几秒钟内<a href="https://poker.serbito.rs/">创建一个免费房间</a>，一边阅读本指南，一边和团队一起尝试。</p>
+
+        <h2>团队为什么使用敏捷估算扑克</h2>
+        <p>估算很难，而且人们容易受到第一个发言者的影响。敏捷估算扑克正是为了对抗这一点而设计的。因为每个人同时亮出自己的卡片，它减少了<strong>锚定效应</strong>——也就是最先提到的数字会把后续所有估算都拉向它的偏差。团队最常提到的好处包括：</p>
+        <ul>
+          <li><strong>更好的讨论：</strong>估算结果的较大差异会在编码开始之前暴露出隐藏的假设、缺失的验收标准和风险。</li>
+          <li><strong>共同承担：</strong>整个团队都对估算结果做出承诺，而不仅仅是某位负责人或管理者。</li>
+          <li><strong>相对规模：</strong>把事项彼此相互比较，比预测确切的小时数更快、更可靠。</li>
+          <li><strong>积极参与：</strong>出一张卡片这个简单的动作让较安静的成员保持投入，并赋予每个人平等的发言权。</li>
+        </ul>
+
+        <h2>如何一步步进行敏捷估算扑克</h2>
+        <p>一旦团队找到节奏，一轮<strong>敏捷估算</strong>会很快完成。以下是标准流程：</p>
+        <ul>
+          <li><strong>1. 介绍事项。</strong>产品负责人朗读一个待办事项或用户故事，并阐明目标和验收标准。</li>
+          <li><strong>2. 简短讨论。</strong>团队提出问题以理解范围。这是为了澄清，此时还不要提出数字。</li>
+          <li><strong>3. 私下估算。</strong>每位成员选择一张代表其估算（以故事点计）的卡片，并将其保持隐藏。</li>
+          <li><strong>4. 同时亮牌。</strong>所有人在同一时刻亮出卡片，这样就没有人会受到他人的影响。</li>
+          <li><strong>5. 讨论差异。</strong>如果估算结果差异较大，给出最高分和最低分的人解释各自的理由。</li>
+          <li><strong>6. 重新投票。</strong>讨论之后再次估算，反复进行，直到团队达成<strong>共识</strong>。</li>
+          <li><strong>7. 记录并继续。</strong>记下商定的估算结果，然后开始下一个事项。</li>
+        </ul>
+
+        <h2>斐波那契刻度，以及间隔为何越来越大</h2>
+        <p>大多数团队使用经过改良的<strong>斐波那契</strong>数列进行估算：1、2、3、5、8、13、20、40、100，再加上几张特殊卡片。不断增大的间隔正是其用意所在。任务越大，任何人对其规模的判断就越不精确，因此在 13 旁边放一个 14 毫无意义。逐渐拉大的区间迫使人们在大致理解的几个档位之间做出选择，而非追求虚假的精确。</p>
+        <p>常见的非数字卡片包括：</p>
+        <ul>
+          <li><strong>0</strong>表示已经完成或微不足道的工作。</li>
+          <li><strong>?</strong>（问号）表示“我对这个理解得不够透彻，无法估算”。</li>
+          <li><strong>咖啡杯</strong>用于请求休息。</li>
+          <li><strong>无穷大</strong>表示某个事项过于庞大，无法按当前状态进行估算。</li>
+        </ul>
+        <p>像 20 或 40 这样较高的估算通常是一个信号，表明应在该事项进入冲刺之前将其拆分为更小的故事。你可以在我们的<a href="/zh/glossary">术语表</a>中找到这些术语的简短定义。</p>
+
+        <h2>故事点 vs 小时数</h2>
+        <p><strong>故事点</strong>衡量的是一项工作的相对工作量、复杂度和不确定性，而不是它所花费的钟表时间。一个两点的任务，其规模感大致应是一个一点任务的两倍。团队偏好用点数而非小时数，原因有几个：人们在比较规模方面远比预测确切时长更在行；即便由更快或更慢的人来承担工作，点数仍保持稳定；而且它们避免了“8 小时”估算所制造的虚假信心。经过几个冲刺，团队会逐渐了解自己的<em>速率</em>，即它通常能完成的点数，这使得预测远比把猜出来的小时数加总更可靠。</p>
+
+        <h2>何时重新投票以及讨论高低差异</h2>
+        <p>分歧不是需要压制的问题；它们是会议最有价值的产出。当卡片显示出差异时，请最高估算者和最低估算者解释他们的思路。往往是高分者了解到了其他人忽略的某个边界情况或依赖项，或者低分者知道一条捷径。经过简短讨论后，团队重新投票。反复进行直到估算趋于一致，但不要追求完美的一致：一旦团队落在相邻的一两张卡片之内，就取较高的值或大致的多数意见，然后继续推进。无休止的重新投票会浪费这项技术本应节省的时间。</p>
+
+        <h2>敏捷估算扑克会议中的角色</h2>
+        <ul>
+          <li><strong>Scrum Master（或主持人）：</strong>主持会议，控制时间，确保卡片同时亮出，并防止某一种声音占据主导。Scrum Master 通常不参与估算。</li>
+          <li><strong>产品负责人：</strong>介绍每个事项，回答关于范围和优先级的问题，并阐明验收标准。产品负责人负责回答但不投票，因为他们并不进行实现。</li>
+          <li><strong>开发团队：</strong>真正构建这项工作的工程师、测试人员和设计师。他们才是出卡片并对估算负责的人。</li>
+          <li><strong>观察者：</strong>利益相关者或来宾可以旁观以建立背景认知，但在投票期间保持沉默，以免影响团队。</li>
+        </ul>
+
+        <h2>实时估算 vs 异步估算</h2>
+        <p>敏捷估算扑克有两种模式。<strong>实时</strong>会议，无论是在会议室还是视频通话中，都能保持高昂的气氛并让讨论自然展开；所有人在同样的几分钟内投票。<strong>异步</strong>估算适合跨时区的分布式团队：成员在方便的时候对待办事项投票，主持人随后再就重大分歧进行跟进。异步用即时的来回讨论换取灵活性，因此当故事已经写得很清楚时效果最好。关于远程方面的具体建议，请参阅我们的<a href="/zh/planning-poker-for-remote-teams">远程团队敏捷估算扑克</a>指南。</p>
+
+        <h2>需要避免的常见错误</h2>
+        <ul>
+          <li><strong>当众锚定：</strong>在卡片亮出之前，绝不要让任何人说出一个数字。那会破坏整个目的。</li>
+          <li><strong>把点数当成小时数：</strong>把点数换算回固定的小时数，会丢掉它们的主要优势。</li>
+          <li><strong>估算不清晰的故事：</strong>如果半数团队出了问号，先去细化这个故事。</li>
+          <li><strong>过度讨论：</strong>为每个事项设定时间盒；几分钟的辩论是健康的，二十分钟则不然。</li>
+          <li><strong>跨团队比较速率：</strong>点数相对于某个团队自己的刻度而言，跨团队比较毫无意义。</li>
+          <li><strong>让管理者投票：</strong>只有真正做这项工作的人才应该对其进行估算。</li>
+        </ul>
+
+        <h2>常见问题</h2>
+        <dl>
+          <dt>敏捷估算扑克和 Scrum Poker 是一回事吗？</dt>
+          <dd>是的。这两个名称指的是同一种基于共识的估算技术。“Scrum Poker”只是强调它在 Scrum 框架内的常见用途。</dd>
+          <dt>一次敏捷估算扑克会议应该持续多久？</dt>
+          <dd>团队热身之后，争取每个事项一到两分钟。待办事项梳理会议通常限制在一个小时以内，以便团队保持专注。</dd>
+          <dt>如果团队无法达成共识怎么办？</dt>
+          <dd>讨论最高和最低的估算，然后重新投票。如果差异依然存在，那么这个故事很可能不清晰或太大，因此应将其拆分或收集更多信息，而不是强行得出一个数字。</dd>
+          <dt>我需要安装什么才能开始吗？</dt>
+          <dd>不需要。使用像我们这样基于网页的工具，无需安装任何东西，也无需注册。开一个房间，分享链接，就可以开始估算。</dd>
+          <dt>远程团队能使用敏捷估算扑克吗？</dt>
+          <dd>当然可以。在线房间让分布式团队能够实时或异步地一起投票，卡片在所有人投票完毕之前都保持隐藏。</dd>
+        </dl>
+
+        <p><strong>准备好和你的团队一起估算了吗？</strong>敏捷估算扑克免费、快捷，并且适用于任何敏捷流程。<a href="https://poker.serbito.rs/">立即创建一个免费房间</a>，无需注册，把链接分享给你的团队，让你的下一次冲刺规划变成一场专注、坦诚、围绕即将开展的工作的对话。</p>
+      </article>
+    </main>
+    <footer class="site">
+      免费、开源的敏捷估算扑克 —— 无广告，无需注册。<br />
+      <a href="https://poker.serbito.rs/">创建房间</a> ·
+      <a href="/zh/what-is-planning-poker">指南</a> ·
+      <a href="/zh/glossary">术语表</a> ·
+      <a href="/zh/planning-poker-for-jira">用于 Jira</a> ·
+      <a href="/zh/planning-poker-for-remote-teams">远程团队</a> ·
+      <a href="https://github.com/alxndr-bnd/planning-poker">GitHub</a>
+    </footer>
+  </body>
+</html>

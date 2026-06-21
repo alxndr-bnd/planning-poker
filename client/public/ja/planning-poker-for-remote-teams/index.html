@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>リモートチーム向けプランニングポーカー - 無料リアルタイムツール</title>
+    <meta
+      name="description"
+      content="リモートチーム向けの無料・オープンソースのプランニングポーカー。リアルタイムの隠し投票でアンカリングを排除、登録不要。どのタイムゾーンでも分散アジャイル見積もりを実行。"
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://poker.serbito.rs/ja/planning-poker-for-remote-teams" />
+    <meta property="og:title" content="リモートチーム向けプランニングポーカー - 無料リアルタイムツール" />
+    <meta property="og:description" content="リアルタイムの隠し投票がタイムゾーンを越えてアンカリングを排除。無料・オープンソース・登録不要の分散アジャイル見積もり。" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://poker.serbito.rs/ja/planning-poker-for-remote-teams" />
+    <meta property="og:image" content="https://poker.serbito.rs/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://poker.serbito.rs/og-image.png" />
+    <link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="es" href="https://poker.serbito.rs/es/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="de" href="https://poker.serbito.rs/de/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="fr" href="https://poker.serbito.rs/fr/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="pt-BR" href="https://poker.serbito.rs/pt/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="ru" href="https://poker.serbito.rs/ru/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="sr" href="https://poker.serbito.rs/sr/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="ja" href="https://poker.serbito.rs/ja/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="zh" href="https://poker.serbito.rs/zh/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="x-default" href="https://poker.serbito.rs/planning-poker-for-remote-teams" />
+    <style>
+      *{box-sizing:border-box}
+      body{margin:0;font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1a2b22;background:#fff}
+      header.site{background:#15603b;padding:.8rem 1rem}
+      header.site a{color:#fff;text-decoration:none;font-weight:700}
+      main.page{max-width:760px;margin:0 auto;padding:1.5rem 1.1rem 2.5rem}
+      main.page h1{color:#15603b;font-size:1.9rem;line-height:1.25;margin:.2rem 0 1rem}
+      main.page h2{color:#15603b;font-size:1.3rem;margin-top:2rem}
+      main.page a{color:#15603b}
+      main.page dt{font-weight:600;margin-top:1rem}
+      main.page dd{margin:.25rem 0 0}
+      footer.site{border-top:1px solid #e3e9e5;background:#f4f7f5;padding:1rem;text-align:center;font-size:.85rem;color:#5b6b62;line-height:1.9}
+      footer.site a{color:#15603b;font-weight:600}
+    </style>
+  </head>
+  <body>
+    <header class="site"><a href="https://poker.serbito.rs/">🃏 Serbito Planning Poker</a></header>
+    <main class="page">
+      <article>
+        <h1>リモートチーム向けプランニングポーカー</h1>
+
+        <p>作業の見積もりは、全員が同じ部屋にいてさえ十分に難しいものです。そこにタイムゾーン、在宅オフィス、ハイブリッドな勤務形態が加わると、単純な「このストーリーはどれくらいの規模か？」が、長く偏った会話になりかねません。<strong>リモートチーム向けのプランニングポーカー</strong>は、その構造を取り戻します。各人がこっそり見積もりにコミットし、全カードが一斉にめくられ、チームがその差を議論します。このページでは、分散アジャイル見積もりをうまく実行する方法と、無料・オープンソース・登録不要の当社ツールでそれをリアルタイムに行う方法を説明します。</p>
+
+        <h2>なぜ分散・ハイブリッドチームでは見積もりが難しいのか</h2>
+        <p>同じ場所にいる部屋では、ボディランゲージを読み取り、ためらいを感じ取り、明らかに反対している無口なエンジニアに気づけます。リモートワークはそのほとんどを奪います。ビデオ通話では、最も声が大きい、あるいは最も上位の人が最初に数字を決めがちで、他の全員は静かにそこへ流れていきます。それがアンカリングであり、見積もりの価値をひそかに損ないます。</p>
+        <p>分散チームは現実的な摩擦にも直面します。人々は異なるタイムゾーンから参加し、一部は別の作業の合間に上の空で聞いており、数字のスプレッドシートを画面共有すると誰が何に投票したかが丸見えになります。その結果、率直な意見の相違ではなく急いだ合意が生まれますが、有益な情報があるのはまさに意見の相違の中です。二人が同じストーリーをまったく違って見積もるなら、それはたいてい要件の理解が異なることを意味し、スプリントが始まる前に浮き彫りにする価値があります。</p>
+
+        <h2>リアルタイムの「隠してから公開する」投票がアンカリングを排除する仕組み</h2>
+        <p>プランニングポーカーの中核の仕組みはシンプルで強力です。各参加者が自分の見積もりのカードを選びますが、誰も他人の選択を見ることはできません。全員が投票し終えると、全カードが同じ瞬間に公開されます。誰も自分が決めるまで数字を見ないので、「上位エンジニアが先に出す」問題が消えます。</p>
+        <p>当社のツールはこれを完全にリアルタイムで実行します。チームメイトがカードを選ぶと、何を選んだかは見えずに誰が投票したかが見えるので、ファシリテーターはラウンドが公開の準備ができたタイミングを把握できます。公開が起きると、どのタイムゾーンから接続していても、ルーム内の全員に<strong>リアルタイムのストーリーポイント</strong>のばらつきが即座に表示されます。独立した同時投票は、<strong>分散アジャイル見積もり</strong>を率直に保つためにできる最も効果的な一手です。この手法が初めてなら、<a href="/ja/what-is-planning-poker">プランニングポーカーとは何かのガイド</a>が基本を解説しています。</p>
+
+        <h2>非同期に優しいセッションの進め方</h2>
+        <p>タイムゾーンが広く分かれていると、完全に同期した見積もりが常に可能とは限りません。プランニングポーカーは、よりゆるやかで非同期に優しいリズムでも機能します。</p>
+        <ul>
+          <li>ルームのリンクを前もって共有し、アカウントやインストールなしで準備ができたときに参加できるようにします。</li>
+          <li>見積もるストーリーを先にトラッカーへ投稿し、全員が投票前に文脈を読めるようにします。</li>
+          <li>即答を求めるのではなく、現在のストーリーに投票するための時間枠をチームに与えます。</li>
+          <li>その場にいる全員が投票したら公開し、ライブで参加できなかった人のために議論のポイントを書き留めます。</li>
+          <li>見積もりが大きく離れていたら議論のあとに再投票し、最終的な数字が共通理解を反映するようにします。</li>
+        </ul>
+        <p>これにより、全員が同じ時刻に起きているわけではないことを尊重しつつ、独立した投票の利点を保てます。</p>
+
+        <h2>ルームのリンクを共有して全員を一か所に集める</h2>
+        <p>リモートチームを同じセッションに集めるのは、セットアップガイドではなく数秒で済むべきです。当社のツールでは、ルームを作り、そのリンクをチャットチャンネルやカレンダー招待で共有します。それを開いた人は誰でも同じライブルームに参加し、名前を選んで投票を始めます。登録もメールの関門も有料の壁もありません。これは、数ストーリーを見積もるためだけにアカウント登録をすべきでない委託先、ゲスト、入れ替わるメンバーがいるときに重要です。</p>
+        <p>全員を一つのルームに保つことが、注意すべき主なポイントです。二人が別々のルームを開くと、その投票は決して合流しないので、必ずまったく同じリンクを貼り、最初にルーム名を声に出して確認しましょう。モバイルで素早く共有する方法は、ルームを指すQRコードです。ルーム用のスキャン可能なQRコードはロードマップにあり、まだ利用できないので、今のところ共有リンクが確実な入り口です。</p>
+
+        <h2>リモートファシリテーションのヒント</h2>
+        <p>良いファシリテーターは、公開をクリックする以上のことをします。<strong>リモートスクラム</strong>と分散見積もりには、次の習慣が最も役立ちます。</p>
+        <ul>
+          <li>各ストーリーを声に出して読むか、作者に要約してもらってから投票し、全員が同じ文脈から始められるようにします。</li>
+          <li>公開する前にすべての参加者が投票するのを待ちます。早く投票した人が残りに圧力をかけないようにします。</li>
+          <li>ばらつきが大きいときは、最高値と最低値を出した人にまず理由を説明してもらいます。数字を擁護するためではなく、それぞれが何を見たかを共有するためです。</li>
+          <li>議論に時間を区切り、一つの厄介なストーリーがセッション全体を食い尽くさないようにします。</li>
+          <li>カメラは任意でも声はオンを推奨し、無口なチームメイトも貢献できるようにします。</li>
+          <li>非同期のチームメイトとスプリントの記録のために、決定事項と未解決の質問を書き留めます。</li>
+        </ul>
+        <p>全員が知らない用語が出てきたら、語彙が障壁にならないよう<a href="/ja/glossary">見積もり用語集</a>を案内しましょう。</p>
+
+        <h2>無料・オープンソースのツールがリモートチームに合う理由</h2>
+        <p>リモートやハイブリッドのチームは頻繁に形を変えるので、登録不要の<strong>無料プランニングポーカー</strong>ツールは、新しい参加者をオンボーディングする摩擦を取り除きます。オープンソースであることは、その仕組みを正確に読み、データに何が起こるかを信頼でき、組織が求めるなら自分でホスティングできることを意味します。リアルタイム投票と一つの共有ルームと組み合わせれば、分散アジャイル見積もりに規律をもたらす、負担の小さい方法になります。</p>
+
+        <h2>よくある質問</h2>
+        <dl>
+          <dt>このプランニングポーカーツールは本当に無料ですか？</dt>
+          <dd>はい。無料でオープンソースで、登録もアカウントも有料の壁もありません。ルームを作ってリンクを共有すれば始められます。</dd>
+          <dt>リモートのチームメイトは何かをインストールする必要がありますか？</dt>
+          <dd>いいえ。全員が共有ルームのリンクを開いてブラウザで参加するので、ダウンロードや設定は何も必要ありません。</dd>
+          <dt>隠し投票はどのようにアンカリングを防ぐのですか？</dt>
+          <dd>各人のカードは全員が投票するまで隠され、その後すべてのカードが一斉に公開されます。誰も自分が決める前に数字を見ないので、最初の、あるいは最も大きな声の見積もりにアンカリングされません。</dd>
+          <dt>異なるタイムゾーンをまたいで使えますか？</dt>
+          <dd>はい。ルームはその場にいる人のためにリアルタイムで動き、投票の時間枠を与えて議論を書き留めることで、非同期に優しい形でも実行できます。</dd>
+          <dt>QRコードでルームを共有できますか？</dt>
+          <dd>まだです。ルーム用のスキャン可能なQRコードはロードマップにあります。今のところは、チャットやカレンダー招待でルームのリンクを直接共有してください。</dd>
+        </dl>
+
+        <h2>リモートチームと見積もりを始める</h2>
+        <p>ルームを作り、リンクを共有し、次の分散見積もりセッションを数分で実行しましょう。無料で、登録なしで。<a href="https://poker.serbito.rs/">無料のプランニングポーカーツールを開いて</a>、今日リモートチームをストーリーポイントでそろえましょう。</p>
+      </article>
+    </main>
+    <footer class="site">
+      無料・オープンソースのプランニングポーカー — 広告なし、登録なし。<br />
+      <a href="https://poker.serbito.rs/">ルームを始める</a> ·
+      <a href="/ja/what-is-planning-poker">ガイド</a> ·
+      <a href="/ja/glossary">用語集</a> ·
+      <a href="/ja/planning-poker-for-jira">Jira向け</a> ·
+      <a href="/ja/planning-poker-for-remote-teams">リモートチーム</a> ·
+      <a href="https://github.com/alxndr-bnd/planning-poker">GitHub</a>
+    </footer>
+  </body>
+</html>

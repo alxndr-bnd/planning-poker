@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="sr-Latn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Šta je Planning Poker? Vodič za Scrum procenu (besplatan alat)</title>
+    <meta
+      name="description"
+      content="Saznajte šta je Planning Poker (Scrum Poker), kako se igra korak po korak, Fibonačijeva skala, story points i timske uloge. Besplatan vodič za agilnu procenu, bez registracije."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://poker.serbito.rs/sr/what-is-planning-poker" />
+    <meta property="og:title" content="Šta je Planning Poker? Kompletan vodič za Scrum procenu" />
+    <meta property="og:description" content="Kako se igra Planning Poker korak po korak: Fibonačijeva skala, story points, uloge i konsenzus. Besplatno, otvorenog koda, bez registracije." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://poker.serbito.rs/sr/what-is-planning-poker" />
+    <meta property="og:image" content="https://poker.serbito.rs/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://poker.serbito.rs/og-image.png" />
+    <link rel="alternate" hreflang="en" href="https://poker.serbito.rs/what-is-planning-poker" />
+    <link rel="alternate" hreflang="es" href="https://poker.serbito.rs/es/what-is-planning-poker" />
+    <link rel="alternate" hreflang="de" href="https://poker.serbito.rs/de/what-is-planning-poker" />
+    <link rel="alternate" hreflang="fr" href="https://poker.serbito.rs/fr/what-is-planning-poker" />
+    <link rel="alternate" hreflang="pt-BR" href="https://poker.serbito.rs/pt/what-is-planning-poker" />
+    <link rel="alternate" hreflang="ru" href="https://poker.serbito.rs/ru/what-is-planning-poker" />
+    <link rel="alternate" hreflang="sr" href="https://poker.serbito.rs/sr/what-is-planning-poker" />
+    <link rel="alternate" hreflang="ja" href="https://poker.serbito.rs/ja/what-is-planning-poker" />
+    <link rel="alternate" hreflang="zh" href="https://poker.serbito.rs/zh/what-is-planning-poker" />
+    <link rel="alternate" hreflang="x-default" href="https://poker.serbito.rs/what-is-planning-poker" />
+    <style>
+      *{box-sizing:border-box}
+      body{margin:0;font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1a2b22;background:#fff}
+      header.site{background:#15603b;padding:.8rem 1rem}
+      header.site a{color:#fff;text-decoration:none;font-weight:700}
+      main.page{max-width:760px;margin:0 auto;padding:1.5rem 1.1rem 2.5rem}
+      main.page h1{color:#15603b;font-size:1.9rem;line-height:1.25;margin:.2rem 0 1rem}
+      main.page h2{color:#15603b;font-size:1.3rem;margin-top:2rem}
+      main.page a{color:#15603b}
+      main.page dt{font-weight:600;margin-top:1rem}
+      main.page dd{margin:.25rem 0 0}
+      footer.site{border-top:1px solid #e3e9e5;background:#f4f7f5;padding:1rem;text-align:center;font-size:.85rem;color:#5b6b62;line-height:1.9}
+      footer.site a{color:#15603b;font-weight:600}
+    </style>
+  </head>
+  <body>
+    <header class="site"><a href="https://poker.serbito.rs/">🃏 Serbito Planning Poker</a></header>
+    <main class="page">
+      <article>
+        <h1>Šta je Planning Poker? Kompletan vodič za Scrum procenu</h1>
+
+        <p>Planning Poker, poznat i kao Scrum Poker, jeste tehnika agilne procene zasnovana na konsenzusu koja pomaže softverskim timovima da odrede veličinu posla u svom backlog-u. Umesto da jedna osoba nagađa koliko će neki zadatak trajati, svaki član tima procenjuje istovremeno koristeći numerisane karte. Cilj nije savršen broj; cilj je zajedničko razumevanje posla i iskren razgovor o tome šta svaka stavka zaista podrazumeva.</p>
+
+        <p>Metodu je popularizovao James Grenning 2002. godine, a kasnije se široko proširila kroz tekstove Mike Cohn-a o agilnoj proceni. Danas je to jedan od najčešćih načina za dodeljivanje <strong>story points</strong> tokom <strong>planiranja sprinta</strong> i razrade backlog-a. Možete <a href="https://poker.serbito.rs/">otvoriti besplatnu sobu</a> za nekoliko sekundi i isprobati je sa svojim timom dok čitate ovaj vodič.</p>
+
+        <h2>Zašto timovi koriste Planning Poker</h2>
+        <p>Procenjivanje je teško, a na ljude utiče onaj ko prvi progovori. Planning Poker je osmišljen da se tome suprotstavi. Pošto svi otkrivaju svoju kartu istovremeno, smanjuje se <strong>usidravanje</strong>, pristrasnost kod koje prvi pomenuti broj povlači sve kasnije procene ka sebi. Prednosti koje timovi najčešće navode su:</p>
+        <ul>
+          <li><strong>Bolji razgovori:</strong> široki raspon procena otkriva skrivene pretpostavke, nedostajuće kriterijume prihvatanja i rizike pre nego što počne kodiranje.</li>
+          <li><strong>Zajedničko vlasništvo:</strong> ceo tim se obavezuje na procenu, ne samo vođa ili menadžer.</li>
+          <li><strong>Relativno određivanje veličine:</strong> upoređivanje stavki međusobno je brže i pouzdanije od predviđanja tačnog broja sati.</li>
+          <li><strong>Angažovanje:</strong> jednostavan čin igranja karte održava tiše članove uključenima i daje svima jednak glas.</li>
+        </ul>
+
+        <h2>Kako se igra Planning Poker, korak po korak</h2>
+        <p>Jedna runda <strong>agilne procene</strong> je brza čim tim uhvati ritam. Evo standardnog toka:</p>
+        <ul>
+          <li><strong>1. Predstavite stavku.</strong> Product Owner čita stavku iz backlog-a ili korisničku priču i pojašnjava cilj i kriterijume prihvatanja.</li>
+          <li><strong>2. Kratko prodiskutujte.</strong> Tim postavlja pitanja da bi razumeo obim. Ovo je radi pojašnjenja, ne radi predlaganja brojeva.</li>
+          <li><strong>3. Procenite privatno.</strong> Svaki član bira kartu koja predstavlja njegovu procenu u story points, držeći je skrivenom.</li>
+          <li><strong>4. Otkrijte zajedno.</strong> Svi pokazuju svoju kartu u istom trenutku tako da niko nije pod uticajem drugih.</li>
+          <li><strong>5. Prodiskutujte raspon.</strong> Ako se procene znatno razlikuju, oni koji su glasali najviše i najniže objašnjavaju svoje rezonovanje.</li>
+          <li><strong>6. Ponovo glasajte.</strong> Procenite ponovo nakon diskusije, ponavljajući dok tim ne postigne <strong>konsenzus</strong>.</li>
+          <li><strong>7. Zabeležite i nastavite.</strong> Zapišite dogovorenu procenu i pređite na sledeću stavku.</li>
+        </ul>
+
+        <h2>Fibonačijeva skala i zašto razmaci rastu</h2>
+        <p>Većina timova procenjuje koristeći modifikovani <strong>Fibonačijev</strong> niz: 1, 2, 3, 5, 8, 13, 20, 40, 100, uz nekoliko posebnih karata. Rastući razmaci su upravo poenta. Što je zadatak veći, to ga niko ne može preciznije proceniti, pa nema smisla nuditi 14 pored 13. Sve veći intervali primoravaju na izbor između okvirno shvaćenih grupa umesto lažne preciznosti.</p>
+        <p>Uobičajene nenumeričke karte uključuju:</p>
+        <ul>
+          <li><strong>0</strong> za posao koji je već završen ili trivijalan.</li>
+          <li><strong>?</strong> (znak pitanja) za „ne razumem ovo dovoljno dobro da bih procenio“.</li>
+          <li><strong>Šolja kafe</strong> za zahtev za pauzu.</li>
+          <li><strong>Beskonačnost</strong> za nešto što je daleko preveliko da bi se procenilo u trenutnom obliku.</li>
+        </ul>
+        <p>Visoka procena poput 20 ili 40 obično je signal da stavku treba podeliti na manje priče pre nego što uđe u sprint. Kratke definicije ovih pojmova možete naći u našem <a href="/sr/glossary">rečniku</a>.</p>
+
+        <h2>Story points naspram sati</h2>
+        <p><strong>Story points</strong> mere relativni napor, složenost i neizvesnost dela posla, a ne vreme po satu koje je potrebno. Zadatak od dve poene treba da deluje otprilike dvostruko veći od zadatka od jedne poene. Timovi preferiraju poene umesto sati iz nekoliko razloga: ljudi su mnogo bolji u upoređivanju veličina nego u predviđanju tačnog trajanja, poeni ostaju stabilni čak i kada brža ili sporija osoba preuzme posao, i izbegavaju lažno samopouzdanje koje stvara procena od „8 sati“. Tokom nekoliko sprintova tim uči svoju <em>brzinu (velocity)</em>, broj poena koji obično završi, što čini prognoziranje mnogo pouzdanijim od sabiranja nagađanih sati.</p>
+
+        <h2>Kada ponovo glasati i diskutovati o velikim razlikama</h2>
+        <p>Razlike nisu problem koji treba potisnuti; one su najvredniji rezultat sesije. Kada karte otkriju neslaganje, pitajte osobu sa najvišom procenom i osobu sa najnižom da objasne svoje razmišljanje. Često onaj ko je glasao visoko zna za neki granični slučaj ili zavisnost koju su drugi propustili, ili onaj ko je glasao nisko zna za prečicu. Nakon kratke diskusije tim ponovo glasa. Ponavljajte dok se procene ne približe, ali ne jurite savršeno slaganje: čim je tim u okviru jedne ili dve susedne karte, uzmite veću vrednost ili grubu većinu i nastavite. Beskonačno ponovno glasanje troši vreme koje tehnika treba da uštedi.</p>
+
+        <h2>Uloge u Planning Poker sesiji</h2>
+        <ul>
+          <li><strong>Scrum Master (ili facilitator):</strong> vodi sesiju, drži je vremenski ograničenom, obezbeđuje da se karte otkrivaju istovremeno i sprečava da jedan glas dominira. Scrum Master obično ne procenjuje.</li>
+          <li><strong>Product Owner:</strong> predstavlja svaku stavku, odgovara na pitanja o obimu i prioritetima i pojašnjava kriterijume prihvatanja. Product Owner odgovara ali ne glasa, jer ne radi implementaciju.</li>
+          <li><strong>Razvojni tim:</strong> inženjeri, testeri i dizajneri koji će zaista izgraditi posao. Oni su ti koji igraju karte i vlasnici su procena.</li>
+          <li><strong>Posmatrači:</strong> zainteresovane strane ili gosti mogu da posmatraju kako bi stekli kontekst, ali ostaju tihi tokom glasanja kako ne bi uticali na tim.</li>
+        </ul>
+
+        <h2>Procena uživo naspram asinhrone</h2>
+        <p>Planning Poker funkcioniše u dva režima. <strong>Sesije uživo</strong>, bilo u prostoriji ili na video pozivu, održavaju visok nivo energije i puštaju diskusiju da prirodno teče; svi glasaju u istih nekoliko minuta. <strong>Asinhrona</strong> procena odgovara distribuiranim timovima u različitim vremenskim zonama: članovi glasaju o stavkama backlog-a kada im odgovara, a facilitator kasnije proverava velika neslaganja. Asinhrono trguje trenutnom razmenom mišljenja za fleksibilnost, pa najbolje funkcioniše kada su priče već dobro napisane. Za savete specifične za rad na daljinu, pogledajte naš vodič za <a href="/sr/planning-poker-for-remote-teams">Planning Poker za timove na daljinu</a>.</p>
+
+        <h2>Uobičajene greške koje treba izbegavati</h2>
+        <ul>
+          <li><strong>Usidravanje naglas:</strong> nikada nemojte dozvoliti da neko objavi broj pre nego što se karte otkriju. To poništava svrhu.</li>
+          <li><strong>Tretiranje poena kao sati:</strong> pretvaranje poena nazad u fiksan broj sati odbacuje njihovu glavnu prednost.</li>
+          <li><strong>Procenjivanje nejasnih priča:</strong> ako pola tima igra znak pitanja, prvo razradite priču.</li>
+          <li><strong>Preterana diskusija:</strong> vremenski ograničite svaku stavku; nekoliko minuta debate je zdravo, dvadeset nije.</li>
+          <li><strong>Upoređivanje brzine između timova:</strong> poeni su relativni u odnosu na skalu jednog tima i ništa ne znače između timova.</li>
+          <li><strong>Dozvoljavanje menadžerima da glasaju:</strong> samo ljudi koji rade posao treba da ga procenjuju.</li>
+        </ul>
+
+        <h2>Često postavljana pitanja</h2>
+        <dl>
+          <dt>Da li je Planning Poker isto što i Scrum Poker?</dt>
+          <dd>Da. Oba naziva se odnose na istu tehniku procene zasnovanu na konsenzusu. „Scrum Poker“ jednostavno naglašava njenu uobičajenu upotrebu unutar Scrum okvira.</dd>
+          <dt>Koliko dugo treba da traje Planning Poker sesija?</dt>
+          <dd>Težite ka jednom do dva minuta po stavci kada se tim zagreje. Sesije razrade backlog-a često se vremenski ograničavaju na sat vremena kako bi tim ostao fokusiran.</dd>
+          <dt>Šta ako tim ne može da postigne konsenzus?</dt>
+          <dd>Prodiskutujte visoke i niske procene, a zatim ponovo glasajte. Ako neslaganje opstane, priča je verovatno nejasna ili prevelika, pa je podelite ili prikupite više informacija umesto da namećete broj.</dd>
+          <dt>Da li treba nešto da instaliram da bih igrao?</dt>
+          <dd>Ne. Sa veb alatom poput našeg nema ničega za instaliranje i nije potrebna registracija. Otvorite sobu, podelite link i počnite sa procenom.</dd>
+          <dt>Mogu li timovi na daljinu da koriste Planning Poker?</dt>
+          <dd>Apsolutno. Onlajn soba omogućava distribuiranim timovima da glasaju zajedno u realnom vremenu ili asinhrono, sa kartama skrivenim dok svi ne glasaju.</dd>
+        </dl>
+
+        <p><strong>Spremni da procenjujete sa svojim timom?</strong> Planning Poker je besplatan, brz i radi sa bilo kojim agilnim procesom. <a href="https://poker.serbito.rs/">Otvorite besplatnu sobu odmah</a>, bez registracije, podelite link sa svojim timom i pretvorite svoje sledeće planiranje sprinta u fokusiran, iskren razgovor o predstojećem poslu.</p>
+      </article>
+    </main>
+    <footer class="site">
+      Besplatan planning poker otvorenog koda — bez reklama, bez registracije.<br />
+      <a href="https://poker.serbito.rs/">Otvori sobu</a> ·
+      <a href="/sr/what-is-planning-poker">Vodič</a> ·
+      <a href="/sr/glossary">Rečnik</a> ·
+      <a href="/sr/planning-poker-for-jira">Za Jira</a> ·
+      <a href="/sr/planning-poker-for-remote-teams">Timovi na daljinu</a> ·
+      <a href="https://github.com/alxndr-bnd/planning-poker">GitHub</a>
+    </footer>
+  </body>
+</html>

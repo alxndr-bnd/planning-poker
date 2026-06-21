@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>用于远程团队的敏捷估算扑克 - 免费实时工具</title>
+    <meta
+      name="description"
+      content="免费、开源、面向远程团队的敏捷估算扑克。实时隐藏式投票消除锚定，无需注册。在任何时区运行分布式敏捷估算。"
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://poker.serbito.rs/zh/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="es" href="https://poker.serbito.rs/es/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="de" href="https://poker.serbito.rs/de/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="fr" href="https://poker.serbito.rs/fr/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="pt-BR" href="https://poker.serbito.rs/pt/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="ru" href="https://poker.serbito.rs/ru/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="sr" href="https://poker.serbito.rs/sr/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="ja" href="https://poker.serbito.rs/ja/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="zh" href="https://poker.serbito.rs/zh/planning-poker-for-remote-teams" />
+    <link rel="alternate" hreflang="x-default" href="https://poker.serbito.rs/planning-poker-for-remote-teams" />
+    <meta property="og:title" content="用于远程团队的敏捷估算扑克 - 免费实时工具" />
+    <meta property="og:description" content="实时隐藏式投票跨时区消除锚定。免费、开源、无需注册的分布式敏捷估算。" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://poker.serbito.rs/zh/planning-poker-for-remote-teams" />
+    <meta property="og:image" content="https://poker.serbito.rs/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://poker.serbito.rs/og-image.png" />
+    <style>
+      *{box-sizing:border-box}
+      body{margin:0;font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1a2b22;background:#fff}
+      header.site{background:#15603b;padding:.8rem 1rem}
+      header.site a{color:#fff;text-decoration:none;font-weight:700}
+      main.page{max-width:760px;margin:0 auto;padding:1.5rem 1.1rem 2.5rem}
+      main.page h1{color:#15603b;font-size:1.9rem;line-height:1.25;margin:.2rem 0 1rem}
+      main.page h2{color:#15603b;font-size:1.3rem;margin-top:2rem}
+      main.page a{color:#15603b}
+      main.page dt{font-weight:600;margin-top:1rem}
+      main.page dd{margin:.25rem 0 0}
+      footer.site{border-top:1px solid #e3e9e5;background:#f4f7f5;padding:1rem;text-align:center;font-size:.85rem;color:#5b6b62;line-height:1.9}
+      footer.site a{color:#15603b;font-weight:600}
+    </style>
+  </head>
+  <body>
+    <header class="site"><a href="https://poker.serbito.rs/">🃏 Serbito Planning Poker</a></header>
+    <main class="page">
+      <article>
+        <h1>用于远程团队的敏捷估算扑克</h1>
+
+        <p>当所有人都在同一个房间里时，估算工作就已经够难了。再加上时区、居家办公和混合办公的日程，一个简单的“这个故事有多大？”就可能演变成一场冗长、失衡的讨论。<strong>面向远程团队的敏捷估算扑克</strong>把结构重新带了回来：每个人私下做出估算，所有卡片同时翻开，团队再讨论其中的差距。本页解释如何把分布式敏捷估算做好，以及如何使用我们免费、开源、无需注册的工具实时地完成它。</p>
+
+        <h2>为什么估算对分布式和混合团队更难</h2>
+        <p>在一个集中办公的房间里，你能读懂肢体语言、感知犹豫，并捕捉到那位明显不同意却没出声的工程师。远程工作把这些大多剥离掉了。在视频通话中，最响亮或最资深的声音往往率先定下数字，其他人则悄悄朝它漂移。那就是锚定，它会悄无声息地侵蚀你估算的价值。</p>
+        <p>分布式团队还面临实际的摩擦：人们从不同时区加入，有些人在任务之间三心二意地半听着，而共享一份满是数字的电子表格会让谁投了什么一目了然。结果是仓促的共识取代了坦诚的分歧，而分歧恰恰是有用信息所在之处。如果两个人对同一个故事的估算大相径庭，这通常意味着他们对需求的理解不同，而这一点值得在冲刺开始之前就摆出来。</p>
+
+        <h2>实时的先隐藏后亮牌投票如何消除锚定</h2>
+        <p>敏捷估算扑克的核心机制简单而有力。每位参与者为自己的估算选一张卡片，但谁也看不到别人的选择。一旦所有人都投完票，所有卡片在同一时刻翻开。因为在做出自己的承诺之前没有人看到任何数字，资深工程师率先发言的问题就消失了。</p>
+        <p>我们的工具完全实时地运行这一机制。当队友们选卡时，你能看到谁已经投票，却看不到他们选了什么，因此主持人知道这一轮何时可以亮牌。亮牌发生时，<strong>实时故事点</strong>的分布会立即呈现给房间里的每个人，无论他们是从哪个时区拨入的。独立、同时的投票，是你为保持<strong>分布式敏捷估算</strong>诚实所能做的最有效的一件事。如果你是这项技术的新手，我们的<a href="/zh/what-is-planning-poker">什么是敏捷估算扑克指南</a>会带你了解基础知识。</p>
+
+        <h2>运行一次对异步友好的会议</h2>
+        <p>在分散于各个时区的情况下，完全同步的估算并不总是可行。敏捷估算扑克仍然能以一种更宽松、对异步友好的节奏运作：</p>
+        <ul>
+          <li>提前分享房间链接，让人们在准备好时随时加入，无需账户或安装。</li>
+          <li>先把要估算的故事发布到你的跟踪工具中，让每个人在投票前都读过背景信息。</li>
+          <li>给团队一个时间窗口来对当前故事投票，而不是要求即时回应。</li>
+          <li>在场的每个人都投票后再亮牌，然后把讨论要点以书面形式记录下来，供无法实时参加的人查看。</li>
+          <li>当估算相差甚远时在讨论之后重新投票，以便最终的数字反映出共同的理解。</li>
+        </ul>
+        <p>这既保留了独立投票的好处，又尊重了并非所有人都在同一时刻清醒这一事实。</p>
+
+        <h2>分享一个房间链接，把所有人聚到一处</h2>
+        <p>把一个远程团队带进同一次会议应该只需几秒钟，而不是一份安装指南。使用我们的工具，你创建一个房间，并在你的聊天频道或日历邀请中分享它的链接。任何打开它的人都加入同一个实时房间，取一个名字，然后开始投票。无需注册，无邮箱门槛，也没有付费墙，这在你有承包商、来宾或轮换团队成员、而他们不应仅仅为了估算几个故事就去注册账户时尤为重要。</p>
+        <p>让所有人保持在同一个房间里是需要留意的主要事项。如果两个人打开了各自不同的房间，他们的投票就永远不会汇合，因此一定要粘贴完全相同的链接，并在开始时把房间名字大声确认一遍。在移动端分享的一个快捷方式是用一个指向房间的二维码；房间的可扫描二维码已在我们的路线图上，但尚未提供，所以目前共享链接才是可靠的进入方式。</p>
+
+        <h2>远程主持小贴士</h2>
+        <p>一个好的主持人不只是点一下亮牌。对于<strong>远程 Scrum</strong>和分布式估算，以下习惯最有帮助：</p>
+        <ul>
+          <li>在投票前朗读每个故事，或让作者做个概述，让每个人都从同样的背景出发。</li>
+          <li>在亮牌前等待每位参与者都投票；不要让早投票的人给其他人施压。</li>
+          <li>当差异较大时，请最高分和最低分的投票者先解释他们的理由——不是为某个数字辩护，而是分享他们各自看到了什么。</li>
+          <li>给讨论设定时间盒，别让一个棘手的故事吞掉整场会议。</li>
+          <li>鼓励摄像头可选但声音要开，让较安静的队友仍能贡献。</li>
+          <li>把决策和悬而未决的问题以书面形式记录下来，供异步队友和你的冲刺记录使用。</li>
+        </ul>
+        <p>如果出现了不是每个人都懂的术语，把人们指向<a href="/zh/glossary">估算术语表</a>，这样词汇就不会成为障碍。</p>
+
+        <h2>为什么一款免费、开源的工具适合远程团队</h2>
+        <p>远程和混合团队经常变换形态，而一款无需注册的<strong>免费敏捷估算扑克</strong>工具消除了为每位新参与者进行上手准备的摩擦。开源意味着你可以确切地了解它如何运作，信任你的数据会被如何处理，并在你的组织有要求时进行自托管。再加上实时投票和单一的共享房间，这使它成为一种低开销的方式，为分布式敏捷估算带来纪律。</p>
+
+        <h2>常见问题</h2>
+        <dl>
+          <dt>这款敏捷估算扑克工具真的免费吗？</dt>
+          <dd>是的。它免费且开源，无需注册、无账户、无付费墙。创建一个房间并分享链接即可开始。</dd>
+          <dt>远程队友需要安装什么吗？</dt>
+          <dd>不需要。每个人都通过浏览器打开共享的房间链接加入，因此没有任何东西需要下载或配置。</dd>
+          <dt>隐藏式投票如何防止锚定？</dt>
+          <dd>每个人的卡片在所有人投票之前都保持隐藏，然后所有卡片一次性翻开。因为在做出自己的承诺之前没有人看到数字，所以没有人会被最先或最响亮的估算所锚定。</dd>
+          <dt>我们能跨不同时区使用它吗？</dt>
+          <dd>可以。房间为在场的人实时运行，你也可以以一种对异步友好的方式运行它——给人们一个投票的时间窗口，并把讨论以书面形式记录下来。</dd>
+          <dt>我能用二维码分享房间吗？</dt>
+          <dd>还不能。房间的可扫描二维码已在路线图上。目前，请直接在聊天或日历邀请中分享房间链接。</dd>
+        </dl>
+
+        <h2>开始和你的远程团队一起估算</h2>
+        <p>创建一个房间，分享链接，在几分钟内运行你的下一次分布式估算会议，免费且无需注册。<a href="https://poker.serbito.rs/">打开免费的敏捷估算扑克工具</a>，让你的远程团队今天就在故事点上达成一致。</p>
+      </article>
+    </main>
+    <footer class="site">
+      免费、开源的敏捷估算扑克 —— 无广告，无需注册。<br />
+      <a href="https://poker.serbito.rs/">创建房间</a> ·
+      <a href="/zh/what-is-planning-poker">指南</a> ·
+      <a href="/zh/glossary">术语表</a> ·
+      <a href="/zh/planning-poker-for-jira">用于 Jira</a> ·
+      <a href="/zh/planning-poker-for-remote-teams">远程团队</a> ·
+      <a href="https://github.com/alxndr-bnd/planning-poker">GitHub</a>
+    </footer>
+  </body>
+</html>
