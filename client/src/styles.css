@@ -73,6 +73,14 @@ input[type="text"], input:not([type]) {
 .sponsor { color: var(--muted); font-size: 0.85rem; text-decoration: none; }
 .sponsor:hover { color: var(--accent); text-decoration: underline; }
 
+/* Language switcher (lobby + room header). */
+.lang-switcher {
+  font-size: 0.85rem; padding: 0.25rem 0.45rem; border-radius: 6px;
+  border: 1px solid var(--line); background: transparent;
+  color: var(--muted); cursor: pointer;
+}
+.lang-switcher:hover { color: var(--ink); }
+
 .room-footer {
   display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
   padding: 0.25rem 1.5rem 1.25rem;
