@@ -1,4 +1,9 @@
-import { WS_PATH, type ClientMessage, type ServerMessage } from "@pp/shared";
+import {
+  WS_PATH,
+  IDLE_CLOSE_CODE,
+  type ClientMessage,
+  type ServerMessage,
+} from "@pp/shared";
 
 type Handler = (msg: ServerMessage) => void;
 
@@ -12,12 +17,14 @@ export class PokerSocket {
   private url: string;
   private handler: Handler;
   private onOpen: () => void;
+  private onIdle: () => void;
   private closedByUser = false;
   private backoff = 500;
 
-  constructor(handler: Handler, onOpen: () => void) {
+  constructor(handler: Handler, onOpen: () => void, onIdle: () => void = () => {}) {
     this.handler = handler;
     this.onOpen = onOpen;
+    this.onIdle = onIdle;
     const proto = location.protocol === "https:" ? "wss" : "ws";
     this.url = `${proto}://${location.host}${WS_PATH}`;
   }
@@ -37,8 +44,15 @@ export class PokerSocket {
         /* ignore malformed */
       }
     };
-    ws.onclose = () => {
+    ws.onclose = (ev) => {
       if (this.closedByUser) return;
+      // Server disconnected us for inactivity — do NOT auto-reconnect (that would
+      // re-pin the Cloud Run instance). Tell the app so it can offer a manual reconnect.
+      if (ev.code === IDLE_CLOSE_CODE) {
+        this.closedByUser = true;
+        this.onIdle();
+        return;
+      }
       setTimeout(() => this.connect(), this.backoff);
       this.backoff = Math.min(this.backoff * 2, 5000);
     };

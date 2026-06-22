@@ -29,6 +29,8 @@ export const EN = {
   "nav.homeTitle": "Back to start — change name or create a new room",
   "room.invite": "Invite teammates",
   "room.copied": "Copied!",
+  "room.idleDisconnected": "Disconnected due to inactivity.",
+  "room.idleReconnect": "Reconnect",
   "room.reveal": "Reveal",
   "room.revealsThisRound": "{name} reveals this round",
   "room.reset": "Reset",

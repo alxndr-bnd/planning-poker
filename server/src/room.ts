@@ -33,6 +33,13 @@ export class Room {
   phase: Phase = "voting";
   itemTitle: string | null = null;
   lastActivityAt = Date.now();
+  /**
+   * Last *engagement* — a real user action (vote/reveal/reset/...), NOT connection
+   * churn. Used to detect abandoned rooms so their sockets can be closed and the
+   * single Cloud Run instance can scale to zero. Reconnects (join/leave) must NOT
+   * bump this, or a forgotten tab's auto-reconnect keeps the room "active" forever.
+   */
+  lastEngagementAt = Date.now();
   readonly participants = new Map<string, Participant>();
   /** Holder of the reveal "star" — the only participant allowed to reveal. */
   revealerId: string | null = null;
@@ -45,6 +52,11 @@ export class Room {
 
   private touch() {
     this.lastActivityAt = Date.now();
+  }
+
+  /** Record a real user action — resets the idle-disconnect timer. */
+  private engage() {
+    this.lastEngagementAt = Date.now();
   }
 
   /** Voting (non-observer) participants — the only ones who can hold the star. */
@@ -95,6 +107,7 @@ export class Room {
     if (!ALLOWED_VOTES.has(value)) return false; // reject cards not in the deck
     p.vote = value;
     this.touch();
+    this.engage();
     return true;
   }
 
@@ -103,6 +116,7 @@ export class Room {
     if (!p || p.isObserver || this.phase !== "voting") return false;
     p.vote = null;
     this.touch();
+    this.engage();
     return true;
   }
 
@@ -113,6 +127,7 @@ export class Room {
     if (isObserver) p.vote = null;
     this.ensureRevealer(); // a holder who became an observer must hand off the star
     this.touch();
+    this.engage();
   }
 
   /** Only the star holder may reveal. Records the round's results in the log. */
@@ -121,6 +136,7 @@ export class Room {
     this.phase = "revealed";
     this.log.push({ itemTitle: this.itemTitle, summary: this.summary() });
     this.touch();
+    this.engage();
     return true;
   }
 
@@ -130,6 +146,7 @@ export class Room {
     for (const p of this.participants.values()) p.vote = null;
     this.assignRevealer(); // fresh random star holder each round
     this.touch();
+    this.engage();
   }
 
   isEmpty(): boolean {

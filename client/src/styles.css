@@ -56,6 +56,12 @@ input[type="text"], input:not([type]) {
 
 /* Room: full-height column — Reveal on top, green table center, your hand bottom */
 .room { min-height: 100vh; display: flex; flex-direction: column; }
+.idle-banner {
+  display: flex; align-items: center; justify-content: center; gap: 1rem;
+  flex-wrap: wrap; padding: 0.6rem 1rem; text-align: center;
+  background: var(--accent); color: var(--accent-ink); font-weight: 600;
+}
+.idle-banner button { flex: 0 0 auto; }
 .room-top {
   display: flex; align-items: center; justify-content: space-between;
   padding: 0.9rem 1.5rem; border-bottom: 1px solid var(--line);

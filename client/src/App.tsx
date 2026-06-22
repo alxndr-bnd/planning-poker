@@ -226,6 +226,9 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
   const [copied, setCopied] = useState(false);
   const [revealerId, setRevealerId] = useState<string | null>(null);
   const [log, setLog] = useState<RoundLog[]>([]);
+  // Server closed our socket for inactivity (idle-disconnect, lets Cloud Run scale
+  // to zero). We do NOT auto-reconnect; the user clicks to rejoin.
+  const [idleDisconnected, setIdleDisconnected] = useState(false);
 
   useEffect(() => {
     const sock = new PokerSocket(
@@ -247,7 +250,11 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
             break;
         }
       },
-      () => sock.send({ type: "join", roomId, name }),
+      () => {
+        setIdleDisconnected(false);
+        sock.send({ type: "join", roomId, name });
+      },
+      () => setIdleDisconnected(true),
     );
     sock.connect();
     sockRef.current = sock;
@@ -267,6 +274,20 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
 
   return (
     <div className="room">
+      {idleDisconnected && (
+        <div className="idle-banner" role="alert">
+          <span>{tr("room.idleDisconnected")}</span>
+          <button
+            className="primary"
+            onClick={() => {
+              setIdleDisconnected(false);
+              sockRef.current?.connect();
+            }}
+          >
+            {tr("room.idleReconnect")}
+          </button>
+        </div>
+      )}
       <header className="room-top">
         <div className="brand">
           <button

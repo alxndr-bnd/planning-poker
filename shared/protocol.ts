@@ -78,3 +78,10 @@ export type ServerMessage =
   | { type: "error"; code: string; message: string };
 
 export const WS_PATH = "/ws";
+
+/**
+ * Private WS close code (4000-4999 range) the server uses when it disconnects an
+ * idle room so the single Cloud Run instance can scale to zero. The client treats
+ * this code specially: it shows an "inactive" notice and does NOT auto-reconnect.
+ */
+export const IDLE_CLOSE_CODE = 4000;

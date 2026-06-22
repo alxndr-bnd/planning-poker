@@ -3,9 +3,15 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { randomUUID } from "node:crypto";
 import { WebSocketServer, WebSocket } from "ws";
-import { WS_PATH, type ClientMessage, type ServerMessage } from "@pp/shared";
+import {
+  WS_PATH,
+  IDLE_CLOSE_CODE,
+  type ClientMessage,
+  type ServerMessage,
+} from "@pp/shared";
 import {
   deleteRoom,
+  getIdleRooms,
   getOrCreateRoom,
   getRoom,
   roomCount,
@@ -18,6 +24,11 @@ const DEFAULT_STATIC_DIR =
   process.env.STATIC_DIR ?? join(__dirname, "../../client/dist");
 const ROOM_ID_RE = /^[A-Za-z0-9_-]{6,32}$/;
 const IDLE_SWEEP_MS = 5 * 60 * 1000;
+// Billing fix (2026-06-22): forgotten tabs hold a WebSocket open + auto-reconnect,
+// pinning the single Cloud Run instance 24/7. After this long with no real engagement
+// (vote/reveal/reset — NOT reconnects) we close the room's sockets with a private close
+// code; the client sees it and stops reconnecting, so the instance can scale to zero.
+const IDLE_DISCONNECT_MS = 30 * 60 * 1000;
 
 // --- Security / DoS hardening (docs/SECURITY-REVIEW-2026-06-21.md) ---
 const MAX_PAYLOAD = 16 * 1024; // WS frame cap (messages are tiny; ws default is 100MB)
@@ -215,6 +226,19 @@ export function createPokerServer(staticDir: string = DEFAULT_STATIC_DIR): Serve
   const sweep = setInterval(() => sweepIdleRooms(IDLE_SWEEP_MS), 60 * 1000);
   sweep.unref();
   httpServer.on("close", () => clearInterval(sweep));
+
+  // Disconnect idle rooms so the instance can scale to zero. Closing each socket
+  // fires its 'close' handler (removeParticipant → deleteRoom when empty); the
+  // client honours IDLE_CLOSE_CODE and does NOT auto-reconnect.
+  const idleKick = setInterval(() => {
+    for (const room of getIdleRooms(IDLE_DISCONNECT_MS)) {
+      for (const p of room.participants.values()) {
+        sockets.get(p.id)?.close(IDLE_CLOSE_CODE, "idle");
+      }
+    }
+  }, 60 * 1000);
+  idleKick.unref();
+  httpServer.on("close", () => clearInterval(idleKick));
 
   return httpServer;
 }

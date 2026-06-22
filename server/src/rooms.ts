@@ -25,6 +25,17 @@ export function roomCount(): number {
 }
 
 /**
+ * Rooms whose last *engagement* (real user action) is older than `idleMs`. The
+ * caller closes their sockets so the single instance can scale to zero — see the
+ * idle-disconnect sweep in server.ts. Connection churn (reconnects) does NOT count
+ * as engagement, so a forgotten auto-reconnecting tab is correctly seen as idle.
+ */
+export function getIdleRooms(idleMs: number): Room[] {
+  const now = Date.now();
+  return [...rooms.values()].filter((r) => now - r.lastEngagementAt > idleMs);
+}
+
+/**
  * Sweep rooms that are empty, or that have had no connected participants for
  * longer than `idleMs`. Returns the number of rooms removed.
  */
