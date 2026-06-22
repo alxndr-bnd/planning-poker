@@ -63,10 +63,10 @@ export function createPokerServer(staticDir: string = DEFAULT_STATIC_DIR): Serve
   const sockets = new Map<string, WebSocket>();
 
   const httpServer = createServer((req, res) => {
-    if (req.url === "/healthz") {
-      res.writeHead(200, { "content-type": "text/plain" }).end("ok");
-      return;
-    }
+    // (No /healthz handler: the Google Front End intercepts the literal path
+    // "/healthz" on Cloud Run and returns its own 404, so the request never
+    // reaches the container — the handler was dead code. Cloud Run's default
+    // startup probe is a TCP port check, no HTTP path needed.)
     if (serveStatic(staticDir, req, res)) return;
     res.writeHead(404).end("Not found");
   });
