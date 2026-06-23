@@ -26,7 +26,11 @@ export class PokerSocket {
     this.onOpen = onOpen;
     this.onIdle = onIdle;
     const proto = location.protocol === "https:" ? "wss" : "ws";
-    this.url = `${proto}://${location.host}${WS_PATH}`;
+    // ?v=2 version-gate: a Cloudflare edge rule blocks /ws WITHOUT this marker, so
+    // stale tabs running pre-v2 client JS (which connect to bare /ws and blindly
+    // auto-reconnect, pinning the Cloud Run instance 24/7) are dropped at the edge and
+    // never reach the origin — letting it scale to zero. New clients carry the marker.
+    this.url = `${proto}://${location.host}${WS_PATH}?v=2`;
   }
 
   connect() {
