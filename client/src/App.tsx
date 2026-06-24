@@ -101,11 +101,13 @@ export function App() {
   const joined = roomId && name;
   return (
     <I18nCtx.Provider value={i18n}>
-      {!joined ? (
-        <Lobby roomId={roomId} name={name} setName={setName} />
-      ) : (
-        <Room key={roomId} roomId={roomId} name={name} />
-      )}
+      <main>
+        {!joined ? (
+          <Lobby roomId={roomId} name={name} setName={setName} />
+        ) : (
+          <Room key={roomId} roomId={roomId} name={name} />
+        )}
+      </main>
     </I18nCtx.Provider>
   );
 }

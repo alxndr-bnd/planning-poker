@@ -49,7 +49,13 @@ export function serveStatic(
   }
 
   const type = MIME[extname(filePath)] ?? "application/octet-stream";
-  res.writeHead(200, { "content-type": type });
+  // Vite emits content-hashed files under /assets — safe to cache forever.
+  // HTML must stay fresh so a new deploy's hashed asset refs are picked up.
+  const isHashedAsset = /[/\\]assets[/\\]/.test(filePath) && !filePath.endsWith(".html");
+  const cacheControl = isHashedAsset
+    ? "public, max-age=31536000, immutable"
+    : "no-cache";
+  res.writeHead(200, { "content-type": type, "cache-control": cacheControl });
   createReadStream(filePath).pipe(res);
   return true;
 }

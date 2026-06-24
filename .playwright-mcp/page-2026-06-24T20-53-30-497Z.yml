@@ -1,0 +1,60 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]: javi.
+    - navigation [ref=e5]:
+      - button "SR" [ref=e6] [cursor=pointer]
+      - button "EN" [ref=e7] [cursor=pointer]
+      - button "RU" [ref=e8] [cursor=pointer]
+  - generic [ref=e9]:
+    - heading "Tell your customer when the parcel leaves — and when it arrives" [level=1] [ref=e10]
+    - paragraph [ref=e11]: Fewer failed deliveries. Happier customers. More repeat orders.
+    - generic [ref=e12]:
+      - link "I want to try it" [ref=e13] [cursor=pointer]:
+        - /url: "#prijava"
+      - link "How it works" [ref=e14] [cursor=pointer]:
+        - /url: "#kako"
+  - paragraph [ref=e16]:
+    - text: Would you like to
+    - emphasis [ref=e17]: notify the recipient
+    - text: when delivery starts and the expected arrival time?
+  - generic [ref=e18]:
+    - generic [ref=e19]:
+      - generic [ref=e20]: 📦
+      - heading "The customer knows it's on the way" [level=3] [ref=e21]
+      - paragraph [ref=e22]: Automatic Viber or SMS message the moment you ship the order.
+    - generic [ref=e23]:
+      - generic [ref=e24]: ⏱️
+      - heading "And roughly when it arrives" [level=3] [ref=e25]
+      - paragraph [ref=e26]: An approximate arrival time — the customer is home, delivery succeeds on the first try.
+    - generic [ref=e27]:
+      - generic [ref=e28]: 🔗
+      - heading "Tracking on a single link" [level=3] [ref=e29]
+      - paragraph [ref=e30]: No app to install — the customer opens the status in a browser.
+  - generic [ref=e33]:
+    - heading "Leave your contact" [level=2] [ref=e34]
+    - paragraph [ref=e35]: We'll reach out and show you how it works. No commitment.
+    - generic [ref=e36]:
+      - generic [ref=e37]:
+        - generic [ref=e38]: Shop name *
+        - textbox [ref=e39]
+      - generic [ref=e40]:
+        - generic [ref=e41]: Email or phone / Viber *
+        - textbox [ref=e42]
+      - generic [ref=e43]:
+        - generic [ref=e44]: Orders per month (approx.)
+        - combobox [ref=e45]:
+          - option "— choose —" [selected]
+          - option "1–50"
+          - option "50–200"
+          - option "200–1000"
+          - option "1000+"
+      - generic [ref=e46]:
+        - generic [ref=e47]: Message (optional)
+        - textbox [ref=e48]
+      - button "Send request" [ref=e49] [cursor=pointer]
+      - paragraph [ref=e50]: We use your contact only to reach out about Javi.
+  - contentinfo [ref=e51]:
+    - paragraph [ref=e52]: © 2026 Javi · javi.serbito.rs · Delivery notifications for shops in Serbia
+    - paragraph [ref=e53]:
+      - link "Privacy policy" [ref=e54] [cursor=pointer]:
+        - /url: /privacy.html
