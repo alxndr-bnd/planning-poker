@@ -4,6 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Google Analytics (GA4). Loaded ONLY on the prod host so localhost / *.run.app /
+         footer-preview etc. never pollute the stats. GA4 Enhanced Measurement counts
+         users + page_view + history/hash room navigations with no extra code. -->
+    <script>
+      if (location.hostname === "poker.serbito.rs") {
+        var gaScript = document.createElement("script");
+        gaScript.async = true;
+        gaScript.src = "https://www.googletagmanager.com/gtag/js?id=G-B5CQC4JJV0";
+        document.head.appendChild(gaScript);
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag("js", new Date());
+        gtag("config", "G-B5CQC4JJV0");
+      }
+    </script>
+
     <link
       rel="icon"
       href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50' y='82' font-size='84' text-anchor='middle'>🃏</text></svg>"
