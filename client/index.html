@@ -4,20 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Google Analytics (GA4). Loaded ONLY on the prod host so localhost / *.run.app /
-         footer-preview etc. never pollute the stats. GA4 Enhanced Measurement counts
-         users + page_view + history/hash room navigations with no extra code. -->
+    <!-- Google tag (gtag.js) — GA4. Standard static snippet (NOT dynamically injected)
+         so Google's "verify your tag" detection works. dev/localhost hits are negligible
+         and can be excluded GA-side via an Internal-traffic filter if needed. -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-B5CQC4JJV0"></script>
     <script>
-      if (location.hostname === "poker.serbito.rs") {
-        var gaScript = document.createElement("script");
-        gaScript.async = true;
-        gaScript.src = "https://www.googletagmanager.com/gtag/js?id=G-B5CQC4JJV0";
-        document.head.appendChild(gaScript);
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag("js", new Date());
-        gtag("config", "G-B5CQC4JJV0");
-      }
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag("js", new Date());
+      gtag("config", "G-B5CQC4JJV0");
     </script>
 
     <link
