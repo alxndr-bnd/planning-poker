@@ -13,7 +13,7 @@ import {
   type RoundLog,
   type Summary,
 } from "@pp/shared";
-import { PokerSocket, newRoomId } from "./ws.js";
+import { PokerSocket, newRoomId, getClientId } from "./ws.js";
 import {
   type Lang,
   type StringKey,
@@ -254,7 +254,7 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
       },
       () => {
         setIdleDisconnected(false);
-        sock.send({ type: "join", roomId, name });
+        sock.send({ type: "join", roomId, name, clientId: getClientId() });
       },
       () => setIdleDisconnected(true),
     );

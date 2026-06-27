@@ -36,6 +36,17 @@ export function getIdleRooms(idleMs: number): Room[] {
 }
 
 /**
+ * Drop participants disconnected longer than `graceMs` across all rooms (they left for
+ * good — a quick reconnect re-attaches before this), and delete any room left empty.
+ */
+export function purgeDisconnectedParticipants(graceMs: number): void {
+  for (const [id, room] of rooms) {
+    room.purgeDisconnected(graceMs);
+    if (room.isEmpty()) rooms.delete(id);
+  }
+}
+
+/**
  * Sweep rooms that are empty, or that have had no connected participants for
  * longer than `idleMs`. Returns the number of rooms removed.
  */

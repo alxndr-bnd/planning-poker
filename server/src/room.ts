@@ -12,6 +12,8 @@ export interface Participant {
   isObserver: boolean;
   connected: boolean;
   vote: CardValue | null; // kept server-side; never sent to clients during "voting"
+  /** ms timestamp of the last disconnect (for the reconnect grace), or null while connected. */
+  disconnectedAt: number | null;
 }
 
 const NUMERIC = new Set(["1", "2", "3", "5", "8", "13", "21", "34", "55", "89", "144", "233", "377", "610"]);
@@ -88,11 +90,62 @@ export class Room {
   }
 
   addParticipant(id: string, name: string, isObserver: boolean): Participant {
-    const p: Participant = { id, name, isObserver, connected: true, vote: null };
+    const p: Participant = {
+      id,
+      name,
+      isObserver,
+      connected: true,
+      vote: null,
+      disconnectedAt: null,
+    };
     this.participants.set(id, p);
     this.ensureRevealer();
     this.touch();
     return p;
+  }
+
+  /**
+   * Re-attach a returning participant (same stable clientId) WITHOUT resetting their
+   * vote/observer state. This is the fix for "my vote disappears": a flaky WS that
+   * reconnects every ~30-100s used to come back as a brand-new participant with no
+   * vote. Now the vote (and the reveal "star") survive the reconnect.
+   */
+  reattachParticipant(id: string, name: string): Participant | null {
+    const p = this.participants.get(id);
+    if (!p) return null;
+    p.connected = true;
+    p.disconnectedAt = null;
+    if (name) p.name = name;
+    this.ensureRevealer();
+    this.touch();
+    return p; // vote intentionally preserved
+  }
+
+  /** Mark connected=false but KEEP the participant (and their vote) for the grace window. */
+  markDisconnected(id: string) {
+    const p = this.participants.get(id);
+    if (!p) return;
+    p.connected = false;
+    p.disconnectedAt = Date.now();
+    this.ensureRevealer();
+    this.touch();
+  }
+
+  /** Drop participants that have been disconnected longer than `graceMs` (left for good). */
+  purgeDisconnected(graceMs: number): number {
+    const now = Date.now();
+    let removed = 0;
+    for (const [id, p] of this.participants) {
+      if (!p.connected && p.disconnectedAt !== null && now - p.disconnectedAt > graceMs) {
+        this.participants.delete(id);
+        removed++;
+      }
+    }
+    if (removed) {
+      this.ensureRevealer();
+      this.touch();
+    }
+    return removed;
   }
 
   removeParticipant(id: string) {

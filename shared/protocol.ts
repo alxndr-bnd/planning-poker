@@ -53,7 +53,15 @@ export interface RoundLog {
 
 // ---- Client -> Server ----
 export type ClientMessage =
-  | { type: "join"; roomId: string; name: string; asObserver?: boolean }
+  | {
+      type: "join";
+      roomId: string;
+      name: string;
+      asObserver?: boolean;
+      /** Stable per-tab id so a reconnect re-attaches to the same participant (keeps the
+       *  vote) instead of spawning a new one. Optional: pre-v3 clients omit it. */
+      clientId?: string;
+    }
   | { type: "vote"; value: CardValue }
   | { type: "unvote" }
   | { type: "reveal" }

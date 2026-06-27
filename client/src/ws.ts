@@ -82,3 +82,25 @@ export function newRoomId(len = 10): string {
   crypto.getRandomValues(bytes);
   return Array.from(bytes, (b) => alphabet[b % alphabet.length]).join("");
 }
+
+let _memoClientId = "";
+/**
+ * Stable per-tab id sent with `join`, so the server re-attaches us (and keeps our vote)
+ * across the WS's frequent reconnects instead of spawning a fresh, vote-less participant.
+ * Persisted in sessionStorage (survives reloads in this tab; a new tab is a new person);
+ * falls back to an in-memory id if storage is blocked (private mode).
+ */
+export function getClientId(): string {
+  const KEY = "pp_client_id";
+  try {
+    let id = sessionStorage.getItem(KEY);
+    if (!id) {
+      id = newRoomId(20);
+      sessionStorage.setItem(KEY, id);
+    }
+    return id;
+  } catch {
+    if (!_memoClientId) _memoClientId = newRoomId(20);
+    return _memoClientId;
+  }
+}

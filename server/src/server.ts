@@ -14,6 +14,7 @@ import {
   getIdleRooms,
   getOrCreateRoom,
   getRoom,
+  purgeDisconnectedParticipants,
   roomCount,
   sweepIdleRooms,
 } from "./rooms.js";
@@ -23,6 +24,15 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const DEFAULT_STATIC_DIR =
   process.env.STATIC_DIR ?? join(__dirname, "../../client/dist");
 const ROOM_ID_RE = /^[A-Za-z0-9_-]{6,32}$/;
+// Stable per-tab client id (from the client) so a reconnect re-attaches to the same
+// participant and keeps their vote (fixes "my vote disappears" on the flaky WS).
+const CLIENT_ID_RE = /^[A-Za-z0-9_-]{8,64}$/;
+// Keep a disconnected participant (and their vote) this long so a reconnect restores
+// them; purged after, so people who actually leave drop out.
+const DISCONNECT_GRACE_MS = 2 * 60 * 1000;
+// Ping every connected socket on this cadence so Cloudflare's ~100s WS idle timeout
+// doesn't keep tearing active sessions down (each teardown was a reconnect).
+const KEEPALIVE_MS = 30 * 1000;
 const IDLE_SWEEP_MS = 5 * 60 * 1000;
 // Billing fix (2026-06-22): forgotten tabs hold a WebSocket open + auto-reconnect,
 // pinning the single Cloud Run instance 24/7. After this long with no real engagement
@@ -167,15 +177,26 @@ export function createPokerServer(staticDir: string = DEFAULT_STATIC_DIR): Serve
             return;
           }
           const room = getOrCreateRoom(msg.roomId);
-          // Cap participants per room (a freshly created room is never full).
-          if (room.isFull()) {
-            send(ws, { type: "error", code: "room_full", message: "This room is full" });
-            return;
-          }
+          // Stable per-tab id from the client → a reconnect re-attaches to the same
+          // participant and KEEPS their vote. Falls back to the random conn id for
+          // pre-v3 clients (they keep the old new-participant-each-reconnect behaviour).
+          const stableId =
+            typeof msg.clientId === "string" && CLIENT_ID_RE.test(msg.clientId)
+              ? msg.clientId
+              : conn.id;
+          conn.id = stableId;
           conn.roomId = msg.roomId;
-          room.addParticipant(conn.id, name, Boolean(msg.asObserver));
-          sockets.set(conn.id, ws);
-          send(ws, { type: "joined", youId: conn.id, roomId: room.id });
+          // Reconnect: re-attach without resetting the vote. New participant: add (and
+          // only then enforce the per-room cap — a returning member doesn't grow the room).
+          if (!room.reattachParticipant(stableId, name)) {
+            if (room.isFull()) {
+              send(ws, { type: "error", code: "room_full", message: "This room is full" });
+              return;
+            }
+            room.addParticipant(stableId, name, Boolean(msg.asObserver));
+          }
+          sockets.set(stableId, ws);
+          send(ws, { type: "joined", youId: stableId, roomId: room.id });
           broadcastState(room.id);
           return;
         }
@@ -211,13 +232,19 @@ export function createPokerServer(staticDir: string = DEFAULT_STATIC_DIR): Serve
     });
 
     ws.on("close", () => {
+      // Stale-close guard: a fast reconnect can register the NEW socket before this old
+      // one's close fires. If we're no longer the current socket for this participant,
+      // do nothing — disturbing the live session would drop the just-restored vote.
+      if (sockets.get(conn.id) !== ws) return;
       sockets.delete(conn.id);
       if (conn.roomId) {
         const room = getRoom(conn.roomId);
         if (room) {
-          room.removeParticipant(conn.id);
-          if (room.isEmpty()) deleteRoom(room.id);
-          else broadcastState(room.id);
+          // Keep the participant + their vote through the reconnect grace; a returning
+          // clientId re-attaches. purgeDisconnectedParticipants drops them if they never
+          // come back, and sweepIdleRooms reaps a room once no one is connected.
+          room.markDisconnected(conn.id);
+          broadcastState(room.id);
         }
       }
     });
@@ -226,6 +253,30 @@ export function createPokerServer(staticDir: string = DEFAULT_STATIC_DIR): Serve
   const sweep = setInterval(() => sweepIdleRooms(IDLE_SWEEP_MS), 60 * 1000);
   sweep.unref();
   httpServer.on("close", () => clearInterval(sweep));
+
+  // Drop participants who disconnected and never came back (vote grace expired).
+  const purge = setInterval(
+    () => purgeDisconnectedParticipants(DISCONNECT_GRACE_MS),
+    30 * 1000,
+  );
+  purge.unref();
+  httpServer.on("close", () => clearInterval(purge));
+
+  // Keepalive: ping every live socket so Cloudflare's ~100s WS idle timeout stops
+  // tearing active sessions down (each teardown forced a reconnect → vote churn).
+  const keepalive = setInterval(() => {
+    for (const ws of sockets.values()) {
+      if (ws.readyState === WebSocket.OPEN) {
+        try {
+          ws.ping();
+        } catch {
+          /* a socket mid-close — ignore */
+        }
+      }
+    }
+  }, KEEPALIVE_MS);
+  keepalive.unref();
+  httpServer.on("close", () => clearInterval(keepalive));
 
   // Disconnect idle rooms so the instance can scale to zero. Closing each socket
   // fires its 'close' handler (removeParticipant → deleteRoom when empty); the
