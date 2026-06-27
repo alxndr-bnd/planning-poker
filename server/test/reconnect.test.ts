@@ -60,3 +60,50 @@ describe("reconnect keeps the vote", () => {
     expect(room.participants.has("live")).toBe(true);
   });
 });
+
+// 2026-06-28: "if I'm an observer (the mic/observer card), the role periodically drops
+// and I'm back among the voting cards". Same root cause as the vote loss: a reconnect
+// whose participant the server no longer has (grace expired, OR a deploy reset the
+// in-memory rooms) re-adds the user fresh. The server keeps the role only when it can
+// re-attach; otherwise it relies on the client carrying `asObserver`. The old client
+// didn't send it on reconnect, so observers silently became voters.
+describe("reconnect keeps the observer role", () => {
+  // Mirror the server's join branch (server.ts): re-attach if the participant is still
+  // around, otherwise add fresh with whatever role the client carried in `asObserver`.
+  function joinOrReattach(room: Room, id: string, name: string, asObserver: boolean) {
+    return (
+      room.reattachParticipant(id, name) ?? room.addParticipant(id, name, asObserver)
+    );
+  }
+
+  function purge(room: Room, id: string) {
+    room.markDisconnected(id);
+    room.participants.get(id)!.disconnectedAt = Date.now() - 5 * 60 * 1000; // 5m ago
+    room.purgeDisconnected(2 * 60 * 1000);
+  }
+
+  it("re-attach within grace keeps observer even if the client omits the role", () => {
+    const room = new Room("abcdef");
+    room.addParticipant("o", "Obs", true);
+    room.markDisconnected("o"); // socket dropped, still within grace
+    const p = joinOrReattach(room, "o", "Obs", false); // asObserver ignored on re-attach
+    expect(p.isObserver).toBe(true);
+  });
+
+  it("after purge, rejoining WITHOUT carrying the role drops observer (the bug)", () => {
+    const room = new Room("abcdef");
+    room.addParticipant("o", "Obs", true);
+    purge(room, "o");
+    expect(room.participants.has("o")).toBe(false);
+    const p = joinOrReattach(room, "o", "Obs", false); // pre-fix client: no asObserver
+    expect(p.isObserver).toBe(false); // regressed to a voter
+  });
+
+  it("after purge, rejoining WITH the carried role restores observer (the fix)", () => {
+    const room = new Room("abcdef");
+    room.addParticipant("o", "Obs", true);
+    purge(room, "o");
+    const p = joinOrReattach(room, "o", "Obs", true); // fixed client carries asObserver
+    expect(p.isObserver).toBe(true);
+  });
+});

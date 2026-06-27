@@ -231,6 +231,11 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
   // Server closed our socket for inactivity (idle-disconnect, lets Cloud Run scale
   // to zero). We do NOT auto-reconnect; the user clicks to rejoin.
   const [idleDisconnected, setIdleDisconnected] = useState(false);
+  // Our current observer role, mirrored into a ref so the (re)connect handler — whose
+  // closure is created once — always re-sends the *current* role. Without this, a
+  // reconnect after the server lost our participant (grace expired, or a deploy reset
+  // the in-memory rooms) re-adds us as a plain voter and the observer state is lost.
+  const observerRef = useRef(false);
 
   useEffect(() => {
     const sock = new PokerSocket(
@@ -254,7 +259,15 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
       },
       () => {
         setIdleDisconnected(false);
-        sock.send({ type: "join", roomId, name, clientId: getClientId() });
+        // Carry the observer role across the reconnect: the server keeps it when it can
+        // re-attach us, but falls back to asObserver when our participant is gone.
+        sock.send({
+          type: "join",
+          roomId,
+          name,
+          clientId: getClientId(),
+          asObserver: observerRef.current,
+        });
       },
       () => setIdleDisconnected(true),
     );
@@ -266,6 +279,7 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
   const send = (m: Parameters<PokerSocket["send"]>[0]) => sockRef.current?.send(m);
   const me = participants.find((p) => p.id === youId);
   const isObserver = me?.isObserver ?? false;
+  observerRef.current = isObserver;
 
   function copyLink() {
     navigator.clipboard.writeText(location.href).then(() => {
