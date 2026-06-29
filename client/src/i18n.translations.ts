@@ -40,7 +40,7 @@ export const TRANSLATIONS: Partial<
     "learn.resources": "Recursos",
     "sponsor.full": "Patrocinado por serbito.rs",
     "sponsor.short": "por serbito.rs",
-    "altto.featured": "Encuéntranos en AlternativeTo ↗",
+    "altto.featured": "Danos un like en AlternativeTo ↗",
   },
   de: {
     "lobby.tagline": "Kostenlos · ohne Anmeldung · unbegrenzte Räume",
@@ -76,7 +76,7 @@ export const TRANSLATIONS: Partial<
     "learn.resources": "Ressourcen",
     "sponsor.full": "Gesponsert von serbito.rs",
     "sponsor.short": "von serbito.rs",
-    "altto.featured": "Finde uns auf AlternativeTo ↗",
+    "altto.featured": "Like uns auf AlternativeTo ↗",
   },
   fr: {
     "lobby.tagline": "Gratuit · sans inscription · salles illimitées",
@@ -112,7 +112,7 @@ export const TRANSLATIONS: Partial<
     "learn.resources": "Ressources",
     "sponsor.full": "Sponsorisé par serbito.rs",
     "sponsor.short": "par serbito.rs",
-    "altto.featured": "Retrouvez-nous sur AlternativeTo ↗",
+    "altto.featured": "Aimez-nous sur AlternativeTo ↗",
   },
   pt: {
     "lobby.tagline": "Grátis · sem cadastro · salas ilimitadas",
@@ -148,7 +148,7 @@ export const TRANSLATIONS: Partial<
     "learn.resources": "Recursos",
     "sponsor.full": "Patrocinado por serbito.rs",
     "sponsor.short": "por serbito.rs",
-    "altto.featured": "Encontre-nos no AlternativeTo ↗",
+    "altto.featured": "Curta-nos no AlternativeTo ↗",
   },
   ru: {
     "lobby.tagline": "Бесплатно · без регистрации · неограниченные комнаты",
@@ -184,7 +184,7 @@ export const TRANSLATIONS: Partial<
     "learn.resources": "Материалы",
     "sponsor.full": "При поддержке serbito.rs",
     "sponsor.short": "от serbito.rs",
-    "altto.featured": "Мы на AlternativeTo ↗",
+    "altto.featured": "Лайкни нас на AlternativeTo ↗",
   },
   sr: {
     "lobby.tagline": "Besplatno · bez registracije · neograničen broj soba",
@@ -220,7 +220,7 @@ export const TRANSLATIONS: Partial<
     "learn.resources": "Resursi",
     "sponsor.full": "Sponzoriše serbito.rs",
     "sponsor.short": "od serbito.rs",
-    "altto.featured": "Pronađite nas na AlternativeTo ↗",
+    "altto.featured": "Lajkujte nas na AlternativeTo ↗",
   },
   ja: {
     "lobby.tagline": "無料 · 登録不要 · ルーム数無制限",
@@ -256,7 +256,7 @@ export const TRANSLATIONS: Partial<
     "learn.resources": "リソース",
     "sponsor.full": "提供: serbito.rs",
     "sponsor.short": "by serbito.rs",
-    "altto.featured": "AlternativeTo で見つける ↗",
+    "altto.featured": "AlternativeTo でいいねしてね ↗",
   },
   zh: {
     "lobby.tagline": "免费 · 无需注册 · 房间不限量",
@@ -292,6 +292,6 @@ export const TRANSLATIONS: Partial<
     "learn.resources": "资源",
     "sponsor.full": "由 serbito.rs 赞助",
     "sponsor.short": "由 serbito.rs 提供",
-    "altto.featured": "在 AlternativeTo 上找到我们 ↗",
+    "altto.featured": "在 AlternativeTo 上点赞我们 ↗",
   },
 };
