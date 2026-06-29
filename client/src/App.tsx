@@ -159,6 +159,12 @@ function Lobby({
       if (copyOnCreate) {
         const url = `${location.origin}${location.pathname}#/r/${id}`;
         navigator.clipboard?.writeText(url).catch(() => {});
+        // Flag the freshly-created room so it toasts "link copied" once on entry.
+        try {
+          sessionStorage.setItem(`pp_link_copied:${id}`, "1");
+        } catch {
+          /* sessionStorage unavailable — skip the toast */
+        }
       }
       location.hash = `#/r/${id}`;
     }
@@ -258,6 +264,25 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
   // Server closed our socket for inactivity (idle-disconnect, lets Cloud Run scale
   // to zero). We do NOT auto-reconnect; the user clicks to rejoin.
   const [idleDisconnected, setIdleDisconnected] = useState(false);
+  // Transient toast (e.g. "invite link copied" right after creating the room).
+  const [toast, setToast] = useState<string | null>(null);
+
+  // If this room was just created with "copy link on create" ticked, the lobby flagged
+  // it — show a one-shot toast on entry so the creator knows the link is on the clipboard.
+  useEffect(() => {
+    try {
+      const key = `pp_link_copied:${roomId}`;
+      if (sessionStorage.getItem(key) === "1") {
+        sessionStorage.removeItem(key);
+        setToast(tr("room.linkCopiedToast"));
+        const timer = setTimeout(() => setToast(null), 3000);
+        return () => clearTimeout(timer);
+      }
+    } catch {
+      /* sessionStorage unavailable */
+    }
+  }, [roomId, tr]);
+
   // Our current observer role, mirrored into a ref so the (re)connect handler — whose
   // closure is created once — always re-sends the *current* role. Without this, a
   // reconnect after the server lost our participant (grace expired, or a deploy reset
@@ -317,6 +342,11 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
 
   return (
     <div className="room">
+      {toast && (
+        <div className="toast" role="status">
+          {toast}
+        </div>
+      )}
       {idleDisconnected && (
         <div className="idle-banner" role="alert">
           <span>{tr("room.idleDisconnected")}</span>

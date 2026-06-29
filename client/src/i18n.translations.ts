@@ -40,6 +40,7 @@ export const TRANSLATIONS: Partial<
     "learn.resources": "Recursos",
     "sponsor.full": "Patrocinado por serbito.rs",
     "sponsor.short": "por serbito.rs",
+    "room.linkCopiedToast": "Enlace de invitación copiado al portapapeles",
     "altto.featured": "Danos un like en AlternativeTo ↗",
   },
   de: {
@@ -76,6 +77,7 @@ export const TRANSLATIONS: Partial<
     "learn.resources": "Ressourcen",
     "sponsor.full": "Gesponsert von serbito.rs",
     "sponsor.short": "von serbito.rs",
+    "room.linkCopiedToast": "Einladungslink in die Zwischenablage kopiert",
     "altto.featured": "Like uns auf AlternativeTo ↗",
   },
   fr: {
@@ -112,6 +114,7 @@ export const TRANSLATIONS: Partial<
     "learn.resources": "Ressources",
     "sponsor.full": "Sponsorisé par serbito.rs",
     "sponsor.short": "par serbito.rs",
+    "room.linkCopiedToast": "Lien d'invitation copié dans le presse-papiers",
     "altto.featured": "Aimez-nous sur AlternativeTo ↗",
   },
   pt: {
@@ -148,6 +151,7 @@ export const TRANSLATIONS: Partial<
     "learn.resources": "Recursos",
     "sponsor.full": "Patrocinado por serbito.rs",
     "sponsor.short": "por serbito.rs",
+    "room.linkCopiedToast": "Link de convite copiado para a área de transferência",
     "altto.featured": "Curta-nos no AlternativeTo ↗",
   },
   ru: {
@@ -184,6 +188,7 @@ export const TRANSLATIONS: Partial<
     "learn.resources": "Материалы",
     "sponsor.full": "При поддержке serbito.rs",
     "sponsor.short": "от serbito.rs",
+    "room.linkCopiedToast": "Ссылка-приглашение скопирована в буфер обмена",
     "altto.featured": "Лайкни нас на AlternativeTo ↗",
   },
   sr: {
@@ -220,6 +225,7 @@ export const TRANSLATIONS: Partial<
     "learn.resources": "Resursi",
     "sponsor.full": "Sponzoriše serbito.rs",
     "sponsor.short": "od serbito.rs",
+    "room.linkCopiedToast": "Pozivni link kopiran u privremenu memoriju",
     "altto.featured": "Lajkujte nas na AlternativeTo ↗",
   },
   ja: {
@@ -256,6 +262,7 @@ export const TRANSLATIONS: Partial<
     "learn.resources": "リソース",
     "sponsor.full": "提供: serbito.rs",
     "sponsor.short": "by serbito.rs",
+    "room.linkCopiedToast": "招待リンクをクリップボードにコピーしました",
     "altto.featured": "AlternativeTo でいいねしてね ↗",
   },
   zh: {
@@ -292,6 +299,7 @@ export const TRANSLATIONS: Partial<
     "learn.resources": "资源",
     "sponsor.full": "由 serbito.rs 赞助",
     "sponsor.short": "由 serbito.rs 提供",
+    "room.linkCopiedToast": "邀请链接已复制到剪贴板",
     "altto.featured": "在 AlternativeTo 上点赞我们 ↗",
   },
 };
