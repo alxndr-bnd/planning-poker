@@ -48,6 +48,16 @@ jobs:
           cache-from: type=registry,ref=${{ env.AR_IMAGE }}:buildcache
           cache-to: type=registry,ref=${{ env.AR_IMAGE }}:buildcache,mode=max
 
+      # --- Security: scan the built image for OS/dep CVEs + leaked secrets (parity with
+      # serbito). Hard gate: a *fixed* HIGH/CRITICAL fails the deploy. Pinned install
+      # (tagged install.sh + binary version, not mutable main) for supply-chain safety. ---
+      - name: Trivy image scan
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/v0.71.2/contrib/install.sh | sh -s -- -b /usr/local/bin v0.71.2
+          trivy image --scanners vuln,secret --severity HIGH,CRITICAL \
+            --ignore-unfixed --exit-code 1 --format table --timeout 10m \
+            "${{ env.AR_IMAGE }}:${{ github.sha }}"
+
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy "$SERVICE" \

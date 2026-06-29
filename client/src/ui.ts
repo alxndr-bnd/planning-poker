@@ -8,10 +8,10 @@
 // NOTE: this is the *UI* flag (`?ui=v2`). It is unrelated to the WebSocket edge-gate
 // query (`?v=2`) that Cloudflare's WAF requires on /ws — keep them distinct.
 //
-// THE FLIP: to release v2 to everyone in one go, set UI_V2_DEFAULT = true and ship.
-// v2 then becomes the default; anyone can still force the old UI with `?ui=v1`.
+// THE FLIP (done 2026-06-29): v2 is now the default for everyone — a plain visit lands
+// on the new UI, no `?ui=v2` needed. Anyone can still force the old UI with `?ui=v1`.
 const KEY = "pp_ui_v2";
-const UI_V2_DEFAULT = false;
+const UI_V2_DEFAULT = true;
 
 export function resolveUiV2(): boolean {
   try {
