@@ -54,6 +54,7 @@ export const EN = {
   "learn.resources": "Resources",
   "sponsor.full": "Sponsored by serbito.rs",
   "sponsor.short": "by serbito.rs",
+  "altto.featured": "Find us on AlternativeTo ↗",
 } as const;
 
 export type StringKey = keyof typeof EN;

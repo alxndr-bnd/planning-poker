@@ -22,9 +22,12 @@ import {
   getInitialLang,
   setLang as persistLang,
 } from "./i18n.js";
+import { resolveUiV2 } from "./ui.js";
 
 const REPO = "alxndr-bnd/planning-poker";
 const REPO_URL = `https://github.com/${REPO}`;
+const ALTERNATIVETO_URL =
+  "https://alternativeto.net/software/estimation-poker-serbito/about/";
 
 // --- i18n context: lang + a bound translator, available to every component. ---
 type I18n = { lang: Lang; setLang: (l: Lang) => void; tr: (k: StringKey, v?: Record<string, string | number>) => string };
@@ -68,6 +71,21 @@ function SerbitoSponsor({ short = false }: { short?: boolean }) {
   );
 }
 
+// UI v2 only: a link to our AlternativeTo listing (lobby + room).
+function AlternativeToLink() {
+  const { tr } = useT();
+  return (
+    <a
+      className="altto-link"
+      href={ALTERNATIVETO_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {tr("altto.featured")}
+    </a>
+  );
+}
+
 function useHashRoom(): string | null {
   const [roomId, setRoomId] = useState(parseHash);
   useEffect(() => {
@@ -87,6 +105,8 @@ export function App() {
   const roomId = useHashRoom();
   const [name, setName] = useState(() => localStorage.getItem("pp_name") ?? "");
   const [lang, setLangState] = useState<Lang>(getInitialLang);
+  // Resolved once on load: are we in the v2 UI preview? (`?ui=v2` sticks in localStorage.)
+  const [uiV2] = useState(resolveUiV2);
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -103,9 +123,9 @@ export function App() {
     <I18nCtx.Provider value={i18n}>
       <main>
         {!joined ? (
-          <Lobby roomId={roomId} name={name} setName={setName} />
+          <Lobby roomId={roomId} name={name} setName={setName} uiV2={uiV2} />
         ) : (
-          <Room key={roomId} roomId={roomId} name={name} />
+          <Room key={roomId} roomId={roomId} name={name} uiV2={uiV2} />
         )}
       </main>
     </I18nCtx.Provider>
@@ -116,10 +136,12 @@ function Lobby({
   roomId,
   name,
   setName,
+  uiV2,
 }: {
   roomId: string | null;
   name: string;
   setName: (n: string) => void;
+  uiV2: boolean;
 }) {
   const { tr } = useT();
   const [input, setInput] = useState(name);
@@ -175,6 +197,11 @@ function Lobby({
         <GitHubBadge />
         <SerbitoSponsor />
       </div>
+      {uiV2 && (
+        <div className="altto-row">
+          <AlternativeToLink />
+        </div>
+      )}
       <LearnMore />
     </div>
   );
@@ -217,7 +244,7 @@ function LearnMore() {
   );
 }
 
-function Room({ roomId, name }: { roomId: string; name: string }) {
+function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: boolean }) {
   const { tr } = useT();
   const sockRef = useRef<PokerSocket | null>(null);
   const [youId, setYouId] = useState<string>("");
@@ -325,6 +352,7 @@ function Room({ roomId, name }: { roomId: string; name: string }) {
           <button className="primary" onClick={copyLink}>
             {copied ? tr("room.copied") : tr("room.invite")}
           </button>
+          {uiV2 && <AlternativeToLink />}
           <LanguageSwitcher />
           <GitHubBadge />
           <SerbitoSponsor short />

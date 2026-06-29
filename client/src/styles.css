@@ -280,3 +280,19 @@ input[type="text"], input:not([type]) {
   margin-bottom: 2.5rem; /* push GitHub / sponsor / "How it works" further down */
 }
 .copy-on-create input { width: auto; margin: 0; cursor: pointer; }
+
+/* UI v2 preview: "Find us on AlternativeTo" featured link (lobby + room header). */
+.altto-row { text-align: center; margin-top: 0.25rem; }
+.altto-link {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  padding: 0.25rem 0.7rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.altto-link:hover { background: var(--accent); color: var(--accent-ink); }
