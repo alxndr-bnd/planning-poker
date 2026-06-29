@@ -1,0 +1,15 @@
+{
+  "name": "Planning Poker",
+  "short_name": "Planning Poker",
+  "description": "Free, open-source Planning Poker for agile teams — create a room, share the link, estimate story points together in real time. No sign-up.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#15603b",
+  "theme_color": "#15603b",
+  "icons": [
+    { "src": "/icon-192.png", "type": "image/png", "sizes": "192x192", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "any maskable" },
+    { "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any" }
+  ]
+}
