@@ -1,0 +1,22 @@
+# Dependabot version updates. Security updates (for known CVEs) are enabled
+# separately in the repo's Security settings; this file schedules routine bumps.
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+version: 2
+updates:
+  # npm workspace (root package-lock.json covers client/server/shared).
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # The Cloud Run image base (node:24-slim) + any pinned image deps.
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Pinned GitHub Actions in .github/workflows.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
