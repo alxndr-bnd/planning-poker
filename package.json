@@ -4,7 +4,11 @@
   "private": true,
   "license": "MIT",
   "type": "module",
-  "workspaces": ["shared", "client", "server"],
+  "workspaces": [
+    "shared",
+    "client",
+    "server"
+  ],
   "scripts": {
     "dev": "concurrently -n server,client -c blue,green \"npm:dev:server\" \"npm:dev:client\"",
     "dev:server": "npm -w @pp/server run dev",
@@ -15,7 +19,7 @@
     "typecheck": "npm -w @pp/server run typecheck && npm -w @pp/client run typecheck"
   },
   "devDependencies": {
-    "concurrently": "^9.0.1"
+    "concurrently": "^10.0.3"
   },
   "engines": {
     "node": ">=20"
