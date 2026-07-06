@@ -29,6 +29,22 @@ const REPO_URL = `https://github.com/${REPO}`;
 const ALTERNATIVETO_URL =
   "https://alternativeto.net/software/estimation-poker-serbito/about/";
 
+// Per-language URL prefix for the prerendered guide pages (EN at root, others under
+// /<lang>/). A constant lookup keyed by the validated `Lang` union — the resolved value
+// is always a string literal, so a guide href can never carry unvalidated input into the
+// DOM (no DOM-derived text reaches the href; cf. CodeQL js/xss-through-dom).
+const LANG_PREFIX: Record<Lang, string> = {
+  en: "",
+  es: "/es",
+  de: "/de",
+  fr: "/fr",
+  pt: "/pt",
+  ru: "/ru",
+  sr: "/sr",
+  ja: "/ja",
+  zh: "/zh",
+};
+
 // --- i18n context: lang + a bound translator, available to every component. ---
 type I18n = { lang: Lang; setLang: (l: Lang) => void; tr: (k: StringKey, v?: Record<string, string | number>) => string };
 const I18nCtx = createContext<I18n>({ lang: "en", setLang: () => {}, tr: (k) => t("en", k) });
@@ -215,8 +231,8 @@ function Lobby({
 
 function LearnMore() {
   const { lang, tr } = useT();
-  // Lang-aware clean-URL to a prerendered guide page (EN at root, others under /<lang>/).
-  const guide = (slug: string) => (lang === "en" ? `/${slug}` : `/${lang}/${slug}`);
+  // Lang-aware clean-URL to a prerendered guide page, via the constant LANG_PREFIX map.
+  const guide = (slug: string) => `${LANG_PREFIX[lang]}/${slug}`;
   return (
     <details className="learn">
       <summary>{tr("learn.summary")}</summary>

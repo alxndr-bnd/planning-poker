@@ -1,5 +1,5 @@
 import { createReadStream, existsSync, statSync } from "node:fs";
-import { extname, join, normalize } from "node:path";
+import { extname, join, normalize, relative, sep } from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
 
 const MIME: Record<string, string> = {
@@ -41,10 +41,12 @@ export function serveStatic(
   // the canonical is the no-slash form, so 301 to it rather than serving a second
   // crawlable variant. Skips the site root ("/") and anything without an index.html.
   if (urlPath.length > 1 && urlPath.endsWith("/")) {
-    const noSlash = urlPath.replace(/\/+$/, "");
     const dirIndex = join(dist, safe, "index.html");
     if (dirIndex.startsWith(dist) && existsSync(dirIndex)) {
-      res.writeHead(301, { location: noSlash + (query ? `?${query}` : "") }).end();
+      // Build the target from the sanitized in-dist path (never the raw req.url), so the
+      // Location is always a single-origin absolute path — no open-redirect surface.
+      const target = "/" + relative(dist, join(dist, safe)).split(sep).join("/");
+      res.writeHead(301, { location: query ? `${target}?${query}` : target }).end();
       return true;
     }
   }

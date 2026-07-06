@@ -4,7 +4,8 @@ A free, open-source, no-registration Planning Poker (scrum estimation) app.
 Create a room, share the link, everyone joins by **name only** and estimates together
 in real time. No paywall, no sign-up, unlimited rooms.
 
-Live: **https://poker.serbito.rs**
+Live: **https://poker.serbito.rs** — also listed on
+[AlternativeTo](https://alternativeto.net/software/estimation-poker-serbito/about/).
 
 ## Features (MVP)
 
