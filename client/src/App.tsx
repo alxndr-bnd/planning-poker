@@ -215,16 +215,33 @@ function Lobby({
 
 function LearnMore() {
   const { lang, tr } = useT();
-  const guideHref =
-    lang === "en" ? "/what-is-planning-poker" : `/${lang}/what-is-planning-poker`;
+  // Lang-aware clean-URL to a prerendered guide page (EN at root, others under /<lang>/).
+  const guide = (slug: string) => (lang === "en" ? `/${slug}` : `/${lang}/${slug}`);
   return (
     <details className="learn">
       <summary>{tr("learn.summary")}</summary>
       <div className="learn-body">
         <p>{tr("learn.intro")}</p>
         <p>
-          <a href={guideHref}>{tr("learn.readFull")}</a>
+          <a href={guide("what-is-planning-poker")}>{tr("learn.readFull")}</a>
         </p>
+        {/* Internal links to the guide cluster. These live in the rendered app (not the
+            static #root landing React replaces on mount), so the link equity to the
+            cluster survives client-side rendering. */}
+        <p>
+          <b>{tr("learn.moreGuides")}</b>
+        </p>
+        <ul>
+          <li>
+            <a href={guide("glossary")}>{tr("learn.guideGlossary")}</a>
+          </li>
+          <li>
+            <a href={guide("planning-poker-for-jira")}>{tr("learn.guideJira")}</a>
+          </li>
+          <li>
+            <a href={guide("planning-poker-for-remote-teams")}>{tr("learn.guideRemote")}</a>
+          </li>
+        </ul>
         <p>
           <b>{tr("learn.resources")}</b>
         </p>

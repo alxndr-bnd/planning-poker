@@ -13,7 +13,7 @@ const clientDir = join(here, "../../client"); // planning-poker/client
 
 function httpGet(
   url: string,
-): Promise<{ status: number; contentType: string; body: string }> {
+): Promise<{ status: number; contentType: string; location: string; body: string }> {
   return new Promise((resolve, reject) => {
     httpGetRaw(url, (res) => {
       let body = "";
@@ -22,6 +22,7 @@ function httpGet(
         resolve({
           status: res.statusCode ?? 0,
           contentType: String(res.headers["content-type"] ?? ""),
+          location: String(res.headers["location"] ?? ""),
           body,
         }),
       );
@@ -95,6 +96,12 @@ describe("static file serving (SEO assets + SPA fallback)", () => {
     // must NOT fall through to the SPA shell
     expect(res.body).not.toContain("app shell");
   });
+
+  it("301-redirects a trailing slash on a clean-URL page to the canonical no-slash form", async () => {
+    const res = await httpGet(`${base}/what-is-planning-poker/`);
+    expect(res.status).toBe(301);
+    expect(res.location).toBe("/what-is-planning-poker");
+  });
 });
 
 // --------------------------------------------------------------------------- #
@@ -130,5 +137,32 @@ describe("SEO artifacts (real source files)", () => {
     const xml = readFileSync(join(clientDir, "public/sitemap.xml"), "utf-8");
     expect(xml).toContain("http://www.sitemaps.org/schemas/sitemap/0.9");
     expect(xml).toContain("<loc>https://poker.serbito.rs/</loc>");
+  });
+
+  it("guide pages carry BreadcrumbList JSON-LD; prose guides also carry Article", () => {
+    const guides = [
+      "what-is-planning-poker",
+      "planning-poker-for-jira",
+      "planning-poker-for-remote-teams",
+      "glossary",
+    ];
+    for (const g of guides) {
+      const html = readFileSync(join(clientDir, "public", g, "index.html"), "utf-8");
+      expect(html).toContain('"BreadcrumbList"');
+      // structured data must be valid JSON
+      for (const m of html.matchAll(
+        /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g,
+      )) {
+        expect(() => JSON.parse(m[1].trim())).not.toThrow();
+      }
+    }
+    for (const g of [
+      "what-is-planning-poker",
+      "planning-poker-for-jira",
+      "planning-poker-for-remote-teams",
+    ]) {
+      const html = readFileSync(join(clientDir, "public", g, "index.html"), "utf-8");
+      expect(html).toContain('"@type":"Article"');
+    }
   });
 });

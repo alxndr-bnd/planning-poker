@@ -52,6 +52,10 @@ export const EN = {
   "learn.intro":
     "Planning Poker is a consensus-based, gamified estimation technique for agile teams. Everyone privately picks a card; all votes reveal at once to avoid anchoring. The team discusses the spread and re-votes until it converges.",
   "learn.readFull": "Read the full guide →",
+  "learn.moreGuides": "More guides",
+  "learn.guideGlossary": "Agile estimation glossary",
+  "learn.guideJira": "Planning Poker for Jira",
+  "learn.guideRemote": "Planning Poker for remote teams",
   "learn.resources": "Resources",
   "sponsor.full": "Sponsored by serbito.rs",
   "sponsor.short": "by serbito.rs",

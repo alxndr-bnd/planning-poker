@@ -27,7 +27,7 @@ export function serveStatic(
 ): boolean {
   if (!existsSync(dist)) return false;
 
-  const urlPath = (req.url ?? "/").split("?")[0];
+  const [urlPath, query = ""] = (req.url ?? "/").split("?");
   // Prevent path traversal; resolve within dist.
   const safe = normalize(urlPath).replace(/^(\.\.[/\\])+/, "");
   let filePath = join(dist, safe);
@@ -35,6 +35,18 @@ export function serveStatic(
   if (!filePath.startsWith(dist)) {
     res.writeHead(403).end("Forbidden");
     return true;
+  }
+
+  // Normalize a trailing slash on a prerendered clean-URL page (/slug/ -> /slug):
+  // the canonical is the no-slash form, so 301 to it rather than serving a second
+  // crawlable variant. Skips the site root ("/") and anything without an index.html.
+  if (urlPath.length > 1 && urlPath.endsWith("/")) {
+    const noSlash = urlPath.replace(/\/+$/, "");
+    const dirIndex = join(dist, safe, "index.html");
+    if (dirIndex.startsWith(dist) && existsSync(dirIndex)) {
+      res.writeHead(301, { location: noSlash + (query ? `?${query}` : "") }).end();
+      return true;
+    }
   }
 
   // Unknown path or directory: try a prerendered clean-URL SEO page
