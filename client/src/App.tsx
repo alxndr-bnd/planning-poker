@@ -545,10 +545,11 @@ function EstimateLog({ log }: { log: RoundLog[] }) {
           <li key={n}>
             <span className="log-round">#{n}</span>
             <span className="log-title">{r.itemTitle || "—"}</span>
-            <span className="log-avg">
-              {r.summary.consensus && <span className="consensus">✓ </span>}
-              {tr("log.avg")} {r.summary.average ?? "–"}
-            </span>
+            {r.summary.consensus && (
+              <span className="log-consensus">
+                <span className="consensus">✓ {tr("log.consensus")}</span>
+              </span>
+            )}
             <span className="log-dist">
               {Object.entries(r.summary.distribution)
                 .sort((a, b) => b[1] - a[1])
@@ -614,12 +615,11 @@ function SummaryView({ summary }: { summary: Summary }) {
   const entries = Object.entries(summary.distribution).sort((a, b) => b[1] - a[1]);
   return (
     <div className="summary">
-      <div className="summary-stats">
-        <span>
-          {tr("summary.average")} <b>{summary.average ?? "–"}</b>
-        </span>
-        {summary.consensus && <span className="consensus">{tr("summary.consensus")}</span>}
-      </div>
+      {summary.consensus && (
+        <div className="summary-stats">
+          <span className="consensus">{tr("summary.consensus")}</span>
+        </div>
+      )}
       <div className="distribution">
         {entries.map(([value, count]) => (
           <span key={value} className="dist-item">

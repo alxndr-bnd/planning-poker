@@ -47,7 +47,7 @@ function drive<T>(
 describe("WebSocket server", () => {
   it("join → vote → reveal → summary happy path", async () => {
     const ws = new WebSocket(wsUrl);
-    const summary = await drive<{ average: number | null }>(
+    const summary = await drive<{ distribution: Record<string, number>; consensus: boolean }>(
       ws,
       () => ws.send(JSON.stringify({ type: "join", roomId: "wsroom0001", name: "Tester" })),
       (m, sock) => {
@@ -64,7 +64,7 @@ describe("WebSocket server", () => {
       },
     );
     ws.close();
-    expect(summary.average).toBe(8);
+    expect(summary.distribution).toEqual({ "8": 1 });
   });
 
   it("hides other players' numeric votes until reveal", async () => {

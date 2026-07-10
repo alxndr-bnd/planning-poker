@@ -36,8 +36,6 @@ export interface ParticipantView {
 export interface Summary {
   /** card value -> how many people picked it (numeric cards only) */
   distribution: Record<string, number>;
-  /** average of numeric votes, rounded to 1 decimal, or null if none */
-  average: number | null;
   /** true when all numeric voters picked the same card */
   consensus: boolean;
 }

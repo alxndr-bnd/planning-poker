@@ -31,17 +31,17 @@ describe("Room", () => {
     expect(room.summary().distribution).toEqual({ "3": 1 });
   });
 
-  it("computes average and consensus over numeric votes only", () => {
+  it("computes distribution and consensus over numeric votes only", () => {
     const room = new Room("abcdef");
     room.addParticipant("a", "A", false);
     room.addParticipant("b", "B", false);
     room.addParticipant("c", "C", false);
     room.vote("a", "2");
     room.vote("b", "8");
-    room.vote("c", "?"); // non-numeric ignored in average
+    room.vote("c", "?"); // non-numeric excluded from consensus
     room.reveal(room.revealerId!);
     const s = room.summary();
-    expect(s.average).toBe(5); // (2+8)/2
+    expect(s.distribution).toEqual({ "2": 1, "8": 1, "?": 1 });
     expect(s.consensus).toBe(false);
   });
 
@@ -103,7 +103,7 @@ describe("Room", () => {
     room.reveal(room.revealerId!);
     expect(room.log).toHaveLength(1);
     expect(room.log[0].itemTitle).toBe("Story A");
-    expect(room.log[0].summary.average).toBe(8);
+    expect(room.log[0].summary.distribution).toEqual({ "8": 2 });
     expect(room.log[0].summary.consensus).toBe(true);
   });
 

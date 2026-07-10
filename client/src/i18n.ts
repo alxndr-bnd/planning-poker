@@ -45,8 +45,7 @@ export const EN = {
   "deck.showHighTitle": "Show high cards (89–610)",
   "deck.hideHighTitle": "Hide high cards",
   "log.title": "Estimate log",
-  "log.avg": "avg",
-  "summary.average": "Average:",
+  "log.consensus": "consensus",
   "summary.consensus": "Consensus 🎉",
   "learn.summary": "How Planning Poker works — theory & resources",
   "learn.intro":

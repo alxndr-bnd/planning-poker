@@ -237,14 +237,8 @@ export class Room {
       distribution[p.vote] = (distribution[p.vote] ?? 0) + 1;
       if (NUMERIC.has(p.vote)) numericValues.push(Number(p.vote));
     }
-    const average =
-      numericValues.length > 0
-        ? Math.round(
-            (numericValues.reduce((a, b) => a + b, 0) / numericValues.length) * 10,
-          ) / 10
-        : null;
     const consensus =
       numericValues.length > 1 && new Set(numericValues).size === 1;
-    return { distribution, average, consensus };
+    return { distribution, consensus };
   }
 }

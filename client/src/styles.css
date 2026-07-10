@@ -259,14 +259,14 @@ input[type="text"], input:not([type]) {
 .log-list li {
   display: grid;
   grid-template-columns: 2.2rem minmax(0, 1fr) auto;
-  grid-template-areas: "round title avg" "round dist dist";
+  grid-template-areas: "round title flag" "round dist dist";
   gap: 0.15rem 0.6rem; align-items: center;
   background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
   padding: 0.4rem 0.7rem; font-size: 0.85rem;
 }
 .log-round { grid-area: round; color: var(--muted); font-variant-numeric: tabular-nums; }
 .log-title { grid-area: title; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.log-avg { grid-area: avg; color: var(--accent); white-space: nowrap; }
+.log-consensus { grid-area: flag; white-space: nowrap; }
 .log-dist { grid-area: dist; display: flex; flex-wrap: wrap; gap: 0.3rem; }
 .log-chip {
   color: var(--muted); background: #0c1118; border: 1px solid var(--line);

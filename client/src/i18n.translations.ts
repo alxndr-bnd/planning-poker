@@ -30,8 +30,7 @@ export const TRANSLATIONS: Partial<
     "deck.showHighTitle": "Mostrar cartas altas (89–610)",
     "deck.hideHighTitle": "Ocultar cartas altas",
     "log.title": "Registro de estimaciones",
-    "log.avg": "media",
-    "summary.average": "Media:",
+    "log.consensus": "consenso",
     "summary.consensus": "Consenso 🎉",
     "learn.summary": "Cómo funciona Planning Poker: teoría y recursos",
     "learn.intro":
@@ -67,8 +66,7 @@ export const TRANSLATIONS: Partial<
     "deck.showHighTitle": "Hohe Karten anzeigen (89–610)",
     "deck.hideHighTitle": "Hohe Karten ausblenden",
     "log.title": "Schätzprotokoll",
-    "log.avg": "Ø",
-    "summary.average": "Durchschnitt:",
+    "log.consensus": "Konsens",
     "summary.consensus": "Konsens 🎉",
     "learn.summary": "So funktioniert Planning Poker – Theorie & Ressourcen",
     "learn.intro":
@@ -104,8 +102,7 @@ export const TRANSLATIONS: Partial<
     "deck.showHighTitle": "Afficher les cartes élevées (89–610)",
     "deck.hideHighTitle": "Masquer les cartes élevées",
     "log.title": "Journal des estimations",
-    "log.avg": "moy.",
-    "summary.average": "Moyenne :",
+    "log.consensus": "consensus",
     "summary.consensus": "Consensus 🎉",
     "learn.summary": "Comment fonctionne le Planning Poker — théorie et ressources",
     "learn.intro":
@@ -141,8 +138,7 @@ export const TRANSLATIONS: Partial<
     "deck.showHighTitle": "Mostrar cartas altas (89–610)",
     "deck.hideHighTitle": "Ocultar cartas altas",
     "log.title": "Registro de estimativas",
-    "log.avg": "média",
-    "summary.average": "Média:",
+    "log.consensus": "consenso",
     "summary.consensus": "Consenso 🎉",
     "learn.summary": "Como funciona o Planning Poker — teoria e recursos",
     "learn.intro":
@@ -178,8 +174,7 @@ export const TRANSLATIONS: Partial<
     "deck.showHighTitle": "Показать старшие карты (89–610)",
     "deck.hideHighTitle": "Скрыть старшие карты",
     "log.title": "Журнал оценок",
-    "log.avg": "сред.",
-    "summary.average": "Среднее:",
+    "log.consensus": "консенсус",
     "summary.consensus": "Консенсус 🎉",
     "learn.summary": "Как работает Planning Poker — теория и материалы",
     "learn.intro":
@@ -215,8 +210,7 @@ export const TRANSLATIONS: Partial<
     "deck.showHighTitle": "Prikaži visoke karte (89–610)",
     "deck.hideHighTitle": "Sakrij visoke karte",
     "log.title": "Dnevnik procena",
-    "log.avg": "pros.",
-    "summary.average": "Prosek:",
+    "log.consensus": "konsenzus",
     "summary.consensus": "Konsenzus 🎉",
     "learn.summary": "Kako funkcioniše Planning Poker — teorija i resursi",
     "learn.intro":
@@ -252,8 +246,7 @@ export const TRANSLATIONS: Partial<
     "deck.showHighTitle": "大きいカードを表示（89–610）",
     "deck.hideHighTitle": "大きいカードを隠す",
     "log.title": "見積もり履歴",
-    "log.avg": "平均",
-    "summary.average": "平均:",
+    "log.consensus": "合意",
     "summary.consensus": "合意 🎉",
     "learn.summary": "プランニングポーカーの仕組み — 理論とリソース",
     "learn.intro":
@@ -289,8 +282,7 @@ export const TRANSLATIONS: Partial<
     "deck.showHighTitle": "显示大牌（89–610）",
     "deck.hideHighTitle": "隐藏大牌",
     "log.title": "估算记录",
-    "log.avg": "平均",
-    "summary.average": "平均值：",
+    "log.consensus": "共识",
     "summary.consensus": "达成共识 🎉",
     "learn.summary": "Planning Poker 的原理 — 理论与资源",
     "learn.intro":
