@@ -32,7 +32,9 @@ export function serveStatic(
   const safe = normalize(urlPath).replace(/^(\.\.[/\\])+/, "");
   let filePath = join(dist, safe);
 
-  if (!filePath.startsWith(dist)) {
+  // Containment: filePath must be dist itself or strictly inside it. The `+ sep`
+  // guard stops a sibling dir that merely shares the prefix (e.g. `${dist}-other`).
+  if (filePath !== dist && !filePath.startsWith(dist + sep)) {
     res.writeHead(403).end("Forbidden");
     return true;
   }
@@ -42,7 +44,7 @@ export function serveStatic(
   // crawlable variant. Skips the site root ("/") and anything without an index.html.
   if (urlPath.length > 1 && urlPath.endsWith("/")) {
     const dirIndex = join(dist, safe, "index.html");
-    if (dirIndex.startsWith(dist) && existsSync(dirIndex)) {
+    if (dirIndex.startsWith(dist + sep) && existsSync(dirIndex)) {
       // Build the target from the sanitized in-dist path (never the raw req.url), so the
       // Location is always a single-origin absolute path — no open-redirect surface.
       const target = "/" + relative(dist, join(dist, safe)).split(sep).join("/");
@@ -56,7 +58,7 @@ export function serveStatic(
   if (!existsSync(filePath) || statSync(filePath).isDirectory()) {
     const candidates = [join(filePath, "index.html"), `${filePath}.html`];
     const page = candidates.find(
-      (c) => c.startsWith(dist) && existsSync(c) && statSync(c).isFile(),
+      (c) => c.startsWith(dist + sep) && existsSync(c) && statSync(c).isFile(),
     );
     filePath = page ?? join(dist, "index.html");
     if (!existsSync(filePath)) return false;
