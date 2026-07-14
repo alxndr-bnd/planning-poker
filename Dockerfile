@@ -10,33 +10,34 @@ COPY client/package.json client/
 COPY server/package.json server/
 RUN npm ci
 
-# Copy sources and build the client bundle.
+# Copy sources and build: client SPA (-> client/dist) + server bundle
+# (-> server/dist/index.js, a single ESM file via esbuild).
 COPY . .
-RUN npm run build   # -> client/dist
+RUN npm run build
 
-# ---- runtime stage: Node serving SPA + WebSocket via tsx ----
+# ---- runtime stage: Node serving the SPA + WebSocket from the precompiled bundle ----
 FROM node:24-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production \
     PORT=8080 \
     STATIC_DIR=/app/client/dist
 
-# Patch base-image OS packages, then strip npm/npx/corepack: the runtime starts the
-# server straight from the local tsx binary and never needs them. Removing them drops
-# their bundled deps (e.g. npm's undici, CVE-2026-12151) from the image and shrinks the
-# attack surface — keeps the Trivy deploy gate green.
+# Patch base-image OS packages, then strip npm/npx/corepack: the runtime runs a single
+# precompiled `node` bundle and never needs them. Removing them drops their bundled deps
+# (e.g. npm's undici) and shrinks the attack surface — keeps the Trivy deploy gate green.
 RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/* && \
     rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
            /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
 
-# Bring the whole built workspace (incl. node_modules with the @pp/shared symlink and tsx).
-# Owned by the built-in non-root `node` user so it can read/write (e.g. tsx cache).
-COPY --from=build --chown=node:node /app /app
+# Copy ONLY the built artifacts — the precompiled server bundle and the SPA. No
+# node_modules, so tsx/esbuild (and their Go/native binaries, e.g. esbuild's Go stdlib
+# CVE-2026-39822) never reach the runtime image. @pp/shared + ws are inlined in the bundle.
+COPY --from=build --chown=node:node /app/server/dist /app/server/dist
+COPY --from=build --chown=node:node /app/client/dist /app/client/dist
 
 # Drop root — run the server as the unprivileged `node` user (defense in depth).
 USER node
 
 EXPOSE 8080
-# tsx runs the TypeScript server directly (resolves workspace + .ts sources). Invoked via
-# the local tsx binary instead of `npx` since npm was removed from the runtime above.
-CMD ["node_modules/.bin/tsx", "server/src/index.ts"]
+# Run the precompiled server bundle directly with the Node runtime.
+CMD ["node", "server/dist/index.js"]
