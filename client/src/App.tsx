@@ -23,6 +23,7 @@ import {
   setLang as persistLang,
 } from "./i18n.js";
 import { resolveUiV2 } from "./ui.js";
+import { trackEvent, trackPageView } from "./analytics.js";
 
 const REPO = "alxndr-bnd/planning-poker";
 const REPO_URL = `https://github.com/${REPO}`;
@@ -128,6 +129,15 @@ export function App() {
     document.documentElement.lang = lang;
   }, [lang]);
 
+  // GA4 counts one page_view — at load, from the tag in index.html. Hash routing
+  // (`#/r/<id>`) fires no history event it listens for, so lobby <-> room moves were
+  // never counted; send them here. Room ids stay out of GA (see analytics.ts).
+  useEffect(() => {
+    const onHash = () => trackPageView();
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+
   const setLang = (l: Lang) => {
     persistLang(l);
     setLangState(l);
@@ -182,6 +192,7 @@ function Lobby({
           /* sessionStorage unavailable — skip the toast */
         }
       }
+      trackEvent("room_created");
       location.hash = `#/r/${id}`;
     }
   }
@@ -321,6 +332,9 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
   // reconnect after the server lost our participant (grace expired, or a deploy reset
   // the in-memory rooms) re-adds us as a plain voter and the observer state is lost.
   const observerRef = useRef(false);
+  // The server re-sends `joined` after every reconnect; the funnel wants one event
+  // per room entry. Room is keyed by roomId, so this resets when the room changes.
+  const joinTracked = useRef(false);
 
   useEffect(() => {
     const sock = new PokerSocket(
@@ -328,6 +342,10 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
         switch (msg.type) {
           case "joined":
             setYouId(msg.youId);
+            if (!joinTracked.current) {
+              joinTracked.current = true;
+              trackEvent("room_joined");
+            }
             break;
           case "state":
             setPhase(msg.phase);
@@ -426,7 +444,13 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
         {phase === "voting" ? (
           <>
             {youId === revealerId ? (
-              <button className="primary" onClick={() => send({ type: "reveal" })}>
+              <button
+                className="primary"
+                onClick={() => {
+                  trackEvent("round_revealed");
+                  send({ type: "reveal" });
+                }}
+              >
                 {tr("room.reveal")}
               </button>
             ) : (
@@ -472,9 +496,14 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
             {!isObserver && (
               <Deck
                 selected={me?.vote ?? null}
-                onPick={(v) =>
-                  send(v === (me?.vote ?? null) ? { type: "unvote" } : { type: "vote", value: v })
-                }
+                onPick={(v) => {
+                  if (v === (me?.vote ?? null)) {
+                    send({ type: "unvote" });
+                    return;
+                  }
+                  trackEvent("vote_cast", { card: String(v) });
+                  send({ type: "vote", value: v });
+                }}
               />
             )}
           </>

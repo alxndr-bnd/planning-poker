@@ -12,7 +12,20 @@
       window.dataLayer = window.dataLayer || [];
       function gtag() { dataLayer.push(arguments); }
       gtag("js", new Date());
-      gtag("config", "G-B5CQC4JJV0");
+      // The app routes on the URL hash, so this is the only page_view gtag.js sends by
+      // itself — hash changes trigger none of the history events it listens for. The
+      // rest are sent from client/src/analytics.ts.
+      // A room id is the invite credential, so it must never reach GA: an entry via a
+      // shared #/r/<id> link is reported as the virtual page /room (a fragment would
+      // not do either — GA4's page-path dimension drops it). Kept in sync with
+      // currentPage() in client/src/analytics.ts.
+      gtag(
+        "config",
+        "G-B5CQC4JJV0",
+        location.hash.indexOf("#/r/") === 0
+          ? { page_location: location.origin + "/room", page_title: "Planning Poker \u2014 Room" }
+          : {},
+      );
     </script>
 
     <!-- Cloudflare Web Analytics (privacy-first, cookieless). poker.serbito.rs is

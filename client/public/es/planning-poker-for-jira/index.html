@@ -3,6 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Google tag (gtag.js) — GA4, same property as the app shell. These prerendered
+         guide pages are the SEO landing pages: without the tag, all organic traffic
+         that lands here is invisible in GA4. Static snippet, like client/index.html.
+         No hash routing here, so gtag.js's own page_view is all these pages need. -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-B5CQC4JJV0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag("js", new Date());
+      gtag("config", "G-B5CQC4JJV0");
+    </script>
+
+    <!-- Cloudflare Web Analytics (privacy-first, cookieless) — same beacon token as
+         client/index.html; CF's automatic injection doesn't fire for this site. -->
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "baa4373b14044e0b83a55a7d437c6019"}'></script>
+    <!-- End Cloudflare Web Analytics -->
+
     <title>Planning Poker para Jira - Gratis, sin plugin, sin registro</title>
     <meta
       name="description"
