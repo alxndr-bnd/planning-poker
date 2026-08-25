@@ -1,5 +1,5 @@
 # ---- build stage: install deps & build the SPA ----
-FROM node:24-slim AS build
+FROM node:25-slim AS build
 WORKDIR /app
 
 # Install with workspace package manifests first (better layer caching).
@@ -16,7 +16,7 @@ COPY . .
 RUN npm run build
 
 # ---- runtime stage: Node serving the SPA + WebSocket from the precompiled bundle ----
-FROM node:24-slim AS runtime
+FROM node:25-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production \
     PORT=8080 \
