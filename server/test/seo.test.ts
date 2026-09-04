@@ -56,6 +56,8 @@ describe("static file serving (SEO assets + SPA fallback)", () => {
       join(dist, "what-is-planning-poker", "index.html"),
       "<!doctype html><h1>WHAT IS PLANNING POKER</h1>",
     );
+    // The share image: its content-type is load-bearing, see the test below.
+    writeFileSync(join(dist, "og-image.jpg"), Buffer.from("\xff\xd8\xff", "binary"));
     server = createPokerServer(dist);
     await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
     const { port } = server.address() as AddressInfo;
@@ -79,6 +81,15 @@ describe("static file serving (SEO assets + SPA fallback)", () => {
     expect(res.status).toBe(200);
     expect(res.contentType).toContain("xml");
     expect(res.body).toContain("<loc>https://poker.serbito.rs/</loc>");
+  });
+
+  it("serves og-image.jpg as image/jpeg, not octet-stream", async () => {
+    // Slack, Discord and the other unfurlers drop a share image whose content-type
+    // isn't an image type, so a missing .jpg entry in the MIME map silently kills
+    // every link preview. Regression guard for exactly that.
+    const res = await httpGet(`${base}/og-image.jpg`);
+    expect(res.status).toBe(200);
+    expect(res.contentType).toBe("image/jpeg");
   });
 
   it("falls back to index.html for unknown SPA routes", async () => {
@@ -163,6 +174,41 @@ describe("SEO artifacts (real source files)", () => {
     ]) {
       const html = readFileSync(join(clientDir, "public", g, "index.html"), "utf-8");
       expect(html).toContain('"@type":"Article"');
+    }
+  });
+
+  it("every page's og:image is a single-line tag pointing at a file that exists", () => {
+    // Single-line on purpose: Slack's and Discord's unfurlers are far less
+    // forgiving than a real HTML parser about attributes split across lines.
+    const pages = [
+      join(clientDir, "index.html"),
+      ...["", "ru/", "de/", "es/", "fr/", "ja/", "pt/", "sr/", "zh/"].flatMap((p) =>
+        [
+          "glossary",
+          "what-is-planning-poker",
+          "planning-poker-for-jira",
+          "planning-poker-for-remote-teams",
+        ].map((g) => join(clientDir, "public", p + g, "index.html")),
+      ),
+    ];
+    for (const page of pages) {
+      const html = readFileSync(page, "utf-8");
+      const tag = html.match(/<meta property="og:image" content="([^"]+)" \/>/);
+      expect(tag, `${page} has no single-line og:image`).not.toBeNull();
+      const url = tag![1];
+      expect(url.startsWith("https://poker.serbito.rs/")).toBe(true);
+      const asset = url.replace("https://poker.serbito.rs/", "");
+      expect(
+        readFileSync(join(clientDir, "public", asset)).byteLength,
+        `${asset} missing`,
+      ).toBeGreaterThan(0);
+      // Keep the card under the tightest platform budget (WhatsApp/iMessage ~300KB).
+      expect(readFileSync(join(clientDir, "public", asset)).byteLength).toBeLessThan(
+        300 * 1024,
+      );
+      for (const t of ["og:site_name", "og:image:type", "og:image:width"]) {
+        expect(html, `${page} missing ${t}`).toContain(`property="${t}"`);
+      }
     }
   });
 });
