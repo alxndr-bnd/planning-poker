@@ -54,33 +54,29 @@
     <meta name="theme-color" content="#15603b" />
     <link rel="canonical" href="https://poker.serbito.rs/" />
 
-    <!-- Open Graph -->
+    <!-- Open Graph. Every tag on ONE line on purpose: Slack's and Discord's
+         unfurlers are far less forgiving of attributes split across lines than a
+         full HTML parser, and a soft-wrapped <meta> is the classic reason a card
+         renders with a title but no image. -->
     <meta property="og:site_name" content="Planning Poker" />
-    <meta
-      property="og:title"
-      content="Planning Poker — Free Online Scrum Estimation"
-    />
-    <meta
-      property="og:description"
-      content="Create a room, share the link, estimate story points together in real time. Free, open-source, no sign-up, unlimited rooms."
-    />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content="Planning Poker — Free Online Scrum Estimation" />
+    <meta property="og:description" content="Create a room, share the link, estimate story points together in real time. Free, open-source, no sign-up, unlimited rooms." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://poker.serbito.rs/" />
-    <meta property="og:image" content="https://poker.serbito.rs/og-image.png" />
+    <meta property="og:image" content="https://poker.serbito.rs/og-image.jpg" />
+    <meta property="og:image:secure_url" content="https://poker.serbito.rs/og-image.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Free Online Planning Poker — real-time Scrum estimation for agile teams. No sign-up, no ads, open-source." />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://poker.serbito.rs/og-image.png" />
-    <meta
-      name="twitter:title"
-      content="Planning Poker — Free Online Scrum Estimation"
-    />
-    <meta
-      name="twitter:description"
-      content="Free, open-source, no sign-up Planning Poker for agile teams. Real-time story-point estimation."
-    />
+    <meta name="twitter:title" content="Planning Poker — Free Online Scrum Estimation" />
+    <meta name="twitter:description" content="Free, open-source, no sign-up Planning Poker for agile teams. Real-time story-point estimation." />
+    <meta name="twitter:image" content="https://poker.serbito.rs/og-image.jpg" />
+    <meta name="twitter:image:alt" content="Free Online Planning Poker — real-time Scrum estimation for agile teams." />
 
     <!-- Structured data: the app -->
     <script type="application/ld+json">
