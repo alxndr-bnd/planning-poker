@@ -16,7 +16,7 @@ permissions:
 jobs:
   analyze:
     name: Analyze (javascript-typescript)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # явная версия: ubuntu-latest переезжает на 26.04 (2026-10-19)
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: github/codeql-action/init@v4
