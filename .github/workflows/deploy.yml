@@ -61,6 +61,13 @@ jobs:
 
       - name: Deploy to Cloud Run
         run: |
+          # Sentry release id from the tag (v1.4.0 -> planning-poker@1.4.0); a manual
+          # workflow_dispatch run from a branch falls back to the commit SHA.
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            SENTRY_RELEASE="planning-poker@${GITHUB_REF_NAME#v}"
+          else
+            SENTRY_RELEASE="planning-poker@${GITHUB_SHA}"
+          fi
           gcloud run deploy "$SERVICE" \
             --image "$AR_IMAGE:${{ github.sha }}" \
             --region "$REGION" \
@@ -70,10 +77,15 @@ jobs:
             --max-instances=1 \
             --concurrency=250 \
             --port=8080 \
-            --timeout=300
+            --timeout=300 \
+            --set-secrets="SENTRY_DSN=planning-poker-sentry-dsn:latest" \
+            --update-env-vars="SENTRY_RELEASE=${SENTRY_RELEASE}"
         # NB: keep --timeout low (300s, Cloud Run default). A WebSocket is one HTTP
         # request that never returns, so a high timeout (was 3600) lets an abandoned
         # client pin a billable instance up to an hour and blocks scale-to-zero
         # (this caused a ~$2/day Cloud Run cost spike). The client auto-reconnects, so
         # a 5-min cap is safe; it bounds how long a stray socket keeps an instance warm.
+        # --set-secrets REPLACES the service's whole secret set: list every secret here.
+        # SENTRY_DSN lives in Secret Manager (project serbito); the runtime SA
+        # (default compute SA) has secretAccessor on it.
         # One-time domain mapping (poker.serbito.rs -> service) is configured out-of-band.

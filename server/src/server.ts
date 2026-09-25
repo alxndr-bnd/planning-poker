@@ -19,6 +19,7 @@ import {
   sweepIdleRooms,
 } from "./rooms.js";
 import { serveStatic } from "./static.js";
+import { reportError } from "./sentry.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DEFAULT_STATIC_DIR =
@@ -77,8 +78,15 @@ export function createPokerServer(staticDir: string = DEFAULT_STATIC_DIR): Serve
     // "/healthz" on Cloud Run and returns its own 404, so the request never
     // reaches the container — the handler was dead code. Cloud Run's default
     // startup probe is a TCP port check, no HTTP path needed.)
-    if (serveStatic(staticDir, req, res)) return;
-    res.writeHead(404).end("Not found");
+    try {
+      if (serveStatic(staticDir, req, res)) return;
+      res.writeHead(404).end("Not found");
+    } catch (err) {
+      reportError(err);
+      console.error("http handler error:", err);
+      if (!res.headersSent) res.writeHead(500);
+      res.end();
+    }
   });
 
   const wss = new WebSocketServer({ noServer: true, maxPayload: MAX_PAYLOAD });
@@ -226,7 +234,8 @@ export function createPokerServer(staticDir: string = DEFAULT_STATIC_DIR): Serve
             break;
         }
         broadcastState(room.id);
-      } catch {
+      } catch (err) {
+        reportError(err);
         send(ws, { type: "error", code: "internal", message: "Server error" });
       }
     });

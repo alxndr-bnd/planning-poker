@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@pp/shared": "*",
+    "@sentry/node": "^11.0.0",
     "ws": "^8.21.1"
   },
   "devDependencies": {
