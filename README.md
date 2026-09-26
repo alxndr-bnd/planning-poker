@@ -73,3 +73,16 @@ client/   React + Vite SPA
 ## License
 
 MIT
+
+## Other projects
+
+- **GTD** — free GTD task manager with a Telegram bot:
+  [gtd.serbito.rs](https://gtd.serbito.rs/?utm_source=github&utm_medium=crosspromo&utm_campaign=readme)
+  · [source](https://github.com/alxndr-bnd/gtd)
+- **Javi** — delivery notifications for small businesses in Serbia:
+  [javi.serbito.rs](https://javi.serbito.rs/?utm_source=github&utm_medium=crosspromo&utm_campaign=readme)
+  · [source](https://github.com/alxndr-bnd/javi)
+- **Serbito** — classifieds in Serbia:
+  [serbito.rs](https://serbito.rs/?utm_source=github&utm_medium=crosspromo&utm_campaign=readme)
+
+Made by [No Handoff](https://www.linkedin.com/company/nohandoff/).

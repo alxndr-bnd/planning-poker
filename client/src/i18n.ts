@@ -59,6 +59,12 @@ export const EN = {
   "sponsor.full": "Sponsored by serbito.rs",
   "sponsor.short": "by serbito.rs",
   "altto.featured": "Like us on AlternativeTo ↗",
+  // "Other projects" footer block: static HTML rendered at build time by crosspromo.ts.
+  "crosspromo.title": "Other projects",
+  "crosspromo.gtd": "Free GTD task manager with a Telegram bot",
+  "crosspromo.javi": "Delivery notifications for small businesses in Serbia",
+  "crosspromo.serbito": "Classifieds in Serbia",
+  "crosspromo.madeBy": "Made by {name}",
 } as const;
 
 export type StringKey = keyof typeof EN;

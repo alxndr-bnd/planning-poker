@@ -194,6 +194,24 @@
       .learn[open] summary::after {
         transform: rotate(180deg);
       }
+      /* "Other projects" line below the app. In normal flow, not fixed: on the home
+         page it sits under the lobby, in a room it stays below the fold (the room is
+         100vh), so it never covers the table. Bottom padding clears the fixed footer. */
+      .pp-crosspromo {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 0.5rem 1rem 5rem;
+        text-align: center;
+        font: 0.78rem/1.7 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        color: var(--muted, #5b6b62);
+      }
+      .pp-crosspromo a {
+        color: var(--accent, #15603b);
+        text-decoration: none;
+      }
+      .pp-crosspromo a:hover {
+        text-decoration: underline;
+      }
     </style>
   </head>
   <body>
@@ -288,6 +306,9 @@
         <p><a href="https://poker.serbito.rs/">Start a free Planning Poker room →</a></p>
       </main>
     </div>
+    <!-- Cross-promo, OUTSIDE #root so it survives the React mount. The build fills
+         the marker with static links from client/src/crosspromo.ts (the one list). -->
+    <div class="pp-crosspromo"><!-- crosspromo --></div>
     <!-- Visible footer OUTSIDE #root — React only controls #root, so this stays
          on screen for real users (the static landing above is replaced on mount,
          and serves crawlers). Self-contained styles so it doesn't depend on app CSS. -->
