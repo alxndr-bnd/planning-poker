@@ -9,9 +9,9 @@ import { defineConfig } from "vitest/config";
 // "no tests / N errors". It's load/timing dependent, so it flakes (a warm second run
 // usually passes), which is exactly what you don't want from a release gate.
 //
-// The suite is small (10 files / 45 tests, a few seconds of actual test time), so
-// sequential execution costs little and makes the gate fully deterministic. Verified:
-// 3/3 green cold runs with this on, vs ~50% cold-run failures without it.
+// The suite is small (a few seconds of actual test time), so sequential execution
+// costs little and makes the gate fully deterministic. Verified when introduced: 3/3
+// green cold runs with this on, vs ~50% cold-run failures without it.
 export default defineConfig({
   test: {
     fileParallelism: false,

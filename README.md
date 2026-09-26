@@ -15,7 +15,10 @@ Live: **https://poker.serbito.rs** — also listed on
 - Fibonacci deck (`0 1 2 3 5 8 13 21 ? ☕`)
 - Reveal shows **named votes** + summary (distribution, average, consensus)
 - Observer/spectator role (doesn't vote)
-- Ephemeral, in-memory rooms — no database, no tracking
+- Ephemeral, in-memory rooms — no database, no accounts
+- Analytics: Google Analytics 4 (sets cookies; page views and room events, including
+  the card voted) and cookieless Cloudflare Web Analytics; server errors go to Sentry.
+  Names and room ids are never sent.
 
 ## Tech
 
@@ -38,7 +41,8 @@ npm run dev          # server on :8080, client on :5173 (Vite proxies /ws → :8
 Open http://localhost:5173.
 
 ```bash
-npm test         # server room-logic unit tests (Vitest)
+npm test         # Vitest: room logic, WebSocket server, security, static serving,
+                 # SEO, i18n, analytics, Sentry, cross-promo
 npm run typecheck
 ```
 
