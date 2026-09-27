@@ -11,6 +11,17 @@
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() { dataLayer.push(arguments); }
+      // Consent Mode v2 (SERBITO-320): no analytics cookies until the visitor accepts in
+      // the banner (/consent.js); a choice stored in the last 12 months applies at once.
+      // Must run before "config". Identical on every page (server/test/consent.test.ts).
+      (function () {
+        var a = "denied";
+        try {
+          var c = JSON.parse(localStorage.getItem("pp_consent"));
+          if (c && c.choice === "granted" && Date.now() - Date.parse(c.date) < 31536000000) a = "granted";
+        } catch (e) {}
+        gtag("consent", "default", { ad_storage: "denied", analytics_storage: a, ad_user_data: "denied", ad_personalization: "denied", wait_for_update: 500 });
+      })();
       gtag("js", new Date());
       // The app routes on the URL hash, so this is the only page_view gtag.js sends by
       // itself — hash changes trigger none of the history events it listens for. The
@@ -19,14 +30,18 @@
       // shared #/r/<id> link is reported as the virtual page /room (a fragment would
       // not do either — GA4's page-path dimension drops it). Kept in sync with
       // currentPage() in client/src/analytics.ts.
+      // cookie_domain "none": host-only _ga cookies, never shared with the other
+      // *.serbito.rs sites (SERBITO-320). Same on every page.
       gtag(
         "config",
         "G-B5CQC4JJV0",
         location.hash.indexOf("#/r/") === 0
-          ? { page_location: location.origin + "/room", page_title: "Planning Poker \u2014 Room" }
-          : {},
+          ? { cookie_domain: "none", page_location: location.origin + "/room", page_title: "Planning Poker \u2014 Room" }
+          : { cookie_domain: "none" },
       );
     </script>
+    <!-- Cookie consent banner + footer "Cookie settings" (SERBITO-320), shared by every page. -->
+    <script defer src="/consent.js"></script>
 
     <!-- Cloudflare Web Analytics (privacy-first, cookieless). poker.serbito.rs is
          proxied but the CF automatic injection wasn't firing, so the beacon is
@@ -344,6 +359,8 @@
       >Find us on AlternativeTo</a>
       ·
       <a href="/privacy" style="color: #15603b; font-weight: 600;">Privacy</a>
+      ·
+      <a href="/privacy#cookies" data-pp-consent style="color: #15603b; font-weight: 600;">Cookie settings</a>
     </footer>
     <script type="module" src="/src/main.tsx"></script>
   </body>

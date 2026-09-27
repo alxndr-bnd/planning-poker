@@ -12,9 +12,22 @@
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() { dataLayer.push(arguments); }
+      // Consent Mode v2 (SERBITO-320): no analytics cookies until the visitor accepts in
+      // the banner (/consent.js); a choice stored in the last 12 months applies at once.
+      // Must run before "config". Identical on every page (server/test/consent.test.ts).
+      (function () {
+        var a = "denied";
+        try {
+          var c = JSON.parse(localStorage.getItem("pp_consent"));
+          if (c && c.choice === "granted" && Date.now() - Date.parse(c.date) < 31536000000) a = "granted";
+        } catch (e) {}
+        gtag("consent", "default", { ad_storage: "denied", analytics_storage: a, ad_user_data: "denied", ad_personalization: "denied", wait_for_update: 500 });
+      })();
       gtag("js", new Date());
-      gtag("config", "G-B5CQC4JJV0");
+      gtag("config", "G-B5CQC4JJV0", { cookie_domain: "none" }); // host-only _ga cookies
     </script>
+    <!-- Cookie consent banner + footer "Cookie settings" (SERBITO-320), shared by every page. -->
+    <script defer src="/consent.js"></script>
 
     <!-- Cloudflare Web Analytics (privacy-first, cookieless) — same beacon token as
          client/index.html; CF's automatic injection doesn't fire for this site. -->
@@ -148,7 +161,8 @@
       <a href="/zh/planning-poker-for-jira">用于 Jira</a> ·
       <a href="/zh/planning-poker-for-remote-teams">远程团队</a> ·
       <a href="https://github.com/alxndr-bnd/planning-poker">GitHub</a> ·
-      <a href="/privacy" hreflang="en">隐私</a>
+      <a href="/privacy" hreflang="en">隐私</a> ·
+      <a href="/privacy#cookies" hreflang="en" data-pp-consent>Cookie 设置</a>
       <!-- crosspromo -->
     </footer>
   </body>

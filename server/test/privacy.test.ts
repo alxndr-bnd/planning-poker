@@ -94,12 +94,20 @@ describe("/privacy page (SERBITO-307)", () => {
   });
 
   it("names every browser storage key the app uses", () => {
-    const src = readdirSync(join(clientDir, "src"))
-      .filter((f) => /\.tsx?$/.test(f))
-      .map((f) => readFileSync(join(clientDir, "src", f), "utf-8"))
-      .join("\n");
+    // The app's sources, plus the plain scripts every page loads from public/ (the
+    // consent banner, SERBITO-320).
+    const files = [
+      ...readdirSync(join(clientDir, "src"))
+        .filter((f) => /\.tsx?$/.test(f))
+        .map((f) => join(clientDir, "src", f)),
+      ...readdirSync(join(clientDir, "public"))
+        .filter((f) => f.endsWith(".js"))
+        .map((f) => join(clientDir, "public", f)),
+    ];
+    const src = files.map((f) => readFileSync(f, "utf-8")).join("\n");
     const keys = [...new Set([...src.matchAll(/["`](pp_[a-z0-9_]+)/g)].map((m) => m[1]))];
-    expect(keys.length).toBeGreaterThanOrEqual(6);
+    expect(keys).toContain("pp_consent");
+    expect(keys.length).toBeGreaterThanOrEqual(7);
     for (const k of keys) expect(privacy, k).toContain(`<code>${k}</code>`);
   });
 

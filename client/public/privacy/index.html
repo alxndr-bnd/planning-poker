@@ -10,9 +10,22 @@
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() { dataLayer.push(arguments); }
+      // Consent Mode v2 (SERBITO-320): no analytics cookies until the visitor accepts in
+      // the banner (/consent.js); a choice stored in the last 12 months applies at once.
+      // Must run before "config". Identical on every page (server/test/consent.test.ts).
+      (function () {
+        var a = "denied";
+        try {
+          var c = JSON.parse(localStorage.getItem("pp_consent"));
+          if (c && c.choice === "granted" && Date.now() - Date.parse(c.date) < 31536000000) a = "granted";
+        } catch (e) {}
+        gtag("consent", "default", { ad_storage: "denied", analytics_storage: a, ad_user_data: "denied", ad_personalization: "denied", wait_for_update: 500 });
+      })();
       gtag("js", new Date());
-      gtag("config", "G-B5CQC4JJV0");
+      gtag("config", "G-B5CQC4JJV0", { cookie_domain: "none" }); // host-only _ga cookies
     </script>
+    <!-- Cookie consent banner + footer "Cookie settings" (SERBITO-320), shared by every page. -->
+    <script defer src="/consent.js"></script>
 
     <!-- Cloudflare Web Analytics (privacy-first, cookieless) — same beacon token as
          client/index.html; CF's automatic injection doesn't fire for this site. -->
@@ -75,7 +88,7 @@
       <h1>Privacy</h1>
       <p class="updated">Last updated: 27 September 2026</p>
 
-      <p><strong>In short:</strong> no accounts, no ads, nothing sold. What you type into a room lives only in the server's memory and is gone within minutes after everyone leaves. We count visits with Google Analytics (which sets cookies) and Cloudflare Web Analytics (which doesn't), and the server reports its own errors to Sentry.</p>
+      <p><strong>In short:</strong> no accounts, no ads, nothing sold. What you type into a room lives only in the server's memory and is gone within minutes after everyone leaves. We count visits with Google Analytics, which sets cookies only if you accept them in the banner, and Cloudflare Web Analytics, which sets none; the server reports its own errors to Sentry.</p>
 
       <p>Serbito Planning Poker (poker.serbito.rs) is an open-source project run by Alexander Bondarchuk. The code is public, so you can check everything below on <a href="https://github.com/alxndr-bnd/planning-poker">GitHub</a>. Questions or requests: <a href="mailto:alexander.bondarchuk@gmail.com">alexander.bondarchuk@gmail.com</a>.</p>
 
@@ -90,7 +103,7 @@
       <h2>What stays in your browser</h2>
       <p>The app itself sets no cookies. It keeps a few small values in your browser's storage:</p>
       <ul>
-        <li><code>localStorage</code>: your last display name (<code>pp_name</code>), language (<code>pp_lang</code>), the "copy link on create" setting (<code>pp_copy_on_create</code>) and the interface version (<code>pp_ui_v2</code>).</li>
+        <li><code>localStorage</code>: your last display name (<code>pp_name</code>), language (<code>pp_lang</code>), the "copy link on create" setting (<code>pp_copy_on_create</code>), the interface version (<code>pp_ui_v2</code>) and your cookie choice with its date (<code>pp_consent</code>, see <a href="#cookies">below</a>).</li>
         <li><code>sessionStorage</code>, cleared when you close the tab: a random tab id (<code>pp_client_id</code>) sent with your name when you join, so a dropped connection gets your vote back; and a one-time "link copied" flag per room (<code>pp_link_copied</code>).</li>
       </ul>
       <p>You can delete them at any time in your browser's site settings.</p>
@@ -106,7 +119,17 @@
         <li>The events Google Analytics collects by itself, such as <code>first_visit</code>, <code>session_start</code>, <code>user_engagement</code> and <code>scroll</code>.</li>
         <li>What any web request carries: your IP address (Google uses it for an approximate location and, <a href="https://support.google.com/analytics/answer/12017362">by its own account</a>, doesn't store it), browser, device, screen size and the page you came from.</li>
       </ul>
-      <p>Names and room links are never sent. Google Analytics sets two cookies holding a random id: <code>_ga</code> and <code>_ga_B5CQC4JJV0</code>, each for up to 2 years. Event data is kept for at most 14 months. Blocking Google Analytics, with a content blocker or <a href="https://tools.google.com/dlpage/gaoptout">Google's opt-out add-on</a>, doesn't break anything.</p>
+      <p>Names and room links are never sent. If you accept cookies, Google Analytics sets two cookies holding a random id: <code>_ga</code> and <code>_ga_B5CQC4JJV0</code>, each for up to 2 years. They are set for poker.serbito.rs only, not shared with other serbito.rs sites. Event data is kept for at most 14 months. Blocking Google Analytics, with a content blocker or <a href="https://tools.google.com/dlpage/gaoptout">Google's opt-out add-on</a>, doesn't break anything.</p>
+
+      <h2 id="cookies">Cookies and your choice</h2>
+      <p>The first time you visit, a small banner at the bottom of the page asks whether Google Analytics may use cookies. We ask everyone, wherever you are.</p>
+      <ul>
+        <li><strong>Until you answer, and if you decline</strong>, Google Analytics runs in <a href="https://support.google.com/analytics/answer/9976101">consent mode</a>: it sets and reads no cookies. It still sends cookieless pings for the page views and events listed above, without a client id, so a visit can't be linked to earlier ones; Google Analytics uses them for aggregate and modeled counts. Like any request, a ping carries your IP address and browser.</li>
+        <li><strong>If you accept</strong>, Google Analytics sets its <code>_ga</code> cookies as described above. Only analytics is enabled: advertising signals stay off.</li>
+        <li>Your answer and its date are kept in your browser (<code>pp_consent</code>), so the banner doesn't return on every page. After 12 months we ask again.</li>
+        <li>You can change your mind at any time with <a href="/privacy#cookies" data-pp-consent>Cookie settings</a>, also in the footer of every page. Declining deletes the <code>_ga</code> cookies, including any left on serbito.rs by an earlier version of this site.</li>
+      </ul>
+      <p>Cloudflare Web Analytics isn't covered by the banner: it sets no cookies and stores nothing in your browser.</p>
 
       <h2>Cloudflare</h2>
       <p>The site is served through Cloudflare, which handles DNS, TLS and delivery, so every request passes through its network. Cloudflare Web Analytics counts page views and page-load speed without cookies and without storing anything in your browser.</p>
@@ -147,7 +170,8 @@
       <a href="/planning-poker-for-jira">For Jira</a> ·
       <a href="/planning-poker-for-remote-teams">Remote teams</a> ·
       <a href="https://github.com/alxndr-bnd/planning-poker">GitHub</a> ·
-      <a href="/privacy">Privacy</a>
+      <a href="/privacy">Privacy</a> ·
+      <a href="/privacy#cookies" data-pp-consent>Cookie settings</a>
       <!-- crosspromo -->
     </footer>
   </body>
