@@ -44,7 +44,12 @@ Open http://localhost:5173.
 npm test         # Vitest: room logic, WebSocket server, security, static serving,
                  # SEO, i18n, analytics, Sentry, cross-promo
 npm run typecheck
+npm run sitemap  # regenerate client/public/sitemap.xml after adding/editing a page
 ```
+
+`sitemap.xml` is generated from the pages (`lastmod` = each page's last commit) and
+committed, since the Docker build has no git history; a test fails when it's stale.
+Unknown paths return 404 (rooms live in the `#/r/<id>` hash, so no SPA fallback).
 
 ## Build & run as one container
 

@@ -86,13 +86,24 @@ describe("static file serving containment", () => {
 
   it("does not serve files outside dist via ../ traversal", async () => {
     const r = await get("/../secret.txt");
-    // Normalized back inside dist → nonexistent → SPA fallback, never the outside file.
+    // Normalized back inside dist → nonexistent → 404, never the outside file.
+    expect(r.status).toBe(404);
     expect(r.body).not.toContain("TOP_SECRET_OUTSIDE_DIST");
-    expect(r.body).toContain("PP SPA");
   });
 
-  it("falls back to index.html for unknown SPA routes", async () => {
-    const r = await get("/room/abc123");
+  it("answers unknown paths with a real 404, not the SPA shell (no soft 404)", async () => {
+    // Rooms live in the hash (`/#/r/<id>`), so no path needs the old SPA fallback.
+    for (const path of ["/room/abc123", "/nonexistent", "/assets/gone-123.js", "/guide/x"]) {
+      const r = await get(path);
+      expect(r.status, path).toBe(404);
+      expect(String(r.headers["content-type"])).toContain("text/html");
+      expect(r.body, path).not.toContain("PP SPA");
+      expect(r.body).toContain('content="noindex"');
+    }
+  });
+
+  it("still serves / with a query string (e.g. ?ui=v2)", async () => {
+    const r = await get("/?ui=v2");
     expect(r.status).toBe(200);
     expect(r.body).toContain("PP SPA");
   });

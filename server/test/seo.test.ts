@@ -31,10 +31,10 @@ function httpGet(
 }
 
 // --------------------------------------------------------------------------- #
-// HTTP-level: robots.txt / sitemap.xml are served with the right MIME, and the
-// SPA fallback still returns index.html for unknown routes (docs: poker SEO).
+// HTTP-level: robots.txt / sitemap.xml are served with the right MIME, and unknown
+// routes are a 404 rather than the SPA shell (docs: poker SEO, SERBITO-305).
 // --------------------------------------------------------------------------- #
-describe("static file serving (SEO assets + SPA fallback)", () => {
+describe("static file serving (SEO assets + 404)", () => {
   let server: Server;
   let base: string;
   let dist: string;
@@ -92,11 +92,11 @@ describe("static file serving (SEO assets + SPA fallback)", () => {
     expect(res.contentType).toBe("image/jpeg");
   });
 
-  it("falls back to index.html for unknown SPA routes", async () => {
+  it("returns a real 404 for unknown paths, not the app shell (no soft 404)", async () => {
     const res = await httpGet(`${base}/room/abc123`);
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(404);
     expect(res.contentType).toContain("text/html");
-    expect(res.body).toContain("app shell");
+    expect(res.body).not.toContain("app shell");
   });
 
   it("serves a clean-URL static page (/<slug> -> <slug>/index.html)", async () => {
