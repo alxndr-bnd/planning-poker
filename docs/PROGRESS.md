@@ -30,7 +30,7 @@ Source requirements: Product Brief (`docs/planning/product-brief-planning-poker-
 | Item | Status |
 |---|---|
 | No paywall / no signup / unlimited | ✅ |
-| Privacy / no tracking | ⚠️ not tracking-free: GA4 (sets `_ga` cookies) + cookieless Cloudflare Web Analytics on every page, server-side Sentry; no accounts, room data in memory only. All disclosed on [/privacy](https://poker.serbito.rs/privacy) (SERBITO-307). See Gap #2 |
+| Privacy / no tracking | ⚠️ not tracking-free: GA4 (Consent Mode v2: `_ga` cookies only after Accept in the banner, cookieless pings otherwise; SERBITO-320) + cookieless Cloudflare Web Analytics on every page, server-side Sentry; no accounts, room data in memory only. All disclosed on [/privacy](https://poker.serbito.rs/privacy) (SERBITO-307). See Gap #2 |
 | Simplicity / zero-friction | ✅ |
 
 ## Infra & delivery
