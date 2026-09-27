@@ -10,6 +10,10 @@ if [[ -z "$msg" ]]; then
   exit 1
 fi
 
+# --- sitemap: refresh lastmod for pages changed in this release (committed below) ---
+echo "==> npm run sitemap"
+npm run sitemap
+
 # --- gate: tests + typecheck + client build must pass before we tag ---
 echo "==> npm test"
 npm test

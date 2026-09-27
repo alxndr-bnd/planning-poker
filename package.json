@@ -13,7 +13,8 @@
     "dev": "concurrently -n server,client -c blue,green \"npm:dev:server\" \"npm:dev:client\"",
     "dev:server": "npm -w @pp/server run dev",
     "dev:client": "npm -w @pp/client run dev",
-    "build": "npm -w @pp/client run build && npm -w @pp/server run build",
+    "build": "node scripts/sitemap.ts --if-git && npm -w @pp/client run build && npm -w @pp/server run build",
+    "sitemap": "node scripts/sitemap.ts",
     "start": "npm -w @pp/server run start",
     "test": "npm -w @pp/server run test",
     "typecheck": "npm -w @pp/server run typecheck && npm -w @pp/client run typecheck"
