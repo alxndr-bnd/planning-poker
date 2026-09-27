@@ -3,13 +3,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://poker.serbito.rs/</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://poker.serbito.rs/glossary</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/glossary" />
@@ -25,7 +25,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/planning-poker-for-jira</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-jira" />
@@ -41,7 +41,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/planning-poker-for-remote-teams</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-remote-teams" />
@@ -56,8 +56,16 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://poker.serbito.rs/planning-poker-for-remote-teams" />
   </url>
   <url>
+    <loc>https://poker.serbito.rs/privacy</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://poker.serbito.rs/privacy" />
+  </url>
+  <url>
     <loc>https://poker.serbito.rs/what-is-planning-poker</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/what-is-planning-poker" />
@@ -73,7 +81,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/de/glossary</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/glossary" />
@@ -89,7 +97,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/de/planning-poker-for-jira</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-jira" />
@@ -105,7 +113,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/de/planning-poker-for-remote-teams</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-remote-teams" />
@@ -121,7 +129,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/de/what-is-planning-poker</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/what-is-planning-poker" />
@@ -137,7 +145,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/es/glossary</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/glossary" />
@@ -153,7 +161,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/es/planning-poker-for-jira</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-jira" />
@@ -169,7 +177,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/es/planning-poker-for-remote-teams</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-remote-teams" />
@@ -185,7 +193,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/es/what-is-planning-poker</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/what-is-planning-poker" />
@@ -201,7 +209,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/fr/glossary</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/glossary" />
@@ -217,7 +225,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/fr/planning-poker-for-jira</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-jira" />
@@ -233,7 +241,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/fr/planning-poker-for-remote-teams</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-remote-teams" />
@@ -249,7 +257,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/fr/what-is-planning-poker</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/what-is-planning-poker" />
@@ -265,7 +273,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/ja/glossary</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/glossary" />
@@ -281,7 +289,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/ja/planning-poker-for-jira</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-jira" />
@@ -297,7 +305,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/ja/planning-poker-for-remote-teams</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-remote-teams" />
@@ -313,7 +321,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/ja/what-is-planning-poker</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/what-is-planning-poker" />
@@ -329,7 +337,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/pt/glossary</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/glossary" />
@@ -345,7 +353,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/pt/planning-poker-for-jira</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-jira" />
@@ -361,7 +369,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/pt/planning-poker-for-remote-teams</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-remote-teams" />
@@ -377,7 +385,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/pt/what-is-planning-poker</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/what-is-planning-poker" />
@@ -393,7 +401,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/ru/glossary</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/glossary" />
@@ -409,7 +417,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/ru/planning-poker-for-jira</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-jira" />
@@ -425,7 +433,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/ru/planning-poker-for-remote-teams</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-remote-teams" />
@@ -441,7 +449,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/ru/what-is-planning-poker</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/what-is-planning-poker" />
@@ -457,7 +465,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/sr/glossary</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/glossary" />
@@ -473,7 +481,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/sr/planning-poker-for-jira</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-jira" />
@@ -489,7 +497,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/sr/planning-poker-for-remote-teams</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-remote-teams" />
@@ -505,7 +513,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/sr/what-is-planning-poker</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/what-is-planning-poker" />
@@ -521,7 +529,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/zh/glossary</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/glossary" />
@@ -537,7 +545,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/zh/planning-poker-for-jira</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-jira" />
@@ -553,7 +561,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/zh/planning-poker-for-remote-teams</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-for-remote-teams" />
@@ -569,7 +577,7 @@
   </url>
   <url>
     <loc>https://poker.serbito.rs/zh/what-is-planning-poker</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/what-is-planning-poker" />

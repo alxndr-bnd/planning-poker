@@ -30,7 +30,7 @@ Source requirements: Product Brief (`docs/planning/product-brief-planning-poker-
 | Item | Status |
 |---|---|
 | No paywall / no signup / unlimited | ✅ |
-| Privacy / no tracking | ⚠️ mostly — see Gap #2 |
+| Privacy / no tracking | ⚠️ not tracking-free: GA4 (sets `_ga` cookies) + cookieless Cloudflare Web Analytics on every page, server-side Sentry; no accounts, room data in memory only. All disclosed on [/privacy](https://poker.serbito.rs/privacy) (SERBITO-307). See Gap #2 |
 | Simplicity / zero-friction | ✅ |
 
 ## Infra & delivery
@@ -50,7 +50,7 @@ SEO meta, GitHub badge, serbito.rs sponsor link, theory/resources info block, fe
 
 ## Gaps — remaining
 1. **Item-title input** — Brief journey 3 mentions an optional label for "the item being estimated". The protocol/room support `itemTitle` and the UI *displays* it, but there is still **no UI to set it**. → add an input (e.g. alongside Reset, or a field above the table).
-2. **Privacy nuance** — the lobby/room load a **shields.io** GitHub badge (external image request → reveals the visitor to shields.io), slightly at odds with the "no tracking" positioning. → options: self-host a static badge image, or drop the live star-count badge.
+2. **Privacy nuance** — the lobby/room load a **shields.io** GitHub badge (external image request → reveals the visitor to shields.io), disclosed on /privacy (SERBITO-307). → options: self-host a static badge image, or drop the live star-count badge.
 
 ## Gaps — resolved
 3. ~~Test coverage~~ → ✅ added WebSocket integration tests (`server/test/ws.test.ts`) and client `tsc --noEmit` to the typecheck gate (pre-commit + release).

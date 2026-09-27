@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Google tag (gtag.js) — GA4, same property as the app shell and the guides. Kept
+         here too: this page describes it, and every public page is tagged the same way. -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-B5CQC4JJV0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag("js", new Date());
+      gtag("config", "G-B5CQC4JJV0");
+    </script>
+
+    <!-- Cloudflare Web Analytics (privacy-first, cookieless) — same beacon token as
+         client/index.html; CF's automatic injection doesn't fire for this site. -->
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "baa4373b14044e0b83a55a7d437c6019"}'></script>
+    <!-- End Cloudflare Web Analytics -->
+
+    <!-- SERBITO-307. English only, linked from every language's footer. Every claim
+         below is checked against the code: keep it in sync when storage, analytics or
+         processors change (server/src/server.ts, rooms.ts, sentry.ts,
+         client/src/analytics.ts, client/index.html). -->
+    <title>Privacy - Serbito Planning Poker</title>
+    <meta
+      name="description"
+      content="What Serbito Planning Poker stores, for how long, and what Google Analytics, Cloudflare and Sentry receive. No accounts; rooms live only in server memory."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://poker.serbito.rs/privacy" />
+    <link rel="alternate" hreflang="en" href="https://poker.serbito.rs/privacy" />
+    <link rel="alternate" hreflang="x-default" href="https://poker.serbito.rs/privacy" />
+    <meta property="og:site_name" content="Planning Poker" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content="Privacy - Serbito Planning Poker" />
+    <meta property="og:description" content="What Serbito Planning Poker stores, for how long, and what analytics and error monitoring receive." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://poker.serbito.rs/privacy" />
+    <meta property="og:image" content="https://poker.serbito.rs/og-image.jpg" />
+    <meta property="og:image:secure_url" content="https://poker.serbito.rs/og-image.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Free Online Planning Poker — real-time Scrum estimation for agile teams." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://poker.serbito.rs/og-image.jpg" />
+    <style>
+      *{box-sizing:border-box}
+      body{margin:0;font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1a2b22;background:#fff}
+      header.site{background:#15603b;padding:.8rem 1rem}
+      header.site a{color:#fff;text-decoration:none;font-weight:700}
+      main.page{max-width:760px;margin:0 auto;padding:1.5rem 1.1rem 2.5rem}
+      main.page h1{color:#15603b;font-size:1.9rem;line-height:1.25;margin:.2rem 0 1rem}
+      main.page h2{color:#15603b;font-size:1.3rem;line-height:1.3;margin:2rem 0 .6rem}
+      main.page a{color:#15603b}
+      main.page li{margin:.3rem 0}
+      main.page code{font-size:.9em;background:#f4f7f5;padding:.05rem .3rem;border-radius:3px}
+      main.page .updated{color:#5b6b62;font-size:.9rem}
+      main.page .table-wrap{overflow-x:auto}
+      main.page table{border-collapse:collapse;width:100%;font-size:.95rem}
+      main.page th,main.page td{text-align:left;vertical-align:top;padding:.45rem .6rem;border-bottom:1px solid #e3e9e5}
+      main.page th{color:#15603b}
+      footer.site{border-top:1px solid #e3e9e5;background:#f4f7f5;padding:1rem;text-align:center;font-size:.85rem;color:#5b6b62;line-height:1.9}
+      footer.site a{color:#15603b;font-weight:600}
+    </style>
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Planning Poker","item":"https://poker.serbito.rs/"},{"@type":"ListItem","position":2,"name":"Privacy","item":"https://poker.serbito.rs/privacy"}]}
+  </script>
+  </head>
+  <body>
+    <header class="site"><a href="https://poker.serbito.rs/">🃏 Serbito Planning Poker</a></header>
+    <main class="page">
+      <h1>Privacy</h1>
+      <p class="updated">Last updated: 27 September 2026</p>
+
+      <p><strong>In short:</strong> no accounts, no ads, nothing sold. What you type into a room lives only in the server's memory and is gone within minutes after everyone leaves. We count visits with Google Analytics (which sets cookies) and Cloudflare Web Analytics (which doesn't), and the server reports its own errors to Sentry.</p>
+
+      <p>Serbito Planning Poker (poker.serbito.rs) is an open-source project run by Alexander Bondarchuk. The code is public, so you can check everything below on <a href="https://github.com/alxndr-bnd/planning-poker">GitHub</a>. Questions or requests: <a href="mailto:alexander.bondarchuk@gmail.com">alexander.bondarchuk@gmail.com</a>.</p>
+
+      <h2>What you enter in a room</h2>
+      <ul>
+        <li>Your display name (up to 40 characters), your votes, whether you joined as an observer, and the results of the rounds your room revealed.</li>
+        <li>These go to our server so the other people in the room can see them. Anyone with the room link can join, so the link is the key: share it only with your team.</li>
+        <li>The server keeps them in memory only. There is no database, and nothing is written to disk.</li>
+        <li>A participant who disconnects is removed after about 2 minutes; a room is deleted a few minutes after its last participant leaves. Every server restart or update clears all rooms.</li>
+      </ul>
+
+      <h2>What stays in your browser</h2>
+      <p>The app itself sets no cookies. It keeps a few small values in your browser's storage:</p>
+      <ul>
+        <li><code>localStorage</code>: your last display name (<code>pp_name</code>), language (<code>pp_lang</code>), the "copy link on create" setting (<code>pp_copy_on_create</code>) and the interface version (<code>pp_ui_v2</code>).</li>
+        <li><code>sessionStorage</code>, cleared when you close the tab: a random tab id (<code>pp_client_id</code>) sent with your name when you join, so a dropped connection gets your vote back; and a one-time "link copied" flag per room (<code>pp_link_copied</code>).</li>
+      </ul>
+      <p>You can delete them at any time in your browser's site settings.</p>
+
+      <h2>Server logs</h2>
+      <p>Our server logs only its start-up and its errors, never individual requests. Google Cloud Run, which hosts it, keeps standard request logs (time, path, status, IP address, browser) in Google Cloud Logging for 30 days. The room id sits after <code>#</code> in the link, and browsers never send that part to a server, so it doesn't appear in these logs.</p>
+
+      <h2>Google Analytics</h2>
+      <p>Every page loads Google Analytics 4 (property <code>G-B5CQC4JJV0</code>) so we can see how many people use the site and whether rooms work. It receives:</p>
+      <ul>
+        <li>Page views. Every room is reported as the same page, <code>/room</code>: room links are never sent.</li>
+        <li>Four events: <code>room_created</code>, <code>room_joined</code>, <code>vote_cast</code> (with the card value) and <code>round_revealed</code>.</li>
+        <li>The events Google Analytics collects by itself, such as <code>first_visit</code>, <code>session_start</code>, <code>user_engagement</code> and <code>scroll</code>.</li>
+        <li>What any web request carries: your IP address (Google uses it for an approximate location and, <a href="https://support.google.com/analytics/answer/12017362">by its own account</a>, doesn't store it), browser, device, screen size and the page you came from.</li>
+      </ul>
+      <p>Names and room links are never sent. Google Analytics sets two cookies holding a random id: <code>_ga</code> and <code>_ga_B5CQC4JJV0</code>, each for up to 2 years. Event data is kept for at most 14 months. Blocking Google Analytics, with a content blocker or <a href="https://tools.google.com/dlpage/gaoptout">Google's opt-out add-on</a>, doesn't break anything.</p>
+
+      <h2>Cloudflare</h2>
+      <p>The site is served through Cloudflare, which handles DNS, TLS and delivery, so every request passes through its network. Cloudflare Web Analytics counts page views and page-load speed without cookies and without storing anything in your browser.</p>
+
+      <h2>Sentry (server errors)</h2>
+      <p>When the server hits an error, it sends a report to Sentry: the error message, the stack trace, the app version and the environment. Sentry also receives timing data for about 10% of requests (path, status, duration). It is configured not to collect IP addresses, cookies, headers, request bodies, query strings or variable values from the code, so names and votes stay out of it. Sentry deletes the data after its retention period (at most 90 days). The app in your browser sends nothing to Sentry.</p>
+
+      <h2>GitHub badge</h2>
+      <p>The app's lobby and rooms show a GitHub star badge, an image loaded from shields.io. Like any image request, it lets shields.io see your IP address and browser.</p>
+
+      <h2>Who processes data</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Service</th><th>What for</th><th>Where</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Google Cloud Run, Cloud Logging</td><td>Hosting, request logs (30 days)</td><td>EU (Belgium, europe-west1)</td></tr>
+            <tr><td>Google Analytics</td><td>Visit and usage statistics (up to 14 months)</td><td>Google</td></tr>
+            <tr><td>Cloudflare</td><td>DNS, TLS, delivery; cookieless Web Analytics</td><td>Cloudflare network</td></tr>
+            <tr><td>Sentry</td><td>Server error reports (up to 90 days)</td><td>US</td></tr>
+            <tr><td>shields.io</td><td>GitHub star badge image</td><td>shields.io</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Your requests</h2>
+      <p>We never learn who you are: no accounts, no email, and room data is gone within minutes. To ask about or delete analytics data, write to <a href="mailto:alexander.bondarchuk@gmail.com">alexander.bondarchuk@gmail.com</a>; include the value of your <code>_ga</code> cookie, since that random id is the only thing that links the data to you.</p>
+
+      <h2>Changes</h2>
+      <p>This page lives in the public repository, so every change to it is visible in its <a href="https://github.com/alxndr-bnd/planning-poker/commits/main/client/public/privacy/index.html">history on GitHub</a>.</p>
+    </main>
+    <footer class="site">
+      Free, open-source planning poker — no ads, no sign-up.<br />
+      <a href="https://poker.serbito.rs/">Start a room</a> ·
+      <a href="/what-is-planning-poker">Guide</a> ·
+      <a href="/glossary">Glossary</a> ·
+      <a href="/planning-poker-for-jira">For Jira</a> ·
+      <a href="/planning-poker-for-remote-teams">Remote teams</a> ·
+      <a href="https://github.com/alxndr-bnd/planning-poker">GitHub</a> ·
+      <a href="/privacy">Privacy</a>
+      <!-- crosspromo -->
+    </footer>
+  </body>
+</html>
