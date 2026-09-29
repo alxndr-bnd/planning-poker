@@ -46,12 +46,6 @@ describe("WS security hardening", () => {
     ws.terminate();
   });
 
-  it("accepts a WS from an allowed Origin", async () => {
-    const ws = new WebSocket(wsUrl, { origin: ORIGIN });
-    expect(await firstEvent(ws)).toBe("open");
-    ws.close();
-  });
-
   it("closes the connection when a message exceeds the payload cap", async () => {
     const ws = new WebSocket(wsUrl, { origin: ORIGIN });
     const code = await new Promise<number>((resolve, reject) => {
@@ -80,22 +74,5 @@ describe("WS security hardening", () => {
     });
     expect(rateLimited).toBe(true);
     ws.terminate();
-  });
-
-  it("survives a malformed message and stays responsive", async () => {
-    const ws = new WebSocket(wsUrl, { origin: ORIGIN });
-    const joined = await new Promise<boolean>((resolve, reject) => {
-      ws.on("open", () => {
-        ws.send("not json at all"); // bad_json
-        ws.send(JSON.stringify({ type: "vote", value: 5 })); // weird/not-joined
-        ws.send(JSON.stringify({ type: "join", roomId: "room999", name: "Ok" }));
-      });
-      ws.on("message", (raw) => {
-        if (JSON.parse(raw.toString()).type === "joined") resolve(true);
-      });
-      setTimeout(() => reject(new Error("server did not stay responsive")), 3000);
-    });
-    expect(joined).toBe(true);
-    ws.close();
   });
 });

@@ -279,11 +279,12 @@ describe("PKR-4: malformed fields are rejected, the server stays up", () => {
     await start();
     const c = new Client();
     await c.opened;
+    c.send("not json at all"); // bad_json, not counted below
     c.send({ type: "join", roomId: ["pkr4room01"], name: "A" });
     c.send({ type: "join", roomId: "pkr4room01", name: { toString: 1 } });
     c.send({ type: "join", roomId: "pkr4room01", name: "x".repeat(5000) });
     await c.waitFor(
-      (m) => m.type === "error" && m.code === "bad_message" && c.msgs.length >= 3,
+      () => c.msgs.filter((m) => m.type === "error" && m.code === "bad_message").length >= 3,
     );
     expect(c.msgs.filter((m) => m.type === "error" && m.code === "bad_message")).toHaveLength(3);
     const id = await c.join("pkr4room01", "A");

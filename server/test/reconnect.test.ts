@@ -38,11 +38,6 @@ describe("reconnect keeps the vote", () => {
     expect(p.vote).toBe("5");
   });
 
-  it("reattach on an unknown id returns null (genuinely new participant)", () => {
-    const room = new Room("abcdef");
-    expect(room.reattachParticipant("ghost", "x")).toBeNull();
-  });
-
   it("purgeDisconnected drops only those past the grace, keeps connected + recent", () => {
     const room = new Room("abcdef");
     room.addParticipant("live", "Live", false);

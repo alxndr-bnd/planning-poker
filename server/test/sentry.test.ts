@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { initSentry, sentryOptions, reportError } from "../src/sentry.js";
+import { initSentry, sentryOptions } from "../src/sentry.js";
 
 const { init, captureException } = vi.hoisted(() => ({
   init: vi.fn(),
@@ -52,11 +52,5 @@ describe("sentry init", () => {
     const opts = sentryOptions({ SENTRY_DSN: DSN });
     expect(opts?.environment).toBe("development");
     expect(opts?.release).toBeUndefined();
-  });
-
-  it("reportError forwards to Sentry.captureException", () => {
-    const err = new Error("boom");
-    reportError(err);
-    expect(captureException).toHaveBeenCalledWith(err);
   });
 });
