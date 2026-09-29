@@ -4,6 +4,9 @@ import type { Server } from "node:http";
 import { WebSocket } from "ws";
 import { createPokerServer } from "../src/server.js";
 
+/** Browsers always send Origin on a WebSocket; the server refuses one without it. */
+const ORIGIN = "http://localhost:5173";
+
 // docs/SECURITY-REVIEW-2026-06-21.md — DoS / input-validation hardening of the WS server.
 
 let server: Server;
@@ -37,14 +40,20 @@ describe("WS security hardening", () => {
     ws.terminate();
   });
 
-  it("accepts a WS with no Origin (native / non-browser client)", async () => {
-    const ws = new WebSocket(wsUrl); // ws client sends no Origin by default
+  it("rejects a WS with no Origin: browsers always send one (SERBITO-361)", async () => {
+    const ws = new WebSocket(wsUrl); // the ws client sends no Origin by default
+    expect(await firstEvent(ws)).not.toBe("open");
+    ws.terminate();
+  });
+
+  it("accepts a WS from an allowed Origin", async () => {
+    const ws = new WebSocket(wsUrl, { origin: ORIGIN });
     expect(await firstEvent(ws)).toBe("open");
     ws.close();
   });
 
   it("closes the connection when a message exceeds the payload cap", async () => {
-    const ws = new WebSocket(wsUrl);
+    const ws = new WebSocket(wsUrl, { origin: ORIGIN });
     const code = await new Promise<number>((resolve, reject) => {
       ws.on("open", () => ws.send("x".repeat(64 * 1024))); // 64KB > 16KB cap
       ws.on("close", (c) => resolve(c));
@@ -55,7 +64,7 @@ describe("WS security hardening", () => {
   });
 
   it("rate-limits a flood of messages from one connection", async () => {
-    const ws = new WebSocket(wsUrl);
+    const ws = new WebSocket(wsUrl, { origin: ORIGIN });
     const rateLimited = await new Promise<boolean>((resolve) => {
       ws.on("open", () => {
         ws.send(JSON.stringify({ type: "join", roomId: "room123", name: "Flo" }));
@@ -74,7 +83,7 @@ describe("WS security hardening", () => {
   });
 
   it("survives a malformed message and stays responsive", async () => {
-    const ws = new WebSocket(wsUrl);
+    const ws = new WebSocket(wsUrl, { origin: ORIGIN });
     const joined = await new Promise<boolean>((resolve, reject) => {
       ws.on("open", () => {
         ws.send("not json at all"); // bad_json

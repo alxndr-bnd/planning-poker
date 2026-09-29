@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { Room } from "../src/room.js";
 
+/** Views carry the public id, not the participant's secret key. */
+const pub = (room: Room, key: string) => room.participants.get(key)!.publicId;
+
 describe("Room", () => {
   it("hides votes during voting and reveals them after reveal", () => {
     const room = new Room("abcdef");
@@ -12,13 +15,13 @@ describe("Room", () => {
     // voting: values hidden, only hasVoted exposed
     const voting = room.toViews();
     expect(voting.every((p) => p.vote === undefined)).toBe(true);
-    expect(voting.find((p) => p.id === "a")!.hasVoted).toBe(true);
+    expect(voting.find((p) => p.id === pub(room, "a"))!.hasVoted).toBe(true);
 
     // revealed: values exposed
     room.reveal(room.revealerId!);
     const revealed = room.toViews();
-    expect(revealed.find((p) => p.id === "a")!.vote).toBe("5");
-    expect(revealed.find((p) => p.id === "b")!.vote).toBe("8");
+    expect(revealed.find((p) => p.id === pub(room, "a"))!.vote).toBe("5");
+    expect(revealed.find((p) => p.id === pub(room, "b"))!.vote).toBe("8");
   });
 
   it("observers cannot vote and are excluded from summary", () => {
@@ -55,10 +58,10 @@ describe("Room", () => {
     room.vote("c", "☕"); // abstain -> shown immediately
 
     const v = room.toViews();
-    expect(v.find((p) => p.id === "a")!.vote).toBeUndefined();
-    expect(v.find((p) => p.id === "a")!.hasVoted).toBe(true);
-    expect(v.find((p) => p.id === "b")!.vote).toBe("?");
-    expect(v.find((p) => p.id === "c")!.vote).toBe("☕");
+    expect(v.find((p) => p.id === pub(room, "a"))!.vote).toBeUndefined();
+    expect(v.find((p) => p.id === pub(room, "a"))!.hasVoted).toBe(true);
+    expect(v.find((p) => p.id === pub(room, "b"))!.vote).toBe("?");
+    expect(v.find((p) => p.id === pub(room, "c"))!.vote).toBe("☕");
   });
 
   it("reset clears votes and returns to voting", () => {
@@ -127,5 +130,26 @@ describe("Room", () => {
     }
     expect(room.participants.size).toBe(Room.MAX_PARTICIPANTS);
     expect(room.isFull()).toBe(true);
+  });
+
+  it("views and the star use public ids, never the secret participant key (SERBITO-361)", () => {
+    const room = new Room("abcdef");
+    room.addParticipant("secret-key-alice", "Alice", false);
+    room.addParticipant("secret-key-bob", "Bob", false);
+    const views = room.toViews();
+    expect(JSON.stringify(views)).not.toContain("secret-key");
+    const ids = views.map((v) => v.id);
+    expect(new Set(ids).size).toBe(2);
+    expect(ids).toContain(pub(room, "secret-key-alice"));
+    expect(room.publicRevealerId()).toBe(pub(room, room.revealerId!));
+    expect(room.publicRevealerId()).not.toContain("secret-key");
+  });
+
+  it("a public id is not a rejoin key: re-attaching by it finds no one", () => {
+    const room = new Room("abcdef");
+    room.addParticipant("secret-key-alice", "Alice", false);
+    room.vote("secret-key-alice", "8");
+    expect(room.reattachParticipant(pub(room, "secret-key-alice"), "Mallory")).toBeNull();
+    expect(room.participants.get("secret-key-alice")!.name).toBe("Alice");
   });
 });

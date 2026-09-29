@@ -5,6 +5,9 @@ import { WebSocket } from "ws";
 import type { ServerMessage } from "@pp/shared";
 import { createPokerServer } from "../src/server.js";
 
+/** Browsers always send Origin on a WebSocket; the server refuses one without it. */
+const ORIGIN = "http://localhost:5173";
+
 let server: Server;
 let wsUrl: string;
 
@@ -46,7 +49,7 @@ function drive<T>(
 
 describe("WebSocket server", () => {
   it("join → vote → reveal → summary happy path", async () => {
-    const ws = new WebSocket(wsUrl);
+    const ws = new WebSocket(wsUrl, { origin: ORIGIN });
     const summary = await drive<{ distribution: Record<string, number>; consensus: boolean }>(
       ws,
       () => ws.send(JSON.stringify({ type: "join", roomId: "wsroom0001", name: "Tester" })),
@@ -69,7 +72,7 @@ describe("WebSocket server", () => {
 
   it("hides other players' numeric votes until reveal", async () => {
     // Player A joins and votes a number; player B must not see A's value while voting.
-    const a = new WebSocket(wsUrl);
+    const a = new WebSocket(wsUrl, { origin: ORIGIN });
     await drive<boolean>(
       a,
       () => a.send(JSON.stringify({ type: "join", roomId: "wsroom0002", name: "A" })),
@@ -82,7 +85,7 @@ describe("WebSocket server", () => {
       },
     );
 
-    const b = new WebSocket(wsUrl);
+    const b = new WebSocket(wsUrl, { origin: ORIGIN });
     const aSeenByB = await drive<{ hasVoted: boolean; vote: unknown }>(
       b,
       () => b.send(JSON.stringify({ type: "join", roomId: "wsroom0002", name: "B" })),

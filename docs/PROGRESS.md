@@ -41,6 +41,7 @@ Source requirements: Product Brief (`docs/planning/product-brief-planning-poker-
 | Tag-based CI deploy via Workload Identity (keyless, no SA key) | ✅ |
 | `main` branch protection (force-push/deletion blocked) | ✅ |
 | pre-commit: tests + typecheck before commit | ✅ |
+| Security review SERBITO-332 fixes (SERBITO-361): secret rejoin key, per-IP connection / room-creation limits, join timeout, Origin required, message schema, security headers (CSP report-only) | ✅ |
 
 ## Extra (beyond the brief)
 SEO meta, GitHub badge, serbito.rs sponsor link, theory/resources info block, felt table background, emoji favicon/title.

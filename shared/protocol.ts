@@ -25,6 +25,8 @@ export type Phase = "voting" | "revealed";
 
 /** A participant as seen by clients. `vote` is only present when phase === "revealed". */
 export interface ParticipantView {
+  /** Public id, issued by the server. Never the secret `clientId` a participant rejoins
+   *  with — that one only ever travels from its owner to the server (SERBITO-361). */
   id: string;
   name: string;
   isObserver: boolean;
@@ -66,8 +68,71 @@ export type ClientMessage =
   | { type: "reset"; itemTitle?: string }
   | { type: "setObserver"; isObserver: boolean };
 
+/** Longest raw `name` / `itemTitle` a client may send (the server then trims to 40 / 120
+ *  for display). Generous on purpose: the lobby input caps names at 40, but a limit
+ *  bigger than any real value never locks a legitimate user out. */
+export const MAX_NAME_INPUT = 100;
+export const MAX_ITEM_TITLE_INPUT = 200;
+const MAX_ROOM_ID = 32;
+const MAX_CLIENT_ID = 64;
+
+const DECK: ReadonlySet<string> = new Set(FIBONACCI_DECK);
+
+type Fields = Record<string, unknown>;
+const isStr = (v: unknown, max: number): v is string =>
+  typeof v === "string" && v.length <= max;
+const optStr = (v: unknown, max: number) => v === undefined || isStr(v, max);
+const optBool = (v: unknown) => v === undefined || typeof v === "boolean";
+
+/**
+ * Schema check for an incoming WebSocket message (SERBITO-361 / PKR-4). JSON.parse hands
+ * the server `unknown`; the TypeScript type alone proves nothing. Returns the message
+ * only when every field has the right type and size, else null — so an array roomId,
+ * a numeric vote or a megabyte name never reaches the room logic. Only the fields each
+ * message type defines are copied through.
+ */
+export function parseClientMessage(data: unknown): ClientMessage | null {
+  if (typeof data !== "object" || data === null || Array.isArray(data)) return null;
+  const m = data as Fields;
+  switch (m.type) {
+    case "join":
+      if (
+        !isStr(m.roomId, MAX_ROOM_ID) ||
+        !isStr(m.name, MAX_NAME_INPUT) ||
+        !optBool(m.asObserver) ||
+        !optStr(m.clientId, MAX_CLIENT_ID)
+      )
+        return null;
+      return {
+        type: "join",
+        roomId: m.roomId,
+        name: m.name,
+        ...(m.asObserver !== undefined ? { asObserver: m.asObserver as boolean } : {}),
+        ...(m.clientId !== undefined ? { clientId: m.clientId as string } : {}),
+      };
+    case "vote":
+      if (typeof m.value !== "string" || !DECK.has(m.value)) return null;
+      return { type: "vote", value: m.value as CardValue };
+    case "unvote":
+      return { type: "unvote" };
+    case "reveal":
+      return { type: "reveal" };
+    case "reset":
+      if (!optStr(m.itemTitle, MAX_ITEM_TITLE_INPUT)) return null;
+      return m.itemTitle === undefined
+        ? { type: "reset" }
+        : { type: "reset", itemTitle: m.itemTitle as string };
+    case "setObserver":
+      if (typeof m.isObserver !== "boolean") return null;
+      return { type: "setObserver", isObserver: m.isObserver };
+    default:
+      return null;
+  }
+}
+
 // ---- Server -> Client ----
 export type ServerMessage =
+  /** `youId` is the recipient's public id (as in `participants`), not their clientId. */
   | { type: "joined"; youId: string; roomId: string }
   | {
       type: "state";

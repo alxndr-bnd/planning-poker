@@ -1,4 +1,5 @@
-import { createReadStream, existsSync, statSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { createReadStream, existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { extname, join, normalize, relative, sep } from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
 
@@ -44,6 +45,89 @@ const NOT_FOUND_PAGE = `<!doctype html>
 </body>
 </html>
 `;
+
+// --- Security headers on every HTTP response (SERBITO-361 / PKR-5) ---
+
+/** Third parties the pages load: GA4 (gtag.js behind the consent banner) and
+ *  Cloudflare Web Analytics. Anything else shows up as a CSP report. */
+const GA = "https://*.googletagmanager.com";
+const GA_COLLECT = "https://*.google-analytics.com https://*.analytics.google.com";
+const CF_BEACON = "https://static.cloudflareinsights.com";
+/** The GitHub-stars badge in the app footer. */
+const BADGES = "https://img.shields.io";
+
+/** Bodies of the inline <script>s (not src=, not JSON-LD data blocks) in `html`. */
+export function inlineScripts(html: string): string[] {
+  const out: string[] = [];
+  let at = 0;
+  for (;;) {
+    const open = html.indexOf("<script", at);
+    if (open < 0) return out;
+    const tagEnd = html.indexOf(">", open);
+    const close = html.indexOf("</script", tagEnd);
+    if (tagEnd < 0 || close < 0) return out;
+    const tag = html.slice(open, tagEnd + 1).toLowerCase();
+    if (!/\ssrc\s*=/.test(tag) && !tag.includes("application/ld+json")) {
+      out.push(html.slice(tagEnd + 1, close));
+    }
+    at = close + 1;
+  }
+}
+
+/** CSP source list with the sha256 of every inline script in the built pages. */
+function inlineScriptHashes(dist: string): string[] {
+  const hashes = new Set<string>();
+  const walk = (dir: string) => {
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      const p = join(dir, e.name);
+      if (e.isDirectory()) walk(p);
+      else if (e.name.endsWith(".html")) {
+        for (const body of inlineScripts(readFileSync(p, "utf-8"))) {
+          hashes.add(`'sha256-${createHash("sha256").update(body).digest("base64")}'`);
+        }
+      }
+    }
+  };
+  if (existsSync(dist)) walk(dist);
+  return [...hashes].sort();
+}
+
+/**
+ * Headers for every response. The CSP is REPORT-ONLY for now: it lists what the pages
+ * are known to need (own scripts + hashed inline gtag snippet, GA4, Cloudflare beacon,
+ * the shields.io badge),
+ * so violations surface in the browser console without breaking the consent banner or
+ * GA. Enforce it once it has run clean. Framing is enforced right away: frame-ancestors
+ * only works in an enforced policy, so it gets its own one-directive CSP.
+ * Built once per dist (the pages don't change while the server runs).
+ */
+export function securityHeaders(dist: string): Record<string, string> {
+  const reportOnly = [
+    "default-src 'self'",
+    `script-src 'self' ${inlineScriptHashes(dist).join(" ")} ${GA} ${CF_BEACON}`.replace(/ +/g, " "),
+    "style-src 'self' 'unsafe-inline'",
+    `img-src 'self' data: ${GA} ${GA_COLLECT} ${BADGES}`,
+    `connect-src 'self' wss://poker.serbito.rs ${GA} ${GA_COLLECT} https://cloudflareinsights.com`,
+    "font-src 'self'",
+    "manifest-src 'self'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+  ].join("; ");
+  return {
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "x-content-type-options": "nosniff",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "x-frame-options": "DENY",
+    "content-security-policy": "frame-ancestors 'none'",
+    "content-security-policy-report-only": reportOnly,
+    "permissions-policy":
+      "camera=(), microphone=(), geolocation=(), payment=(), usb=(), " +
+      "accelerometer=(), gyroscope=(), magnetometer=(), browsing-topics=()",
+    "cross-origin-opener-policy": "same-origin",
+  };
+}
 
 function notFound(res: ServerResponse): true {
   res.writeHead(404, {
