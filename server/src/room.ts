@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import type {
   CardValue,
   ParticipantView,
@@ -7,7 +8,10 @@ import type {
 } from "@pp/shared";
 
 export interface Participant {
+  /** Secret rejoin key (the client's clientId). Stays on the server: never broadcast. */
   id: string;
+  /** Public id the room sees (views, revealerId, youId). Can't be used to rejoin. */
+  publicId: string;
   name: string;
   isObserver: boolean;
   connected: boolean;
@@ -89,9 +93,25 @@ export class Room {
     return this.participants.size >= Room.MAX_PARTICIPANTS;
   }
 
+  /** A fresh random public id, unique within the room (SERBITO-361 / PKR-1). */
+  private newPublicId(): string {
+    const taken = new Set([...this.participants.values()].map((p) => p.publicId));
+    let id: string;
+    do id = randomBytes(9).toString("base64url");
+    while (taken.has(id));
+    return id;
+  }
+
+  /** The star holder's public id, as clients see it. */
+  publicRevealerId(): string | null {
+    if (!this.revealerId) return null;
+    return this.participants.get(this.revealerId)?.publicId ?? null;
+  }
+
   addParticipant(id: string, name: string, isObserver: boolean): Participant {
     const p: Participant = {
       id,
+      publicId: this.newPublicId(),
       name,
       isObserver,
       connected: true,
@@ -219,7 +239,7 @@ export class Room {
     return [...this.participants.values()].map((p) => {
       const showVote = revealed || (p.vote !== null && ABSTAIN.has(p.vote));
       return {
-        id: p.id,
+        id: p.publicId,
         name: p.name,
         isObserver: p.isObserver,
         connected: p.connected,

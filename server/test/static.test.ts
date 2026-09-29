@@ -5,12 +5,16 @@ import { request } from "node:http";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { createHash } from "node:crypto";
 import { createPokerServer } from "../src/server.js";
 
 // Coverage for the static SPA server (server/src/static.ts): path-traversal
 // containment + correct serving. Aikido flagged the file-read as a potential
 // file-inclusion sink; these tests lock in that user-controlled paths can never
 // escape `dist`, and that the containment guard doesn't regress legit serving.
+
+/** An inline script like the gtag consent snippet; its hash must be in the CSP. */
+const INLINE = "window.dataLayer=window.dataLayer||[];";
 
 let server: Server;
 let port: number;
@@ -47,7 +51,13 @@ beforeEach(async () => {
   writeFileSync(join(dist, "index.html"), "<!doctype html><title>PP SPA</title>");
   writeFileSync(join(dist, "assets", "app-abc123.js"), "console.log('app')");
   mkdirSync(join(dist, "guide"), { recursive: true });
-  writeFileSync(join(dist, "guide", "index.html"), "<h1>Guide page</h1>");
+  writeFileSync(
+    join(dist, "guide", "index.html"),
+    `<script async src="https://www.googletagmanager.com/gtag/js?id=G-X"></script>` +
+      `<script>${INLINE}</script>` +
+      `<script type="application/ld+json">{"@type":"Thing"}</script>` +
+      "<h1>Guide page</h1>",
+  );
   // A secret file OUTSIDE dist (sibling of it) — traversal must never reach it.
   writeFileSync(join(root, "secret.txt"), "TOP_SECRET_OUTSIDE_DIST");
 
@@ -106,5 +116,39 @@ describe("static file serving containment", () => {
     const r = await get("/?ui=v2");
     expect(r.status).toBe(200);
     expect(r.body).toContain("PP SPA");
+  });
+});
+
+// SERBITO-361 / PKR-5: security headers on every response. The CSP is report-only
+// (the consent banner and GA must keep working); framing is denied for real.
+describe("security headers", () => {
+  it("are sent on pages, assets, redirects and 404s", async () => {
+    for (const path of ["/", "/assets/app-abc123.js", "/guide/", "/nonexistent"]) {
+      const h = (await get(path)).headers;
+      expect(h["strict-transport-security"], path).toBe("max-age=31536000; includeSubDomains");
+      expect(h["x-content-type-options"], path).toBe("nosniff");
+      expect(h["referrer-policy"], path).toBe("strict-origin-when-cross-origin");
+      expect(h["x-frame-options"], path).toBe("DENY");
+      expect(h["content-security-policy"], path).toBe("frame-ancestors 'none'");
+      expect(String(h["permissions-policy"]), path).toContain("camera=()");
+      expect(String(h["content-security-policy-report-only"]), path).toContain(
+        "default-src 'self'",
+      );
+    }
+  });
+
+  it("the report-only CSP allows what the pages need: hashed inline gtag, GA4, CF beacon", async () => {
+    const csp = String((await get("/")).headers["content-security-policy-report-only"]);
+    const scriptSrc = csp.split("; ").find((d) => d.startsWith("script-src "))!;
+    const hash = createHash("sha256").update(INLINE).digest("base64");
+    expect(scriptSrc).toContain(`'sha256-${hash}'`);
+    expect(scriptSrc).toContain("https://*.googletagmanager.com");
+    expect(scriptSrc).toContain("https://static.cloudflareinsights.com");
+    expect(scriptSrc).not.toContain("'unsafe-inline'");
+    expect(scriptSrc.match(/'sha256-/g)).toHaveLength(1); // JSON-LD and src= scripts skipped
+    expect(csp).toContain("connect-src 'self' wss://poker.serbito.rs");
+    expect(csp).toContain("https://*.google-analytics.com");
+    expect(csp).toContain("frame-ancestors 'none'");
+    expect(csp).toContain("object-src 'none'");
   });
 });

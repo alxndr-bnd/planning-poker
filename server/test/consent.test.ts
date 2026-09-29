@@ -4,6 +4,7 @@ import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createContext, runInContext } from "node:vm";
 import { trackEvent } from "../../client/src/analytics.js";
+import { inlineScripts } from "../src/static.js";
 
 // SERBITO-320: GA4 stays, but only with consent. Every page sets the Consent Mode v2
 // default inline, before the gtag "config" (denied unless the visitor accepted within
@@ -71,9 +72,8 @@ describe("consent on every page", () => {
   it("queues consent default -> js -> config with host-only cookies, on every page", () => {
     const bad: string[] = [];
     for (const { file, html } of pages) {
-      const script = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
-        .map((m) => m[1])
-        .find((s) => /gtag\(\s*"config"/.test(s))!;
+      // inlineScripts: a tag scanner, not a regex (CodeQL js/bad-tag-filter).
+      const script = inlineScripts(html).find((s) => /gtag\(\s*"config"/.test(s))!;
       for (const hash of ["", "#/r/ZC3THcb2yw"]) {
         const ctx: Record<string, unknown> = {
           localStorage: { getItem: () => null },

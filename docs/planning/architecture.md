@@ -119,7 +119,7 @@ Defined once in `shared/protocol.ts`.
 **Client → Server**
 | type | payload | notes |
 |---|---|---|
-| `join` | `{ roomId, name, asObserver }` | creates room if absent; (re)attaches on reconnect |
+| `join` | `{ roomId, name, asObserver, clientId }` | creates room if absent; (re)attaches on reconnect by the secret `clientId`, within the same room only. One join per connection |
 | `vote` | `{ value }` | only in `voting` phase; ignored for observers |
 | `reveal` | `{}` | host action → phase `revealed` |
 | `reset` | `{ itemTitle? }` | host action → clears votes, phase `voting` |
@@ -130,10 +130,13 @@ Defined once in `shared/protocol.ts`.
 **Server → Client**
 | type | payload | notes |
 |---|---|---|
-| `joined` | `{ youId, roomId }` | ack with your connection id |
+| `joined` | `{ youId, roomId }` | ack with your **public** participant id (the id in `participants`); the `clientId` is never sent to anyone (SERBITO-361) |
 | `state` | `{ phase, itemTitle, participants:[{id,name,isObserver,connected,hasVoted, vote?}] }` | broadcast on every change. `vote` present **only** when `phase=revealed`; during `voting` only `hasVoted:boolean` is sent (votes stay hidden server-side) |
 | `summary` | `{ distribution, average, consensus }` | sent with/after reveal |
 | `error` | `{ code, message }` | e.g. invalid action for phase |
+
+Every incoming message is type- and size-checked by `parseClientMessage` in
+`shared/protocol.ts`; anything else gets `error: bad_message`.
 
 **Key rule:** during `voting`, the server never sends actual vote values — only
 `hasVoted` flags. Hidden-until-reveal is enforced **server-side**, not in the UI.

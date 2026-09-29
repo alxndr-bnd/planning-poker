@@ -5,3 +5,9 @@ node_modules
 *.log
 .DS_Store
 _bmad-output
+# Never let local secrets or tool output into the build context (`COPY . .`).
+**/.env
+**/.env.*
+.playwright-mcp
+coverage
+.vitest
