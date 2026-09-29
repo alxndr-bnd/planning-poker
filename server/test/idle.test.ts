@@ -1,11 +1,9 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { Room } from "../src/room.js";
 import {
   getOrCreateRoom,
   getIdleRooms,
-  getRoom,
   deleteRoom,
-  roomCount,
 } from "../src/rooms.js";
 
 // Billing fix (2026-06-22): forgotten browser tabs hold a WebSocket open and
@@ -53,10 +51,10 @@ describe("Room.lastEngagementAt (idle tracking)", () => {
 });
 
 describe("getIdleRooms", () => {
-  beforeEach(() => {
-    // clean the shared registry between tests
-    for (let i = 0; i < 100; i++) deleteRoom(`idle-${i}`);
-  });
+  // the room registry is module-global: keep it clean between tests and for other suites
+  const clean = () => ["idle-1", "idle-2", "idle-3"].forEach(deleteRoom);
+  beforeEach(clean);
+  afterAll(clean);
 
   it("returns rooms whose last engagement is older than idleMs, and only those", () => {
     const idleMs = 30 * 60 * 1000;
@@ -80,12 +78,5 @@ describe("getIdleRooms", () => {
 
     room.vote("a", "8");
     expect(getIdleRooms(idleMs).map((r) => r.id)).not.toContain("idle-3");
-  });
-
-  // keep the registry tidy for other suites
-  it("cleanup", () => {
-    for (let i = 0; i < 100; i++) deleteRoom(`idle-${i}`);
-    expect(getRoom("idle-1")).toBeUndefined();
-    expect(roomCount()).toBeGreaterThanOrEqual(0);
   });
 });

@@ -72,10 +72,11 @@ afterEach(async () => {
 });
 
 describe("static file serving containment", () => {
-  it("serves the SPA index at /", async () => {
+  it("serves the SPA index at /, never cached (a deploy's new asset hashes must load)", async () => {
     const r = await get("/");
     expect(r.status).toBe(200);
     expect(r.body).toContain("PP SPA");
+    expect(r.headers["cache-control"]).toBe("no-cache");
   });
 
   it("serves a content-hashed asset with immutable caching", async () => {

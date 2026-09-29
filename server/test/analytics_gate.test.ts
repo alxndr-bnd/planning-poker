@@ -15,7 +15,6 @@ import {
 // verification on 2026-06-24). Guard the id + that it's a real static script tag.
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const clientDir = join(__dirname, "../../client");
-const html = readFileSync(join(clientDir, "index.html"), "utf-8");
 
 const MEASUREMENT_ID = "G-B5CQC4JJV0";
 const STATIC_TAG = new RegExp(
@@ -37,32 +36,19 @@ function guidePages(): string[] {
 }
 
 describe("GA4 analytics", () => {
-  it("includes the GA4 measurement id", () => {
-    expect(html).toContain(MEASUREMENT_ID);
-  });
-  it("loads gtag.js as a static script tag (so Google can detect/verify it)", () => {
-    expect(html).toMatch(STATIC_TAG);
-  });
-
   // 2026-08-20: the prerendered guide pages carried no tag at all, so every visit that
   // landed on the SEO cluster from search was missing from GA4 entirely.
-  it("tags every prerendered guide page, not just the app shell", () => {
+  it("tags the app shell and every prerendered guide page with the static gtag.js", () => {
     const pages = guidePages();
     expect(pages.length).toBeGreaterThan(30); // 4 guides x 9 languages
-    const untagged = pages
+    const untagged = [join(clientDir, "index.html"), ...pages]
       .filter((p) => !STATIC_TAG.test(readFileSync(p, "utf-8")))
       .map((p) => relative(clientDir, p));
     expect(untagged).toEqual([]);
   });
-
-  // 2026-08-20: a room id is the invite credential — holding the link is what lets you
-  // into the room — so it must never be shipped to a third party. An entry via a shared
-  // #/r/<id> link is the one page_view gtag.js sends by itself, so index.html has to
-  // normalize it at config time; analytics.ts does the same for later route changes.
-  it("normalizes a #/r/<id> entry to the virtual room page at config time", () => {
-    expect(html).toContain('location.hash.indexOf("#/r/") === 0');
-    expect(html).toContain('location.origin + "/room"');
-  });
+  // A shared #/r/<id> entry (the room id is the invite credential) is normalized to
+  // /room at config time: consent.test.ts runs every page's inline snippet with that
+  // hash and checks the id never reaches the dataLayer.
 });
 
 // --------------------------------------------------------------------------- #

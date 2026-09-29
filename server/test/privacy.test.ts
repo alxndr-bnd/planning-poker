@@ -1,20 +1,15 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { cpSync, mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
-import { get as httpGetRaw } from "node:http";
-import { tmpdir } from "node:os";
+import { describe, expect, it } from "vitest";
+import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { AddressInfo } from "node:net";
-import type { Server } from "node:http";
-import { createPokerServer } from "../src/server.js";
 
 // SERBITO-307: /privacy says what poker stores and what analytics receive. It must be
-// reachable, linked from every page's footer, in the sitemap — and keep naming what the
-// code actually does (funnel events, browser storage keys), so it can't silently drift.
+// linked from every page's footer and keep naming what the code actually does (funnel
+// events, browser storage keys), so it can't silently drift. Being served and listed in
+// the sitemap is covered by sitemap.test.ts (every client/public page).
 
 const here = dirname(fileURLToPath(import.meta.url)); // server/test
 const clientDir = join(here, "../../client");
-const PRIVACY_URL = "https://poker.serbito.rs/privacy";
 const privacy = readFileSync(join(clientDir, "public/privacy/index.html"), "utf-8");
 
 /** client/index.html + every client/public/**\/index.html (incl. /privacy itself). */
@@ -31,43 +26,6 @@ function allPages(): string[] {
 }
 
 describe("/privacy page (SERBITO-307)", () => {
-  let server: Server;
-  let base: string;
-  let dist: string;
-
-  beforeAll(async () => {
-    // A dist laid out the way `vite build` produces it.
-    dist = mkdtempSync(join(tmpdir(), "pp-privacy-"));
-    cpSync(join(clientDir, "public"), dist, { recursive: true });
-    cpSync(join(clientDir, "index.html"), join(dist, "index.html"));
-    server = createPokerServer(dist);
-    await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
-    base = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
-  });
-
-  afterAll(async () => {
-    await new Promise<void>((r) => server.close(() => r()));
-    rmSync(dist, { recursive: true, force: true });
-  });
-
-  it("is served with 200 by the real server", async () => {
-    const res = await new Promise<{ status: number; type: string; body: string }>(
-      (resolve, reject) => {
-        httpGetRaw(`${base}/privacy`, (r) => {
-          let body = "";
-          r.on("data", (c) => (body += c));
-          r.on("end", () =>
-            resolve({ status: r.statusCode ?? 0, type: String(r.headers["content-type"]), body }),
-          );
-        }).on("error", reject);
-      },
-    );
-    expect(res.status).toBe(200);
-    expect(res.type).toContain("text/html");
-    expect(res.body).toContain("<h1>Privacy</h1>");
-    expect(res.body).toContain(`<link rel="canonical" href="${PRIVACY_URL}" />`);
-  });
-
   it("is linked from the footer of every page, in every language", () => {
     const pages = allPages();
     expect(pages.length).toBeGreaterThanOrEqual(38); // home + 36 guides + privacy
@@ -77,11 +35,6 @@ describe("/privacy page (SERBITO-307)", () => {
       return !/<a href="\/privacy"[ >]/.test(footer);
     });
     expect(missing.map((p) => relative(clientDir, p))).toEqual([]);
-  });
-
-  it("is listed in sitemap.xml", () => {
-    const xml = readFileSync(join(clientDir, "public/sitemap.xml"), "utf-8");
-    expect(xml).toContain(`<loc>${PRIVACY_URL}</loc>`);
   });
 
   it("names every funnel event the app sends to GA4", () => {
