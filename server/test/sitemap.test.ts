@@ -81,17 +81,19 @@ describe("sitemap.xml (generated from the pages)", () => {
     });
   });
 
-  it("lastmod is each page's last git commit date (today if uncommitted), not a constant", () => {
+  // The committed file equals the generator's output (next test), which dates every page
+  // with the same git lookup; checking that lookup on one page is enough, and saves ~70
+  // git calls per run.
+  it("lastmod is the page's last git commit date (today if uncommitted), not a constant", () => {
     expect(gitHistoryAvailable(), "needs a full (non-shallow) git checkout").toBe(true);
     const d = new Date();
     const p = (n: number) => String(n).padStart(2, "0");
     const today = `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
-    for (const u of urls) {
-      const rel = relative(repoRoot, fileFor(u.loc));
-      const dirty = git(["status", "--porcelain", "--", rel]) !== "";
-      const expected = dirty ? today : git(["log", "-1", "--format=%cs", "--", rel]);
-      expect(u.lastmod, `${u.loc}: stale — run \`npm run sitemap\``).toBe(expected);
-    }
+    const u = urls.find((x) => x.loc === `${ORIGIN}/pt/glossary`)!;
+    const rel = relative(repoRoot, fileFor(u.loc));
+    const dirty = git(["status", "--porcelain", "--", rel]) !== "";
+    const expected = dirty ? today : git(["log", "-1", "--format=%cs", "--", rel]);
+    expect(u.lastmod, `${u.loc}: stale — run \`npm run sitemap\``).toBe(expected);
   });
 
   it("the committed file is exactly what `npm run sitemap` generates", () => {
