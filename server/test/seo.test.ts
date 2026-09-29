@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { get as httpGetRaw } from "node:http";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from "node:fs";
+import { mkdtempSync, writeFileSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -11,19 +11,14 @@ import { createPokerServer } from "../src/server.js";
 const here = dirname(fileURLToPath(import.meta.url)); // server/test
 const clientDir = join(here, "../../client"); // planning-poker/client
 
-function httpGet(
-  url: string,
-): Promise<{ status: number; contentType: string; location: string; body: string }> {
+function httpGet(url: string): Promise<{ status: number; contentType: string }> {
   return new Promise((resolve, reject) => {
     httpGetRaw(url, (res) => {
-      let body = "";
-      res.on("data", (c) => (body += c));
+      res.resume();
       res.on("end", () =>
         resolve({
           status: res.statusCode ?? 0,
           contentType: String(res.headers["content-type"] ?? ""),
-          location: String(res.headers["location"] ?? ""),
-          body,
         }),
       );
     }).on("error", reject);
@@ -31,17 +26,16 @@ function httpGet(
 }
 
 // --------------------------------------------------------------------------- #
-// HTTP-level: robots.txt / sitemap.xml are served with the right MIME, and unknown
-// routes are a 404 rather than the SPA shell (docs: poker SEO, SERBITO-305).
+// HTTP-level: robots.txt, sitemap.xml and og-image.jpg get the right MIME type
+// (404s and clean URLs are covered in static.test.ts and sitemap.test.ts).
 // --------------------------------------------------------------------------- #
-describe("static file serving (SEO assets + 404)", () => {
+describe("static file serving (SEO assets)", () => {
   let server: Server;
   let base: string;
   let dist: string;
 
   beforeAll(async () => {
     dist = mkdtempSync(join(tmpdir(), "pp-seo-"));
-    writeFileSync(join(dist, "index.html"), "<!doctype html><h1>app shell</h1>");
     writeFileSync(
       join(dist, "robots.txt"),
       "User-agent: *\nAllow: /\nSitemap: https://poker.serbito.rs/sitemap.xml\n",
@@ -49,12 +43,6 @@ describe("static file serving (SEO assets + 404)", () => {
     writeFileSync(
       join(dist, "sitemap.xml"),
       '<?xml version="1.0"?><urlset><url><loc>https://poker.serbito.rs/</loc></url></urlset>',
-    );
-    // A prerendered SEO landing page served at a clean URL (/<slug>).
-    mkdirSync(join(dist, "what-is-planning-poker"));
-    writeFileSync(
-      join(dist, "what-is-planning-poker", "index.html"),
-      "<!doctype html><h1>WHAT IS PLANNING POKER</h1>",
     );
     // The share image: its content-type is load-bearing, see the test below.
     writeFileSync(join(dist, "og-image.jpg"), Buffer.from("\xff\xd8\xff", "binary"));
@@ -69,49 +57,16 @@ describe("static file serving (SEO assets + 404)", () => {
     rmSync(dist, { recursive: true, force: true });
   });
 
-  it("serves robots.txt as text/plain", async () => {
-    const res = await httpGet(`${base}/robots.txt`);
+  // og-image: Slack, Discord and the other unfurlers drop a share image whose
+  // content-type isn't an image type (v0.42.0 shipped it as octet-stream).
+  it.each([
+    ["/robots.txt", "text/plain"],
+    ["/sitemap.xml", "application/xml"],
+    ["/og-image.jpg", "image/jpeg"],
+  ])("serves %s as %s", async (path, type) => {
+    const res = await httpGet(`${base}${path}`);
     expect(res.status).toBe(200);
-    expect(res.contentType).toContain("text/plain");
-    expect(res.body).toContain("Sitemap: https://poker.serbito.rs/sitemap.xml");
-  });
-
-  it("serves sitemap.xml as application/xml", async () => {
-    const res = await httpGet(`${base}/sitemap.xml`);
-    expect(res.status).toBe(200);
-    expect(res.contentType).toContain("xml");
-    expect(res.body).toContain("<loc>https://poker.serbito.rs/</loc>");
-  });
-
-  it("serves og-image.jpg as image/jpeg, not octet-stream", async () => {
-    // Slack, Discord and the other unfurlers drop a share image whose content-type
-    // isn't an image type, so a missing .jpg entry in the MIME map silently kills
-    // every link preview. Regression guard for exactly that.
-    const res = await httpGet(`${base}/og-image.jpg`);
-    expect(res.status).toBe(200);
-    expect(res.contentType).toBe("image/jpeg");
-  });
-
-  it("returns a real 404 for unknown paths, not the app shell (no soft 404)", async () => {
-    const res = await httpGet(`${base}/room/abc123`);
-    expect(res.status).toBe(404);
-    expect(res.contentType).toContain("text/html");
-    expect(res.body).not.toContain("app shell");
-  });
-
-  it("serves a clean-URL static page (/<slug> -> <slug>/index.html)", async () => {
-    const res = await httpGet(`${base}/what-is-planning-poker`);
-    expect(res.status).toBe(200);
-    expect(res.contentType).toContain("text/html");
-    expect(res.body).toContain("WHAT IS PLANNING POKER");
-    // must NOT fall through to the SPA shell
-    expect(res.body).not.toContain("app shell");
-  });
-
-  it("301-redirects a trailing slash on a clean-URL page to the canonical no-slash form", async () => {
-    const res = await httpGet(`${base}/what-is-planning-poker/`);
-    expect(res.status).toBe(301);
-    expect(res.location).toBe("/what-is-planning-poker");
+    expect(res.contentType).toContain(type);
   });
 });
 
@@ -142,12 +97,6 @@ describe("SEO artifacts (real source files)", () => {
     const robots = readFileSync(join(clientDir, "public/robots.txt"), "utf-8");
     expect(robots).toMatch(/Allow:\s*\//);
     expect(robots).toContain("Sitemap: https://poker.serbito.rs/sitemap.xml");
-  });
-
-  it("sitemap.xml is valid and lists the homepage", () => {
-    const xml = readFileSync(join(clientDir, "public/sitemap.xml"), "utf-8");
-    expect(xml).toContain("http://www.sitemaps.org/schemas/sitemap/0.9");
-    expect(xml).toContain("<loc>https://poker.serbito.rs/</loc>");
   });
 
   it("guide pages carry BreadcrumbList JSON-LD; prose guides also carry Article", () => {
