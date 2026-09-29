@@ -8,12 +8,23 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      # Types must match the runtime (node:24-slim below), not the newest Node.
+      # Lift this when the Dockerfile moves to the next LTS.
+      - dependency-name: "@types/node"
+        versions: [">=25.0.0"]
 
   # The Cloud Run image base (node:24-slim) + any pinned image deps.
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      # Production runs LTS Node only. Odd majors never become LTS; skip them so
+      # PRs like "node 24-slim -> 25-slim" stop. An even major is released in April
+      # and becomes LTS in October: merge its PR only after it turns LTS.
+      - dependency-name: "node"
+        versions: [">= 25, < 26", ">= 27, < 28", ">= 29, < 30", ">= 31, < 32"]
 
   # Pinned GitHub Actions in .github/workflows.
   - package-ecosystem: "github-actions"
