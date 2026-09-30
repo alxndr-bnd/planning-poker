@@ -220,12 +220,28 @@
         font: 0.78rem/1.7 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
         color: var(--muted, #5b6b62);
       }
+      /* Underlined, not told apart by colour alone: they sit inside running text
+         (WCAG 1.4.1, SERBITO-350). */
       .pp-crosspromo a {
         color: var(--accent, #15603b);
-        text-decoration: none;
-      }
-      .pp-crosspromo a:hover {
         text-decoration: underline;
+      }
+      /* The fixed footer below. While the cookie banner is open (consent.js sets
+         data-ppc-open on <html>) the banner covers it, so it goes back into the page
+         flow: its links then scroll into view above the banner instead of taking focus
+         where nobody can see it (WCAG 2.4.11, SERBITO-350). */
+      .pp-foot {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 50;
+      }
+      html[data-ppc-open] .pp-foot {
+        position: static;
+      }
+      html[data-ppc-open] .pp-crosspromo {
+        padding-bottom: 1rem;
       }
     </style>
   </head>
@@ -328,12 +344,8 @@
          on screen for real users (the static landing above is replaced on mount,
          and serves crawlers). Self-contained styles so it doesn't depend on app CSS. -->
     <footer
+      class="pp-foot"
       style="
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 50;
         border-top: 1px solid rgba(0, 0, 0, 0.12);
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.12);
         padding: 0.5rem 1rem;

@@ -35,6 +35,9 @@
 
   var CSS =
     ".ppc-slot[hidden],.ppc[hidden]{display:none}" +
+    // While the bar is open, focus scrolling stops above it (WCAG 2.4.11): --ppc-h is
+    // the bar's height, set by fit(). :where() keeps it overridable by the page.
+    ":where(html){scroll-padding-bottom:var(--ppc-h,0px)}" +
     ".ppc{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.4rem .75rem;padding:.55rem 1rem;background:#15603b;color:#fff;font:.85rem/1.4 system-ui,-apple-system,\"Segoe UI\",Roboto,sans-serif;box-shadow:0 -2px 8px rgba(0,0,0,.2);text-align:center}" +
     ".ppc p{margin:0}" +
     ".ppc a{color:#fff;text-decoration:underline}" +
@@ -115,7 +118,27 @@
   }
 
   function fit() {
-    if (slot && !bar.hidden) slot.style.height = bar.offsetHeight + "px";
+    if (!slot || bar.hidden) return;
+    var h = bar.offsetHeight + "px";
+    slot.style.height = h;
+    d.documentElement.style.setProperty("--ppc-h", h);
+  }
+
+  /**
+   * Focus must never end up fully behind the bar (WCAG 2.4.11). scroll-padding covers
+   * browsers that honour it for focus scrolling; this covers the rest: once the
+   * browser has scrolled, if the focused element still reaches under the bar, scroll
+   * it clear.
+   */
+  function reveal(e) {
+    var t = e.target;
+    if (!bar || bar.hidden || !t || !t.getBoundingClientRect || bar.contains(t)) return;
+    var raf = w.requestAnimationFrame || function (f) { f(); };
+    raf(function () {
+      if (bar.hidden) return;
+      var under = t.getBoundingClientRect().bottom - bar.getBoundingClientRect().top;
+      if (under > 0) w.scrollBy(0, under + 8);
+    });
   }
 
   function build() {
@@ -147,6 +170,7 @@
       new w.MutationObserver(fill).observe(d.documentElement, { attributes: true, attributeFilter: ["lang"] });
     }
     w.addEventListener("resize", fit);
+    d.addEventListener("focusin", reveal);
   }
 
   /**
@@ -157,6 +181,9 @@
     if (!bar) build();
     slot.hidden = false;
     bar.hidden = false;
+    // Lets the page move its own bottom-fixed chrome out of the bar's way (the app
+    // shell's footer goes back into the flow: client/index.html).
+    d.documentElement.setAttribute("data-ppc-open", "");
     fill();
     if (focus) {
       returnFocus = from || d.activeElement || null;
@@ -168,6 +195,8 @@
     if (!bar) return;
     bar.hidden = true;
     slot.hidden = true;
+    d.documentElement.removeAttribute("data-ppc-open");
+    d.documentElement.style.removeProperty("--ppc-h");
     if (returnFocus && returnFocus.focus) returnFocus.focus();
     // Never leave focus on a hidden button (e.g. it had nowhere to return to).
     var a = d.activeElement;

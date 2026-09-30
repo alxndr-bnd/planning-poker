@@ -53,6 +53,8 @@ input[type="text"], input:not([type]) {
 }
 .lobby h1 { margin: 0; }
 .lobby input { text-align: center; }
+.name-field { display: flex; flex-direction: column; gap: 0.35rem; }
+.name-field label { font-weight: 600; }
 
 /* Room: full-height column — Reveal on top, green table center, your hand bottom */
 .room { min-height: 100vh; display: flex; flex-direction: column; }

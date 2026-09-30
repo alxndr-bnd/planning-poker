@@ -198,8 +198,17 @@ class FakeEl {
   parent: FakeEl | null = null;
   hidden = false;
   textContent = "";
-  style: Record<string, string> = {};
+  style: Record<string, any> = {
+    setProperty(k: string, v: string) {
+      this[k] = v;
+    },
+    removeProperty(k: string) {
+      delete this[k];
+    },
+  };
   offsetHeight = 52;
+  /** Viewport rect: only top/bottom matter to consent.js. */
+  rect = { top: 0, bottom: 0 };
   lang = "";
   listeners: Record<string, Listener[]> = {};
   constructor(
@@ -214,6 +223,16 @@ class FakeEl {
   }
   hasAttribute(k: string) {
     return this.attrs.has(k);
+  }
+  removeAttribute(k: string) {
+    this.attrs.delete(k);
+  }
+  contains(c: FakeEl | null): boolean {
+    for (let n = c; n; n = n.parent) if (n === this) return true;
+    return false;
+  }
+  getBoundingClientRect() {
+    return this.rect;
   }
   appendChild(c: FakeEl) {
     return this.insertBefore(c, null);
@@ -317,6 +336,7 @@ function runBanner(env: Env = {}) {
   };
   const calls: unknown[][] = [];
   const observers: (() => void)[] = [];
+  const scrolls: number[] = [];
   const win: Record<string, any> = {
     document: doc,
     location: {
@@ -339,6 +359,7 @@ function runBanner(env: Env = {}) {
       }
     },
     addEventListener: () => {},
+    scrollBy: (_x: number, y: number) => void scrolls.push(y),
   };
   win.window = win;
   runInContext(CONSENT_JS, createContext(win));
@@ -350,6 +371,7 @@ function runBanner(env: Env = {}) {
     doc,
     calls,
     store,
+    scrolls,
     bar,
     slot,
     accept: () => button("ppc-yes").fire("click"),
@@ -387,6 +409,37 @@ describe("consent banner (client/public/consent.js)", () => {
     // The spacer is as tall as the bar, so the page can scroll clear of it: the bar
     // never permanently covers the end of a guide or the room's cards on a phone.
     expect(p.slot.style.height).toBe("52px");
+  });
+
+  // SERBITO-350, WCAG 2.4.11: tabbing must never put focus fully behind the bar.
+  it("while open, pads focus scrolling by the bar's height and flags <html>", () => {
+    const p = runBanner();
+    const html = p.doc.documentElement;
+    const css = p.doc.head.find("style")[0].textContent;
+    expect(css).toContain(":where(html){scroll-padding-bottom:var(--ppc-h,0px)}");
+    expect(html.style["--ppc-h"]).toBe("52px");
+    expect(html.hasAttribute("data-ppc-open")).toBe(true); // the app shell un-fixes its footer
+    p.accept();
+    expect(html.style["--ppc-h"]).toBeUndefined();
+    expect(html.hasAttribute("data-ppc-open")).toBe(false);
+  });
+
+  it("scrolls a focused element out from under the bar, and leaves the rest alone", () => {
+    const p = runBanner();
+    p.bar.rect = { top: 600, bottom: 652 };
+    const el = (top: number, bottom: number) => {
+      const a = p.doc.body.appendChild(p.doc.createElement("a"));
+      a.rect = { top, bottom };
+      return a;
+    };
+    el(610, 630).fire("focusin"); // fully behind the bar
+    el(590, 612).fire("focusin"); // partly behind
+    el(100, 120).fire("focusin"); // in the clear
+    p.button("ppc-yes").fire("focusin"); // the bar's own button
+    expect(p.scrolls).toEqual([38, 20]);
+    p.accept();
+    el(610, 630).fire("focusin"); // bar closed: nothing to clear
+    expect(p.scrolls).toEqual([38, 20]);
   });
 
   it("Accept: grants analytics only, stores the choice with a date, closes", () => {
