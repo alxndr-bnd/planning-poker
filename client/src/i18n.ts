@@ -21,7 +21,7 @@ export const LANGS: { code: Lang; label: string }[] = [
 export const EN = {
   "lobby.tagline": "Free · no sign-up · unlimited rooms",
   "lobby.enterName": "Enter your name to join the room.",
-  "lobby.namePlaceholder": "Your name",
+  "lobby.nameLabel": "Your name",
   "lobby.create": "Create room",
   "lobby.join": "Join room",
   "lobby.copyOnCreate": "Copy invite link to clipboard on create",

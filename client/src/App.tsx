@@ -2,6 +2,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useId,
   useRef,
   useState,
 } from "react";
@@ -170,6 +171,7 @@ function Lobby({
   uiV2: boolean;
 }) {
   const { tr } = useT();
+  const nameId = useId();
   const [input, setInput] = useState(name);
   const [copyOnCreate, setCopyOnCreate] = useState(
     () => localStorage.getItem("pp_copy_on_create") !== "0",
@@ -201,14 +203,21 @@ function Lobby({
     <div className="lobby">
       <h1>Planning Poker</h1>
       <p className="muted">{roomId ? tr("lobby.enterName") : tr("lobby.tagline")}</p>
-      <input
-        autoFocus
-        placeholder={tr("lobby.namePlaceholder")}
-        value={input}
-        maxLength={40}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && go()}
-      />
+      {/* A visible label, not a placeholder (WCAG 3.3.2). Autofocus only on an invite
+          link, where joining is the one thing to do; on the landing it would skip the
+          header, language switcher and cookie banner for keyboard users (SERBITO-350). */}
+      <div className="name-field">
+        <label htmlFor={nameId}>{tr("lobby.nameLabel")}</label>
+        <input
+          id={nameId}
+          autoFocus={!!roomId}
+          autoComplete="nickname"
+          value={input}
+          maxLength={40}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && go()}
+        />
+      </div>
       <button onClick={go} disabled={!input.trim()}>
         {roomId ? tr("lobby.join") : tr("lobby.create")}
       </button>

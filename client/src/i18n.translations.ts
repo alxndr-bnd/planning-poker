@@ -9,7 +9,7 @@ export const TRANSLATIONS: Partial<
   es: {
     "lobby.tagline": "Gratis · sin registro · salas ilimitadas",
     "lobby.enterName": "Escribe tu nombre para unirte a la sala.",
-    "lobby.namePlaceholder": "Tu nombre",
+    "lobby.nameLabel": "Tu nombre",
     "lobby.create": "Crear sala",
     "lobby.join": "Unirse a la sala",
     "lobby.copyOnCreate": "Copiar el enlace de invitación al crear",
@@ -50,7 +50,7 @@ export const TRANSLATIONS: Partial<
   de: {
     "lobby.tagline": "Kostenlos · ohne Anmeldung · unbegrenzte Räume",
     "lobby.enterName": "Gib deinen Namen ein, um dem Raum beizutreten.",
-    "lobby.namePlaceholder": "Dein Name",
+    "lobby.nameLabel": "Dein Name",
     "lobby.create": "Raum erstellen",
     "lobby.join": "Raum beitreten",
     "lobby.copyOnCreate": "Einladungslink beim Erstellen in die Zwischenablage kopieren",
@@ -91,7 +91,7 @@ export const TRANSLATIONS: Partial<
   fr: {
     "lobby.tagline": "Gratuit · sans inscription · salles illimitées",
     "lobby.enterName": "Saisissez votre nom pour rejoindre la salle.",
-    "lobby.namePlaceholder": "Votre nom",
+    "lobby.nameLabel": "Votre nom",
     "lobby.create": "Créer une salle",
     "lobby.join": "Rejoindre la salle",
     "lobby.copyOnCreate": "Copier le lien d’invitation lors de la création",
@@ -132,7 +132,7 @@ export const TRANSLATIONS: Partial<
   pt: {
     "lobby.tagline": "Grátis · sem cadastro · salas ilimitadas",
     "lobby.enterName": "Digite seu nome para entrar na sala.",
-    "lobby.namePlaceholder": "Seu nome",
+    "lobby.nameLabel": "Seu nome",
     "lobby.create": "Criar sala",
     "lobby.join": "Entrar na sala",
     "lobby.copyOnCreate": "Copiar o link de convite ao criar",
@@ -173,7 +173,7 @@ export const TRANSLATIONS: Partial<
   ru: {
     "lobby.tagline": "Бесплатно · без регистрации · неограниченные комнаты",
     "lobby.enterName": "Введите имя, чтобы войти в комнату.",
-    "lobby.namePlaceholder": "Ваше имя",
+    "lobby.nameLabel": "Ваше имя",
     "lobby.create": "Создать комнату",
     "lobby.join": "Войти в комнату",
     "lobby.copyOnCreate": "Копировать ссылку-приглашение при создании",
@@ -214,7 +214,7 @@ export const TRANSLATIONS: Partial<
   sr: {
     "lobby.tagline": "Besplatno · bez registracije · neograničen broj soba",
     "lobby.enterName": "Unesite svoje ime da biste ušli u sobu.",
-    "lobby.namePlaceholder": "Vaše ime",
+    "lobby.nameLabel": "Vaše ime",
     "lobby.create": "Napravi sobu",
     "lobby.join": "Uđi u sobu",
     "lobby.copyOnCreate": "Kopiraj pozivni link pri kreiranju",
@@ -255,7 +255,7 @@ export const TRANSLATIONS: Partial<
   ja: {
     "lobby.tagline": "無料 · 登録不要 · ルーム数無制限",
     "lobby.enterName": "名前を入力してルームに参加してください。",
-    "lobby.namePlaceholder": "お名前",
+    "lobby.nameLabel": "お名前",
     "lobby.create": "ルームを作成",
     "lobby.join": "ルームに参加",
     "lobby.copyOnCreate": "作成時に招待リンクをコピー",
@@ -296,7 +296,7 @@ export const TRANSLATIONS: Partial<
   zh: {
     "lobby.tagline": "免费 · 无需注册 · 房间不限量",
     "lobby.enterName": "输入你的名字以加入房间。",
-    "lobby.namePlaceholder": "你的名字",
+    "lobby.nameLabel": "你的名字",
     "lobby.create": "创建房间",
     "lobby.join": "加入房间",
     "lobby.copyOnCreate": "创建时将邀请链接复制到剪贴板",
