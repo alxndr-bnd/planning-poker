@@ -303,6 +303,13 @@ class FakeDoc {
   createElement(tag: string) {
     return new FakeEl(this, tag);
   }
+  /** Only `[attr]` selectors, which is all consent.js asks for. */
+  querySelector(sel: string): FakeEl | null {
+    const attr = /^\[([\w-]+)\]$/.exec(sel)![1];
+    const walk = (n: FakeEl): FakeEl | null =>
+      n.hasAttribute(attr) ? n : n.children.reduce<FakeEl | null>((f, c) => f ?? walk(c), null);
+    return walk(this.documentElement);
+  }
   addEventListener(type: string, f: Listener) {
     (this.listeners[type] ??= []).push(f);
   }
@@ -323,11 +330,20 @@ interface Env {
   lang?: string;
   blockedStorage?: boolean;
   cookies?: Record<string, string>;
+  /** The app shell's fixed footer (client/index.html): 85 px tall, as on a phone. */
+  footer?: boolean;
 }
 
 /** Run consent.js in a fresh page. Returns the page's window and the gtag calls. */
 function runBanner(env: Env = {}) {
   const doc = new FakeDoc(env.lang ?? "en");
+  let footer: FakeEl | undefined;
+  if (env.footer) {
+    footer = doc.body.appendChild(doc.createElement("footer"));
+    footer.setAttribute("data-pp-fixed-bottom", "");
+    footer.offsetHeight = 85;
+    footer.rect = { top: 582, bottom: 667 };
+  }
   for (const [k, v] of Object.entries(env.cookies ?? {})) doc.jar.set(k, v);
   const store = new Map<string, string>();
   if (env.item != null) store.set("pp_consent", env.item);
@@ -360,6 +376,11 @@ function runBanner(env: Env = {}) {
     },
     addEventListener: () => {},
     scrollBy: (_x: number, y: number) => void scrolls.push(y),
+    // The page's CSS: the footer is fixed, except while the banner is open.
+    getComputedStyle: (e: FakeEl) => ({
+      position:
+        e === footer && !doc.documentElement.hasAttribute("data-ppc-open") ? "fixed" : "static",
+    }),
   };
   win.window = win;
   runInContext(CONSENT_JS, createContext(win));
@@ -374,6 +395,7 @@ function runBanner(env: Env = {}) {
     scrolls,
     bar,
     slot,
+    footer,
     accept: () => button("ppc-yes").fire("click"),
     decline: () => button("ppc-no").fire("click"),
     button,
@@ -416,7 +438,7 @@ describe("consent banner (client/public/consent.js)", () => {
     const p = runBanner();
     const html = p.doc.documentElement;
     const css = p.doc.head.find("style")[0].textContent;
-    expect(css).toContain(":where(html){scroll-padding-bottom:var(--ppc-h,0px)}");
+    expect(css).toContain(":where(html){scroll-padding-bottom:var(--ppc-h,var(--pp-foot-h,0px))}");
     expect(html.style["--ppc-h"]).toBe("52px");
     expect(html.hasAttribute("data-ppc-open")).toBe(true); // the app shell un-fixes its footer
     p.accept();
@@ -440,6 +462,44 @@ describe("consent banner (client/public/consent.js)", () => {
     p.accept();
     el(610, 630).fire("focusin"); // bar closed: nothing to clear
     expect(p.scrolls).toEqual([38, 20]);
+  });
+
+  // SERBITO-350: with the banner gone, the home page's fixed footer is what covers the
+  // bottom of the viewport, so focus has to stay clear of it the same way.
+  it("keeps focus clear of the page's fixed footer when there is no banner", () => {
+    const p = runBanner({ item: stored("denied", 10), footer: true });
+    expect(p.bar).toBeUndefined();
+    const html = p.doc.documentElement;
+    const css = p.doc.head.find("style")[0]?.textContent ?? "";
+    expect(css).toContain(":where(html){scroll-padding-bottom:var(--ppc-h,var(--pp-foot-h,0px))}");
+    expect(html.style["--pp-foot-h"]).toBe("85px");
+    const el = (top: number, bottom: number) => {
+      const a = p.doc.body.appendChild(p.doc.createElement("a"));
+      a.rect = { top, bottom };
+      return a;
+    };
+    el(600, 640).fire("focusin"); // fully behind the footer
+    el(570, 590).fire("focusin"); // partly behind
+    el(100, 120).fire("focusin"); // in the clear
+    p.footer!.appendChild(p.doc.createElement("a")).fire("focusin"); // the footer's own link
+    expect(p.scrolls).toEqual([66, 16]);
+  });
+
+  it("hands over between banner and footer: the one on screen is the one to clear", () => {
+    const p = runBanner({ footer: true });
+    const html = p.doc.documentElement;
+    p.bar.rect = { top: 615, bottom: 667 };
+    // Banner open: the footer is back in the flow, the bar is what covers focus.
+    expect(html.style["--pp-foot-h"]).toBeUndefined();
+    const a = p.doc.body.appendChild(p.doc.createElement("a"));
+    a.rect = { top: 590, bottom: 610 }; // above the bar, though where the footer would be
+    a.fire("focusin");
+    expect(p.scrolls).toEqual([]);
+    p.accept();
+    // Banner closed: the footer is fixed again.
+    expect(html.style["--pp-foot-h"]).toBe("85px");
+    a.fire("focusin");
+    expect(p.scrolls).toEqual([36]);
   });
 
   it("Accept: grants analytics only, stores the choice with a date, closes", () => {

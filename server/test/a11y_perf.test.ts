@@ -74,4 +74,11 @@ describe("app shell (client/index.html)", () => {
     const tag = html.slice(html.lastIndexOf("<footer"));
     expect(tag.slice(0, tag.indexOf(">"))).not.toContain("position:");
   });
+
+  it("has consent.js keep focus clear of the fixed footer, and room to scroll past it (2.4.11)", () => {
+    const tag = html.slice(html.lastIndexOf("<footer"));
+    expect(tag.slice(0, tag.indexOf(">"))).toMatch(/\sdata-pp-fixed-bottom[\s>]/);
+    // The cross-promo links above it can scroll clear even when it wraps on a phone.
+    expect(rule(".pp-crosspromo")).toContain("var(--pp-foot-h");
+  });
 });

@@ -211,11 +211,14 @@
       }
       /* "Other projects" line below the app. In normal flow, not fixed: on the home
          page it sits under the lobby, in a room it stays below the fold (the room is
-         100vh), so it never covers the table. Bottom padding clears the fixed footer. */
+         100vh), so it never covers the table. Bottom padding clears the fixed footer:
+         at least 5rem, more when it wraps to several lines on a phone (--pp-foot-h,
+         its measured height, from consent.js), so the last links can always scroll
+         clear of it (WCAG 2.4.11). */
       .pp-crosspromo {
         max-width: 760px;
         margin: 0 auto;
-        padding: 0.5rem 1rem 5rem;
+        padding: 0.5rem 1rem max(5rem, calc(var(--pp-foot-h, 0px) + 1rem));
         text-align: center;
         font: 0.78rem/1.7 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
         color: var(--muted, #5b6b62);
@@ -226,10 +229,12 @@
         color: var(--accent, #15603b);
         text-decoration: underline;
       }
-      /* The fixed footer below. While the cookie banner is open (consent.js sets
-         data-ppc-open on <html>) the banner covers it, so it goes back into the page
-         flow: its links then scroll into view above the banner instead of taking focus
-         where nobody can see it (WCAG 2.4.11, SERBITO-350). */
+      /* The fixed footer below. data-pp-fixed-bottom tells consent.js to keep focus
+         clear of it: scroll padding of its height plus a focusin check, so tabbing never
+         lands on an element hidden behind it (WCAG 2.4.11, SERBITO-350). While the
+         cookie banner is open (consent.js sets data-ppc-open on <html>) the banner
+         covers it, so it goes back into the page flow: its links then scroll into view
+         above the banner instead of taking focus where nobody can see it. */
       .pp-foot {
         position: fixed;
         left: 0;
@@ -345,6 +350,7 @@
          and serves crawlers). Self-contained styles so it doesn't depend on app CSS. -->
     <footer
       class="pp-foot"
+      data-pp-fixed-bottom
       style="
         border-top: 1px solid rgba(0, 0, 0, 0.12);
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.12);

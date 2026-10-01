@@ -35,9 +35,10 @@
 
   var CSS =
     ".ppc-slot[hidden],.ppc[hidden]{display:none}" +
-    // While the bar is open, focus scrolling stops above it (WCAG 2.4.11): --ppc-h is
-    // the bar's height, set by fit(). :where() keeps it overridable by the page.
-    ":where(html){scroll-padding-bottom:var(--ppc-h,0px)}" +
+    // Focus scrolling stops above whatever covers the bottom of the viewport (WCAG
+    // 2.4.11): the bar while open (--ppc-h, set by fit()), else the page's own fixed
+    // footer (--pp-foot-h, set by dock()). :where() keeps it overridable by the page.
+    ":where(html){scroll-padding-bottom:var(--ppc-h,var(--pp-foot-h,0px))}" +
     ".ppc{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.4rem .75rem;padding:.55rem 1rem;background:#15603b;color:#fff;font:.85rem/1.4 system-ui,-apple-system,\"Segoe UI\",Roboto,sans-serif;box-shadow:0 -2px 8px rgba(0,0,0,.2);text-align:center}" +
     ".ppc p{margin:0}" +
     ".ppc a{color:#fff;text-decoration:underline}" +
@@ -55,6 +56,9 @@
   var bar;
   var parts; // the elements that carry text: [question, accept, decline, privacy link]
   var returnFocus = null;
+  // The page's own bottom-fixed chrome, if it has any: the app shell's footer
+  // (client/index.html) marks itself with data-pp-fixed-bottom.
+  var foot = d.querySelector ? d.querySelector("[data-pp-fixed-bottom]") : null;
 
   /** The stored choice ("granted" | "denied") if made within 12 months, else null. */
   function stored() {
@@ -124,26 +128,43 @@
     d.documentElement.style.setProperty("--ppc-h", h);
   }
 
+  /** Whether the page's footer is currently fixed (the page un-fixes it under the bar). */
+  function footFixed() {
+    return !!foot && !!w.getComputedStyle && w.getComputedStyle(foot).position === "fixed";
+  }
+
+  /** The element covering the bottom of the viewport: the open bar, else a fixed footer. */
+  function cover() {
+    if (bar && !bar.hidden) return bar;
+    return footFixed() ? foot : null;
+  }
+
+  /** Publish the fixed footer's height as --pp-foot-h (scroll padding, page spacing). */
+  function dock() {
+    var h = footFixed() ? foot.offsetHeight : 0;
+    if (h) d.documentElement.style.setProperty("--pp-foot-h", h + "px");
+    else d.documentElement.style.removeProperty("--pp-foot-h");
+  }
+
   /**
-   * Focus must never end up fully behind the bar (WCAG 2.4.11). scroll-padding covers
-   * browsers that honour it for focus scrolling; this covers the rest: once the
-   * browser has scrolled, if the focused element still reaches under the bar, scroll
-   * it clear.
+   * Focus must never end up behind the bar or a fixed footer (WCAG 2.4.11).
+   * scroll-padding covers browsers that honour it for focus scrolling, but not an
+   * element that is already "in view" behind the cover; this covers the rest: once the
+   * browser has scrolled, if the focused element still reaches under, scroll it clear.
    */
   function reveal(e) {
     var t = e.target;
-    if (!bar || bar.hidden || !t || !t.getBoundingClientRect || bar.contains(t)) return;
+    var c = cover();
+    if (!c || !t || !t.getBoundingClientRect || c.contains(t)) return;
     var raf = w.requestAnimationFrame || function (f) { f(); };
     raf(function () {
-      if (bar.hidden) return;
-      var under = t.getBoundingClientRect().bottom - bar.getBoundingClientRect().top;
+      if (cover() !== c) return;
+      var under = t.getBoundingClientRect().bottom - c.getBoundingClientRect().top;
       if (under > 0) w.scrollBy(0, under + 8);
     });
   }
 
   function build() {
-    var style = el("style", {}, d.head);
-    style.textContent = CSS;
     // The bar goes first in <body>, so keyboard and screen-reader users meet it first;
     // it is fixed, so where it sits in the DOM moves nothing on screen (no layout shift).
     bar = el("div", { class: "ppc", role: "region" });
@@ -170,7 +191,6 @@
       new w.MutationObserver(fill).observe(d.documentElement, { attributes: true, attributeFilter: ["lang"] });
     }
     w.addEventListener("resize", fit);
-    d.addEventListener("focusin", reveal);
   }
 
   /**
@@ -184,6 +204,7 @@
     // Lets the page move its own bottom-fixed chrome out of the bar's way (the app
     // shell's footer goes back into the flow: client/index.html).
     d.documentElement.setAttribute("data-ppc-open", "");
+    if (foot) dock();
     fill();
     if (focus) {
       returnFocus = from || d.activeElement || null;
@@ -197,6 +218,7 @@
     slot.hidden = true;
     d.documentElement.removeAttribute("data-ppc-open");
     d.documentElement.style.removeProperty("--ppc-h");
+    if (foot) dock(); // the footer is fixed again: its height is the scroll padding now
     if (returnFocus && returnFocus.focus) returnFocus.focus();
     // Never leave focus on a hidden button (e.g. it had nowhere to return to).
     var a = d.activeElement;
@@ -225,6 +247,16 @@
   });
 
   w.ppConsent = { open: open, stored: stored, text: TEXT };
+
+  // Always on, banner or not: the scroll padding and the focus check also keep focus
+  // clear of the page's fixed footer.
+  el("style", {}, d.head).textContent = CSS;
+  d.addEventListener("focusin", reveal);
+  if (foot) {
+    dock();
+    if (w.ResizeObserver) new w.ResizeObserver(dock).observe(foot);
+    else w.addEventListener("resize", dock);
+  }
 
   if (!stored()) open(false);
 })();
