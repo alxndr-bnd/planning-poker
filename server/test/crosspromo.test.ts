@@ -107,9 +107,10 @@ describe('"Other projects" cross-promo block (SERBITO-264)', () => {
 
   it("sits in a footer on guide pages and outside #root (after it) on the home page", () => {
     const home = readFileSync(join(clientDir, "index.html"), "utf-8");
-    const root = home.indexOf('<div id="root">');
+    const root = home.indexOf('<div id="root"></div>');
     const marker = home.indexOf(CROSSPROMO_MARKER);
-    expect(marker).toBeGreaterThan(home.indexOf("</main>", root)); // not replaced on mount
+    expect(root).toBeGreaterThan(0);
+    expect(marker).toBeGreaterThan(root); // React only controls #root: never replaced
     expect(marker).toBeLessThan(home.indexOf("<footer"));
     for (const page of PAGES.slice(1)) {
       const html = readFileSync(page, "utf-8");
