@@ -42,7 +42,11 @@
     ".ppc{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.4rem .75rem;padding:.55rem 1rem;background:#15603b;color:#fff;font:.85rem/1.4 system-ui,-apple-system,\"Segoe UI\",Roboto,sans-serif;box-shadow:0 -2px 8px rgba(0,0,0,.2);text-align:center}" +
     ".ppc p{margin:0}" +
     ".ppc a{color:#fff;text-decoration:underline}" +
-    ".ppc .ppc-b{display:flex;align-items:center;gap:.5rem .75rem}" +
+    ".ppc .ppc-b{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.5rem .75rem}" +
+    // Accept and Decline carry equal weight: one style for both, in two equal grid
+    // columns, so they are the same size whatever the language; on a narrow screen
+    // the Privacy link wraps rather than squeezing one button (SERBITO-350).
+    ".ppc .ppc-yn{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}" +
     ".ppc button{font:inherit;font-weight:600;min-height:2.25rem;padding:.3rem 1rem;border:1px solid #fff;border-radius:6px;background:#fff;color:#15603b;cursor:pointer}" +
     ".ppc button:hover{background:#e3f1e8}" +
     ".ppc a:focus-visible,.ppc button:focus-visible{outline:2px solid #ffd54a;outline-offset:2px}" +
@@ -172,8 +176,9 @@
     slot = el("div", { class: "ppc-slot" }, d.body);
     var q = el("p", {}, bar);
     var row = el("div", { class: "ppc-b" }, bar);
-    var yes = el("button", { type: "button", class: "ppc-yes" }, row);
-    var no = el("button", { type: "button", class: "ppc-no" }, row);
+    var pair = el("div", { class: "ppc-yn" }, row);
+    var yes = el("button", { type: "button", class: "ppc-yes" }, pair);
+    var no = el("button", { type: "button", class: "ppc-no" }, pair);
     var link = el("a", { href: "/privacy#cookies", hreflang: "en" }, row);
     yes.addEventListener("click", function () {
       choose("granted");

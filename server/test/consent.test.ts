@@ -603,6 +603,20 @@ describe("consent banner (client/public/consent.js)", () => {
     expect(() => p.accept()).not.toThrow();
   });
 
+  // SERBITO-350: declining is as easy to see and hit as accepting.
+  it("gives Accept and Decline equal weight: same style, same size", () => {
+    const p = runBanner();
+    const css = p.doc.head.find("style")[0].textContent;
+    expect(p.button("ppc-yes").parent).toBe(p.button("ppc-no").parent);
+    // No rule styles one of them apart from the other ...
+    expect(css).not.toMatch(/\.ppc-(yes|no)\b/);
+    // ... and the two of them alone share a grid of two equal columns, so the wider
+    // label sets the width of both buttons, in every language.
+    const pair = p.button("ppc-yes").parent!;
+    expect(pair.children).toEqual([p.button("ppc-yes"), p.button("ppc-no")]);
+    expect(css).toContain(`.ppc .${pair.getAttribute("class")}{display:grid;grid-template-columns:1fr 1fr;`);
+  });
+
   it("has every string in all nine languages", () => {
     const text = runBanner().win.ppConsent.text as Record<string, string[]>;
     expect(Object.keys(text).sort()).toEqual(
