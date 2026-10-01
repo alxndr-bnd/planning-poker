@@ -261,9 +261,9 @@ function LearnMore() {
         <p>
           <a href={guide("what-is-planning-poker")}>{tr("learn.readFull")}</a>
         </p>
-        {/* Internal links to the guide cluster. These live in the rendered app (not the
-            static #root landing React replaces on mount), so the link equity to the
-            cluster survives client-side rendering. */}
+        {/* Internal links to the guide cluster, in the rendered app itself (the static
+            landing below #root links to the English guides only), so every language's
+            guides are linked from the live page. */}
         <p>
           <b>{tr("learn.moreGuides")}</b>
         </p>

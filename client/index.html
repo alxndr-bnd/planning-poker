@@ -170,23 +170,35 @@
     </script>
 
     <style>
-      /* Static SEO landing shown before the React app mounts. Googlebot's first
-         crawl wave reads this; on mount, React replaces #root with the live app,
-         so real users go straight to the tool. */
+      /* The app mounts into #root; the static, crawlable landing (.pp-seo) sits BELOW
+         it and is never replaced, so nothing on screen moves when React mounts
+         (SERBITO-350: the swap moved the page ~100 px, CLS 1.0 mobile / 0.57 desktop).
+         #root holds a full screen from the first paint, so the landing starts below
+         the fold both before the mount and after it: the app fills the space, the
+         landing never shifts in view. flow-root keeps the lobby's top margin (12vh)
+         inside #root: collapsing through it, that margin moved <body> itself down
+         on mount — the ~100 px jump. */
+      #root {
+        display: flow-root;
+        min-height: 100vh;
+      }
+      /* The app's colours (styles.css), with the old light-theme values as fallback. */
       .pp-seo {
         max-width: 760px;
         margin: 0 auto;
         padding: 2.5rem 1.25rem 4rem;
+        border-top: 1px solid var(--line, #d5ddd8);
         font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
         line-height: 1.6;
-        color: #0e2a1d;
+        color: var(--ink, #0e2a1d);
       }
-      .pp-seo h1 { font-size: 2rem; margin: 0 0 0.5rem; color: #15603b; }
-      .pp-seo h2 { font-size: 1.25rem; margin: 2rem 0 0.5rem; color: #15603b; }
+      .pp-seo h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+      .pp-seo h2 { font-size: 1.25rem; margin: 2rem 0 0.5rem; }
       .pp-seo .lead { font-size: 1.1rem; }
       .pp-seo ol { padding-left: 1.25rem; }
       .pp-seo .faq dt { font-weight: 600; margin-top: 1rem; }
-      .pp-seo a { color: #15603b; }
+      .pp-seo dd { color: var(--muted, #5b6b62); }
+      .pp-seo a { color: var(--accent, #15603b); text-decoration: underline; }
 
       /* App layout fixes that pair with the fixed footer below (global, so they
          don't need to touch the app's own styles.css). The fixed footer is ~3rem
@@ -251,103 +263,104 @@
     </style>
   </head>
   <body>
-    <div id="root">
-      <!-- Static, crawlable landing content. Replaced by the React app on mount. -->
-      <main class="pp-seo">
-        <h1>Free Online Planning Poker for Agile Teams</h1>
-        <p class="lead">
-          Real-time <strong>Scrum Poker</strong> for agile estimation — create a
-          room, share the link, and estimate <strong>story points</strong>
-          together using <strong>Fibonacci</strong> cards. Free, open-source,
-          <strong>no sign-up</strong>, unlimited rooms.
-        </p>
-        <p>
-          Also known as <strong>Estimation Poker</strong>,
-          <strong>Poker Planning</strong>, or Pointing Poker — the same agile
-          estimation technique, one shared room.
-        </p>
+    <!-- The React app mounts here; it renders the page's main landmark. -->
+    <div id="root"></div>
+    <!-- Static, crawlable landing content, below the app. Never replaced: React only
+         controls #root, so the text stays put when the app mounts (no layout shift). -->
+    <section class="pp-seo" aria-labelledby="pp-seo-title">
+      <h1 id="pp-seo-title">Free Online Planning Poker for Agile Teams</h1>
+      <p class="lead">
+        Real-time <strong>Scrum Poker</strong> for agile estimation — create a
+        room, share the link, and estimate <strong>story points</strong>
+        together using <strong>Fibonacci</strong> cards. Free, open-source,
+        <strong>no sign-up</strong>, unlimited rooms.
+      </p>
+      <p>
+        Also known as <strong>Estimation Poker</strong>,
+        <strong>Poker Planning</strong>, or Pointing Poker — the same agile
+        estimation technique, one shared room.
+      </p>
 
-        <h2>How it works</h2>
-        <ol>
-          <li><strong>Create a room</strong> — one click, no registration.</li>
-          <li><strong>Share the link</strong> with your Scrum team.</li>
-          <li>
-            <strong>Estimate together</strong> — everyone picks a Fibonacci
-            card, reveal at once, discuss, and agree on the story-point estimate.
-          </li>
-        </ol>
+      <h2>How it works</h2>
+      <ol>
+        <li><strong>Create a room</strong> — one click, no registration.</li>
+        <li><strong>Share the link</strong> with your Scrum team.</li>
+        <li>
+          <strong>Estimate together</strong> — everyone picks a Fibonacci
+          card, reveal at once, discuss, and agree on the story-point estimate.
+        </li>
+      </ol>
 
-        <h2>Why teams use it</h2>
-        <p>
-          Planning Poker turns sprint planning into fast, consensus-based agile
-          estimation. It works for co-located, hybrid, and remote teams, keeps
-          estimates unbiased (cards are revealed simultaneously), and uses the
-          Fibonacci scale (0, 1, 2, 3, 5, 8, 13, 21…) to reflect uncertainty in
-          larger tasks.
-        </p>
+      <h2>Why teams use it</h2>
+      <p>
+        Planning Poker turns sprint planning into fast, consensus-based agile
+        estimation. It works for co-located, hybrid, and remote teams, keeps
+        estimates unbiased (cards are revealed simultaneously), and uses the
+        Fibonacci scale (0, 1, 2, 3, 5, 8, 13, 21…) to reflect uncertainty in
+        larger tasks.
+      </p>
 
-        <h2>Frequently asked questions</h2>
-        <dl class="faq">
-          <dt>What is Planning Poker?</dt>
-          <dd>
-            A consensus-based, gamified estimation technique where agile teams
-            estimate the effort of backlog items by privately choosing a card and
-            revealing all at once.
-          </dd>
-          <dt>What is the Fibonacci sequence used for?</dt>
-          <dd>
-            The Fibonacci-like deck (1, 2, 3, 5, 8, 13…) gives growing gaps that
-            reflect rising uncertainty in bigger stories — our cards use it by
-            default.
-          </dd>
-          <dt>Is it free? Do I need to sign up?</dt>
-          <dd>
-            Completely free and open-source — no registration, no paywall,
-            unlimited rooms.
-          </dd>
-          <dt>How does it fit into Scrum sprint planning?</dt>
-          <dd>
-            Teams size user stories in story points during sprint planning; the
-            estimates feed velocity and sprint scope.
-          </dd>
-          <dt>Can remote teams use it?</dt>
-          <dd>
-            Yes — estimates are revealed in real time, so distributed teams share
-            one room link and estimate together.
-          </dd>
-        </dl>
+      <h2>Frequently asked questions</h2>
+      <dl class="faq">
+        <dt>What is Planning Poker?</dt>
+        <dd>
+          A consensus-based, gamified estimation technique where agile teams
+          estimate the effort of backlog items by privately choosing a card and
+          revealing all at once.
+        </dd>
+        <dt>What is the Fibonacci sequence used for?</dt>
+        <dd>
+          The Fibonacci-like deck (1, 2, 3, 5, 8, 13…) gives growing gaps that
+          reflect rising uncertainty in bigger stories — our cards use it by
+          default.
+        </dd>
+        <dt>Is it free? Do I need to sign up?</dt>
+        <dd>
+          Completely free and open-source — no registration, no paywall,
+          unlimited rooms.
+        </dd>
+        <dt>How does it fit into Scrum sprint planning?</dt>
+        <dd>
+          Teams size user stories in story points during sprint planning; the
+          estimates feed velocity and sprint scope.
+        </dd>
+        <dt>Can remote teams use it?</dt>
+        <dd>
+          Yes — estimates are revealed in real time, so distributed teams share
+          one room link and estimate together.
+        </dd>
+      </dl>
 
-        <h2>Guides &amp; resources</h2>
-        <ul>
-          <li><a href="/what-is-planning-poker">What is Planning Poker? — a complete Scrum estimation guide</a></li>
-          <li><a href="/glossary">Agile estimation glossary</a> — story points, velocity, Fibonacci, and more</li>
-          <li><a href="/planning-poker-for-jira">Planning Poker for Jira</a> — free, no plugin, no signup</li>
-          <li><a href="/planning-poker-for-remote-teams">Planning Poker for remote teams</a></li>
-        </ul>
+      <h2>Guides &amp; resources</h2>
+      <ul>
+        <li><a href="/what-is-planning-poker">What is Planning Poker? — a complete Scrum estimation guide</a></li>
+        <li><a href="/glossary">Agile estimation glossary</a> — story points, velocity, Fibonacci, and more</li>
+        <li><a href="/planning-poker-for-jira">Planning Poker for Jira</a> — free, no plugin, no signup</li>
+        <li><a href="/planning-poker-for-remote-teams">Planning Poker for remote teams</a></li>
+      </ul>
 
-        <h2>Help shape the roadmap</h2>
-        <p>
-          Serbito Planning Poker is free, open-source, and built in the open — and
-          <strong>you decide what we build next</strong>. Browse the candidate features
-          (custom card decks, median stats, CSV/JSON export, QR join, issue import,
-          more languages) and 👍 the ones you want.
-        </p>
-        <p>
-          <a
-            href="https://github.com/alxndr-bnd/planning-poker/issues?q=is%3Aissue+is%3Aopen+label%3Afeature-vote+sort%3Areactions-%2B1-desc"
-            rel="noopener"
-          >Vote on features on GitHub →</a>
-        </p>
+      <h2>Help shape the roadmap</h2>
+      <p>
+        Serbito Planning Poker is free, open-source, and built in the open — and
+        <strong>you decide what we build next</strong>. Browse the candidate features
+        (custom card decks, median stats, CSV/JSON export, QR join, issue import,
+        more languages) and 👍 the ones you want.
+      </p>
+      <p>
+        <a
+          href="https://github.com/alxndr-bnd/planning-poker/issues?q=is%3Aissue+is%3Aopen+label%3Afeature-vote+sort%3Areactions-%2B1-desc"
+          rel="noopener"
+        >Vote on features on GitHub →</a>
+      </p>
 
-        <p><a href="https://poker.serbito.rs/">Start a free Planning Poker room →</a></p>
-      </main>
-    </div>
+      <p><a href="https://poker.serbito.rs/">Start a free Planning Poker room →</a></p>
+    </section>
     <!-- Cross-promo, OUTSIDE #root so it survives the React mount. The build fills
          the marker with static links from client/src/crosspromo.ts (the one list). -->
     <div class="pp-crosspromo"><!-- crosspromo --></div>
     <!-- Visible footer OUTSIDE #root — React only controls #root, so this stays
-         on screen for real users (the static landing above is replaced on mount,
-         and serves crawlers). Self-contained styles so it doesn't depend on app CSS. -->
+         on screen for real users. Self-contained styles so it doesn't depend on app
+         CSS. -->
     <footer
       class="pp-foot"
       data-pp-fixed-bottom

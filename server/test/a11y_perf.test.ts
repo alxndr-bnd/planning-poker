@@ -75,6 +75,25 @@ describe("app shell (client/index.html)", () => {
     expect(tag.slice(0, tag.indexOf(">"))).not.toContain("position:");
   });
 
+  // Item 1: React used to replace a pre-rendered landing inside #root, and the page
+  // moved ~100 px on every load (field CLS 1.0 mobile / 0.59 desktop).
+  it("keeps the landing below the app, so mounting React moves nothing (CLS)", () => {
+    const root = html.indexOf('<div id="root"></div>'); // empty: nothing to replace
+    expect(root).toBeGreaterThan(0);
+    const landing = html.slice(html.indexOf('<section class="pp-seo"'));
+    expect(html.indexOf('<section class="pp-seo"')).toBeGreaterThan(root);
+    expect(landing).toMatch(/<h1[^>]*>Free Online Planning Poker for Agile Teams<\/h1>/);
+    for (const g of ["what-is-planning-poker", "glossary", "planning-poker-for-jira", "planning-poker-for-remote-teams"]) {
+      expect(landing).toContain(`href="/${g}"`);
+    }
+    expect(html).not.toContain("<main"); // the app renders the page's one <main>
+    // A full screen from the first paint, so the landing starts below the fold before
+    // and after the mount; flow-root keeps the lobby's top margin from collapsing
+    // through #root and moving <body> itself.
+    expect(rule("#root")).toContain("display: flow-root");
+    expect(rule("#root")).toContain("min-height: 100vh");
+  });
+
   it("has consent.js keep focus clear of the fixed footer, and room to scroll past it (2.4.11)", () => {
     const tag = html.slice(html.lastIndexOf("<footer"));
     expect(tag.slice(0, tag.indexOf(">"))).toMatch(/\sdata-pp-fixed-bottom[\s>]/);
