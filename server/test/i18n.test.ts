@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { afterEach, describe, it, expect, vi } from "vitest";
 // Client i18n module — tested here so it runs in the existing vitest gate.
-import { EN, LANGS, t, getInitialLang } from "../../client/src/i18n.js";
+import { EN, LANGS, t, detectLang, getInitialLang } from "../../client/src/i18n.js";
 
 describe("UI i18n", () => {
   it("returns the English string for en", () => {
@@ -41,9 +41,6 @@ describe("UI i18n", () => {
     ]);
   });
 
-  it("defaults to English when nothing is saved", () => {
-    expect(getInitialLang()).toBe("en");
-  });
 
   it("never returns an empty string for any EN key in any language", () => {
     for (const { code } of LANGS) {
@@ -51,5 +48,75 @@ describe("UI i18n", () => {
         expect(t(code, key).length).toBeGreaterThan(0);
       }
     }
+  });
+});
+
+// SERBITO-355 (5a): a ru-RU browser got English. Owner: detect navigator.language on
+// the first visit only; a saved pp_lang wins; the /xx/ guides link with ?lang=xx.
+describe("initial UI language", () => {
+  function browser({ saved, languages, href = "https://poker.serbito.rs/" }: {
+    saved?: string;
+    languages: string[];
+    href?: string;
+  }) {
+    const store = new Map<string, string>(saved ? [["pp_lang", saved]] : []);
+    vi.stubGlobal("localStorage", {
+      getItem: (k: string) => store.get(k) ?? null,
+      setItem: (k: string, v: string) => void store.set(k, v),
+    });
+    vi.stubGlobal("navigator", { languages, language: languages[0] });
+    const bar = { href };
+    vi.stubGlobal("location", bar);
+    vi.stubGlobal("history", {
+      state: null,
+      replaceState: (_s: unknown, _t: string, url: string) => {
+        bar.href = new URL(url, bar.href).href;
+      },
+    });
+    return { store, bar };
+  }
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("first visit: the browser's language, saved so later visits keep it", () => {
+    const { store } = browser({ languages: ["ru-RU", "en-US"] });
+    expect(getInitialLang()).toBe("ru");
+    expect(store.get("pp_lang")).toBe("ru");
+  });
+
+  it("first visit, a language we don't offer: English", () => {
+    const { store } = browser({ languages: ["pl-PL", "it"] });
+    expect(getInitialLang()).toBe("en");
+    expect(store.get("pp_lang")).toBe("en");
+  });
+
+  it("a saved choice wins over the browser's language", () => {
+    browser({ saved: "de", languages: ["ru-RU"] });
+    expect(getInitialLang()).toBe("de");
+  });
+
+  it("?lang=xx from a guide link wins, is saved, and leaves the address bar", () => {
+    const { store, bar } = browser({
+      saved: "en",
+      languages: ["en-US"],
+      href: "https://poker.serbito.rs/?lang=ru&ui=v2#/r/abcdef123",
+    });
+    expect(getInitialLang()).toBe("ru");
+    expect(store.get("pp_lang")).toBe("ru");
+    expect(bar.href).toBe("https://poker.serbito.rs/?ui=v2#/r/abcdef123");
+  });
+
+  it("an unknown ?lang is dropped and ignored", () => {
+    const { bar } = browser({ saved: "es", languages: ["en"], href: "https://poker.serbito.rs/?lang=xx" });
+    expect(getInitialLang()).toBe("es");
+    expect(bar.href).toBe("https://poker.serbito.rs/");
+  });
+
+  it("matches by primary subtag", () => {
+    expect(detectLang(["pt-BR"])).toBe("pt");
+    expect(detectLang(["sr-Latn-RS"])).toBe("sr");
+    expect(detectLang(["zh-Hans-CN"])).toBe("zh");
+    expect(detectLang(["ZH_tw"])).toBe("zh");
+    expect(detectLang(["nl", "fr-CA"])).toBe("fr");
+    expect(detectLang([])).toBeNull();
   });
 });

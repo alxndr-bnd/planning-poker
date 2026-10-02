@@ -102,15 +102,68 @@ export function t(
 
 const LS_KEY = "pp_lang";
 
-/** Saved language, else English (default — no auto-detect, per product choice). */
-export function getInitialLang(): Lang {
+const isLang = (v: unknown): v is Lang => LANGS.some((l) => l.code === v);
+
+/**
+ * The first UI language among the browser's preferences, by primary subtag
+ * ("ru-RU" -> ru, "pt-BR" -> pt, "sr-Latn-RS" -> sr), or null when none is offered.
+ */
+export function detectLang(prefs: readonly string[]): Lang | null {
+  for (const tag of prefs) {
+    const primary = String(tag).split(/[-_]/)[0].toLowerCase();
+    if (isLang(primary)) return primary;
+  }
+  return null;
+}
+
+/** `?lang=xx` (the /xx/ guides link to the app with it), removed from the address bar
+ *  so it doesn't travel on in a copied room link. */
+// Structural, not the DOM lib's types: this module is also type-checked and unit
+// tested from the server workspace, whose tsconfig has no DOM lib.
+interface AddressBar {
+  location: { href: string };
+  history: { state: unknown; replaceState(state: unknown, unused: string, url: string): void };
+}
+
+function takeLangParam(): Lang | null {
   try {
-    const saved = localStorage.getItem(LS_KEY) as Lang | null;
-    if (saved && LANGS.some((l) => l.code === saved)) return saved;
+    const { location, history } = globalThis as unknown as AddressBar;
+    const url = new URL(location.href);
+    const lang = url.searchParams.get("lang");
+    if (lang === null) return null;
+    url.searchParams.delete("lang");
+    history.replaceState(history.state, "", url.pathname + url.search + url.hash);
+    return isLang(lang) ? lang : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The UI language (SERBITO-355): `?lang=xx` from a guide link, else the saved choice
+ * (pp_lang), else — on the first visit only — the browser's language, else English.
+ * The link's and the detected language are saved, so later visits don't re-detect.
+ */
+export function getInitialLang(): Lang {
+  const fromLink = takeLangParam();
+  if (fromLink) {
+    setLang(fromLink);
+    return fromLink;
+  }
+  try {
+    const saved = localStorage.getItem(LS_KEY);
+    if (isLang(saved)) return saved;
   } catch {
     /* localStorage unavailable */
   }
-  return "en";
+  let detected: Lang = "en";
+  try {
+    detected = detectLang(navigator.languages?.length ? navigator.languages : [navigator.language]) ?? "en";
+  } catch {
+    /* no navigator */
+  }
+  setLang(detected);
+  return detected;
 }
 
 export function setLang(lang: Lang): void {
