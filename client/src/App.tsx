@@ -437,6 +437,7 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
         switch (msg.type) {
           case "joined": {
             setYouId(msg.youId);
+            setConn("open");
             knownRef.current = true;
             rememberRoom(roomId);
             if (!joinTracked.current) {

@@ -7,7 +7,9 @@ import {
 
 type Handler = (msg: ServerMessage) => void;
 
-/** Socket state for the UI: first connect, live, or dropped and retrying. */
+/** Connection state for the UI: first connect, in the room, or dropped and retrying.
+ *  The socket only reports "reconnecting"; "open" is the app's to set once the server
+ *  has taken our join (an open socket alone doesn't mean we're in). */
 export type ConnStatus = "connecting" | "open" | "reconnecting";
 
 /**
@@ -49,7 +51,6 @@ export class PokerSocket {
     this.ws = ws;
     ws.onopen = () => {
       this.backoff = 500;
-      this.onStatus("open");
       this.onOpen();
     };
     ws.onmessage = (ev) => {
