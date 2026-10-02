@@ -103,8 +103,8 @@
       <h2>What stays in your browser</h2>
       <p>The app itself sets no cookies. It keeps a few small values in your browser's storage:</p>
       <ul>
-        <li><code>localStorage</code>: your last display name (<code>pp_name</code>), language (<code>pp_lang</code>), the "copy link on create" setting (<code>pp_copy_on_create</code>), the interface version (<code>pp_ui_v2</code>) and your cookie choice with its date (<code>pp_consent</code>, see <a href="#cookies">below</a>).</li>
-        <li><code>sessionStorage</code>, cleared when you close the tab: a random tab id (<code>pp_client_id</code>) sent with your name when you join, so a dropped connection gets your vote back; and a one-time "link copied" flag per room (<code>pp_link_copied</code>).</li>
+        <li><code>localStorage</code>: your last display name (<code>pp_name</code>), language (<code>pp_lang</code>; on your first visit, your browser's language), the "copy link on create" setting (<code>pp_copy_on_create</code>), the interface version (<code>pp_ui_v2</code>) and your cookie choice with its date (<code>pp_consent</code>, see <a href="#cookies">below</a>).</li>
+        <li><code>sessionStorage</code>, cleared when you close the tab: a random tab id (<code>pp_client_id</code>) sent with your name when you join, so a dropped connection gets your vote back; a one-time "link copied" flag per room (<code>pp_link_copied</code>); and a flag per room you created or joined in this tab (<code>pp_room</code>), so the room can be restored after a server restart while a mistyped link says "room not found".</li>
       </ul>
       <p>You can delete them at any time in your browser's site settings.</p>
 

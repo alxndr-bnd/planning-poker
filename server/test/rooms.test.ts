@@ -152,4 +152,20 @@ describe("Room", () => {
     expect(room.reattachParticipant(pub(room, "secret-key-alice"), "Mallory")).toBeNull();
     expect(room.participants.get("secret-key-alice")!.name).toBe("Alice");
   });
+
+  // SERBITO-355 (P9c): two "Ann"s were indistinguishable at the table.
+  it("gives a duplicate name a suffix, case-insensitively, and keeps it on reconnect", () => {
+    const room = new Room("dupnames");
+    expect(room.addParticipant("a", "Ann", false).name).toBe("Ann");
+    expect(room.addParticipant("b", "Ann", false).name).toBe("Ann (2)");
+    expect(room.addParticipant("c", "ann", true).name).toBe("ann (3)");
+    expect(room.addParticipant("d", "Bob", false).name).toBe("Bob");
+    // The second Ann reconnects with the name her client knows: still told apart.
+    room.markDisconnected("b");
+    expect(room.reattachParticipant("b", "Ann")!.name).toBe("Ann (2)");
+    // Once the first Ann has left, the name is free again.
+    room.removeParticipant("a");
+    expect(room.reattachParticipant("b", "Ann")!.name).toBe("Ann");
+  });
 });
+

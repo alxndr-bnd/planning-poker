@@ -61,6 +61,14 @@ export type ClientMessage =
       /** Stable per-tab id so a reconnect re-attaches to the same participant (keeps the
        *  vote) instead of spawning a new one. Optional: pre-v3 clients omit it. */
       clientId?: string;
+      /** false: join only an existing room; a missing one answers `room_not_found`
+       *  instead of being created (a mistyped or expired link, SERBITO-355). Absent
+       *  (older clients) or true: create the room if it doesn't exist. */
+      create?: boolean;
+      /** true when the user started this join (opened the room, pressed Reconnect),
+       *  not an automatic reconnect. Counts as activity for the idle disconnect, so a
+       *  user who rejoins isn't kicked again at the next sweep (SERBITO-355). */
+      manual?: boolean;
     }
   | { type: "vote"; value: CardValue }
   | { type: "unvote" }
@@ -100,7 +108,9 @@ export function parseClientMessage(data: unknown): ClientMessage | null {
         !isStr(m.roomId, MAX_ROOM_ID) ||
         !isStr(m.name, MAX_NAME_INPUT) ||
         !optBool(m.asObserver) ||
-        !optStr(m.clientId, MAX_CLIENT_ID)
+        !optStr(m.clientId, MAX_CLIENT_ID) ||
+        !optBool(m.create) ||
+        !optBool(m.manual)
       )
         return null;
       return {
@@ -109,6 +119,8 @@ export function parseClientMessage(data: unknown): ClientMessage | null {
         name: m.name,
         ...(m.asObserver !== undefined ? { asObserver: m.asObserver as boolean } : {}),
         ...(m.clientId !== undefined ? { clientId: m.clientId as string } : {}),
+        ...(m.create !== undefined ? { create: m.create as boolean } : {}),
+        ...(m.manual !== undefined ? { manual: m.manual as boolean } : {}),
       };
     case "vote":
       if (typeof m.value !== "string" || !DECK.has(m.value)) return null;

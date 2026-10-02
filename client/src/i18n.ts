@@ -30,8 +30,27 @@ export const EN = {
   "room.invite": "Invite teammates",
   "room.copied": "Copied!",
   "room.linkCopiedToast": "Invite link copied to clipboard",
+  "room.copyFailed": "Couldn't copy the link. Copy it from here:",
+  "room.close": "Close",
   "room.idleDisconnected": "Disconnected due to inactivity.",
   "room.idleReconnect": "Reconnect",
+  "room.tryAgain": "Try again",
+  "room.notFoundTitle": "Room not found",
+  "room.notFoundText":
+    "This link is mistyped or the room has expired: a room closes a few minutes after everyone leaves.",
+  "room.createNew": "Create a new room",
+  "room.alone": "You're the only one here. Share the room link to invite your team.",
+  "conn.connecting": "Connecting…",
+  "conn.reconnecting": "Connection lost. Reconnecting…",
+  "conn.voteQueued": "Connection lost. Your vote will be sent when it's back.",
+  // Server `error` codes (shared/protocol.ts); unknown codes show the server's text.
+  "error.room_full": "This room is full.",
+  "error.server_full": "The server is busy. Try again in a few minutes.",
+  "error.too_many_rooms": "Too many new rooms from your network. Try again in a few minutes.",
+  "error.rate_limited": "Too many actions at once. Wait a moment and try again.",
+  "error.bad_room": "This room link is not valid.",
+  "error.no_name": "Enter a name to join.",
+  "error.internal": "Something went wrong on the server. Try again.",
   "room.reveal": "Reveal",
   "room.revealsThisRound": "{name} reveals this round",
   "room.reset": "Reset",
@@ -40,6 +59,7 @@ export const EN = {
   "room.observeJoin": "You are observing — click to join voting",
   "room.observe": "Observe (don't vote)",
   "room.you": "(you)",
+  "room.observers": "Observing",
   "deck.more": "More",
   "deck.collapse": "Hide high cards",
   "deck.showHighTitle": "Show high cards (89–610)",
@@ -59,6 +79,14 @@ export const EN = {
   "sponsor.full": "Sponsored by serbito.rs",
   "sponsor.short": "by serbito.rs",
   "altto.featured": "Like us on AlternativeTo ↗",
+  // The app shell's fixed footer (client/index.html, outside React): elements carrying
+  // data-pp-i18n="<key>" are re-labelled in the UI language by shell.ts.
+  "footer.tagline": "Free & open-source planning poker — no ads, no sign-up.",
+  "footer.github": "Open source on GitHub",
+  "footer.vote": "🗳️ Vote on what we build next",
+  "footer.altto": "Find us on AlternativeTo",
+  "footer.privacy": "Privacy",
+  "footer.cookies": "Cookie settings",
   // "Other projects" footer block: static HTML rendered at build time by crosspromo.ts.
   "crosspromo.title": "Other projects",
   "crosspromo.gtd": "Free GTD task manager with a Telegram bot",
@@ -90,15 +118,68 @@ export function t(
 
 const LS_KEY = "pp_lang";
 
-/** Saved language, else English (default — no auto-detect, per product choice). */
-export function getInitialLang(): Lang {
+const isLang = (v: unknown): v is Lang => LANGS.some((l) => l.code === v);
+
+/**
+ * The first UI language among the browser's preferences, by primary subtag
+ * ("ru-RU" -> ru, "pt-BR" -> pt, "sr-Latn-RS" -> sr), or null when none is offered.
+ */
+export function detectLang(prefs: readonly string[]): Lang | null {
+  for (const tag of prefs) {
+    const primary = String(tag).split(/[-_]/)[0].toLowerCase();
+    if (isLang(primary)) return primary;
+  }
+  return null;
+}
+
+/** `?lang=xx` (the /xx/ guides link to the app with it), removed from the address bar
+ *  so it doesn't travel on in a copied room link. */
+// Structural, not the DOM lib's types: this module is also type-checked and unit
+// tested from the server workspace, whose tsconfig has no DOM lib.
+interface AddressBar {
+  location: { href: string };
+  history: { state: unknown; replaceState(state: unknown, unused: string, url: string): void };
+}
+
+function takeLangParam(): Lang | null {
   try {
-    const saved = localStorage.getItem(LS_KEY) as Lang | null;
-    if (saved && LANGS.some((l) => l.code === saved)) return saved;
+    const { location, history } = globalThis as unknown as AddressBar;
+    const url = new URL(location.href);
+    const lang = url.searchParams.get("lang");
+    if (lang === null) return null;
+    url.searchParams.delete("lang");
+    history.replaceState(history.state, "", url.pathname + url.search + url.hash);
+    return isLang(lang) ? lang : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The UI language (SERBITO-355): `?lang=xx` from a guide link, else the saved choice
+ * (pp_lang), else — on the first visit only — the browser's language, else English.
+ * The link's and the detected language are saved, so later visits don't re-detect.
+ */
+export function getInitialLang(): Lang {
+  const fromLink = takeLangParam();
+  if (fromLink) {
+    setLang(fromLink);
+    return fromLink;
+  }
+  try {
+    const saved = localStorage.getItem(LS_KEY);
+    if (isLang(saved)) return saved;
   } catch {
     /* localStorage unavailable */
   }
-  return "en";
+  let detected: Lang = "en";
+  try {
+    detected = detectLang(navigator.languages?.length ? navigator.languages : [navigator.language]) ?? "en";
+  } catch {
+    /* no navigator */
+  }
+  setLang(detected);
+  return detected;
 }
 
 export function setLang(lang: Lang): void {

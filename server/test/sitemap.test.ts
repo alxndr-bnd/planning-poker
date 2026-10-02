@@ -154,6 +154,9 @@ describe("every sitemap URL is served", () => {
   it("serves /sitemap.xml itself, and /nonexistent is a 404", async () => {
     expect((await status("/sitemap.xml")).status).toBe(200);
     expect((await status("/nonexistent")).status).toBe(404);
-    expect((await status("/ru")).status).toBe(404); // no language home pages
+    // No language home pages: /ru redirects to the app in Russian (SERBITO-355), so it
+    // is not a page of its own and stays out of the sitemap.
+    expect((await status("/ru")).status).toBe(302);
+    expect(locs).not.toContain(`${ORIGIN}/ru`);
   });
 });

@@ -61,7 +61,7 @@ export class Room {
   }
 
   /** Record a real user action — resets the idle-disconnect timer. */
-  private engage() {
+  engage() {
     this.lastEngagementAt = Date.now();
   }
 
@@ -108,11 +108,26 @@ export class Room {
     return this.participants.get(this.revealerId)?.publicId ?? null;
   }
 
+  /**
+   * `name`, or "name (2)", "name (3)", ... when someone else in the room already has
+   * it (case-insensitive), so two Anns can tell their votes apart (SERBITO-355).
+   */
+  private uniqueName(name: string, selfId: string): string {
+    const taken = new Set(
+      [...this.participants.values()].filter((p) => p.id !== selfId).map((p) => p.name.toLowerCase()),
+    );
+    if (!taken.has(name.toLowerCase())) return name;
+    for (let n = 2; ; n++) {
+      const candidate = `${name} (${n})`;
+      if (!taken.has(candidate.toLowerCase())) return candidate;
+    }
+  }
+
   addParticipant(id: string, name: string, isObserver: boolean): Participant {
     const p: Participant = {
       id,
       publicId: this.newPublicId(),
-      name,
+      name: this.uniqueName(name, id),
       isObserver,
       connected: true,
       vote: null,
@@ -135,7 +150,7 @@ export class Room {
     if (!p) return null;
     p.connected = true;
     p.disconnectedAt = null;
-    if (name) p.name = name;
+    if (name) p.name = this.uniqueName(name, id);
     this.ensureRevealer();
     this.touch();
     return p; // vote intentionally preserved

@@ -14,16 +14,18 @@ import {
   type RoundLog,
   type Summary,
 } from "@pp/shared";
-import { PokerSocket, newRoomId, getClientId } from "./ws.js";
+import { PokerSocket, newRoomId, getClientId, type ConnStatus } from "./ws.js";
 import {
   type Lang,
   type StringKey,
+  EN,
   LANGS,
   t,
   getInitialLang,
   setLang as persistLang,
 } from "./i18n.js";
 import { resolveUiV2 } from "./ui.js";
+import { localizeShell } from "./shell.js";
 import { trackEvent, trackPageView } from "./analytics.js";
 
 const REPO = "alxndr-bnd/planning-poker";
@@ -114,6 +116,49 @@ function useHashRoom(): string | null {
   return roomId;
 }
 
+/**
+ * Rooms this tab created or has been in (sessionStorage). Only those are (re)created
+ * on join — e.g. after a deploy wiped the server's rooms. Any other link must point
+ * at a live room: a mistyped or expired one shows "room not found" (SERBITO-355).
+ */
+const KNOWN_ROOM = (id: string) => `pp_room:${id}`;
+function rememberRoom(id: string) {
+  try {
+    sessionStorage.setItem(KNOWN_ROOM(id), "1");
+  } catch {
+    /* sessionStorage unavailable: only the in-memory flag in Room */
+  }
+}
+function isKnownRoom(id: string): boolean {
+  try {
+    return sessionStorage.getItem(KNOWN_ROOM(id)) === "1";
+  } catch {
+    return false;
+  }
+}
+
+/** Copy `text`; true only once the clipboard has taken it (SERBITO-355). */
+function copyText(text: string): Promise<boolean> {
+  try {
+    if (!navigator.clipboard) return Promise.resolve(false);
+    return navigator.clipboard.writeText(text).then(
+      () => true,
+      () => false,
+    );
+  } catch {
+    return Promise.resolve(false);
+  }
+}
+
+/** Create a room in this tab and go there. */
+function startNewRoom(): string {
+  const id = newRoomId();
+  rememberRoom(id);
+  trackEvent("room_created");
+  location.hash = `#/r/${id}`;
+  return id;
+}
+
 function parseHash(): string | null {
   const m = location.hash.match(/^#\/r\/([A-Za-z0-9_-]{6,32})$/);
   return m ? m[1] : null;
@@ -128,6 +173,7 @@ export function App() {
 
   useEffect(() => {
     document.documentElement.lang = lang;
+    localizeShell(lang, document);
   }, [lang]);
 
   // GA4 counts one page_view — at load, from the tag in index.html. Hash routing
@@ -184,18 +230,24 @@ function Lobby({
     setName(n);
     if (!roomId) {
       const id = newRoomId();
-      if (copyOnCreate) {
-        const url = `${location.origin}${location.pathname}#/r/${id}`;
-        navigator.clipboard?.writeText(url).catch(() => {});
-        // Flag the freshly-created room so it toasts "link copied" once on entry.
-        try {
-          sessionStorage.setItem(`pp_link_copied:${id}`, "1");
-        } catch {
-          /* sessionStorage unavailable — skip the toast */
+      rememberRoom(id);
+      const enter = () => {
+        trackEvent("room_created");
+        location.hash = `#/r/${id}`;
+      };
+      if (!copyOnCreate) return enter();
+      const url = `${location.origin}${location.pathname}#/r/${id}`;
+      void copyText(url).then((ok) => {
+        // Flag the room so it toasts "link copied" once on entry — only when it was.
+        if (ok) {
+          try {
+            sessionStorage.setItem(`pp_link_copied:${id}`, "1");
+          } catch {
+            /* sessionStorage unavailable — skip the toast */
+          }
         }
-      }
-      trackEvent("room_created");
-      location.hash = `#/r/${id}`;
+        enter();
+      });
     }
   }
 
@@ -303,6 +355,15 @@ function LearnMore() {
   );
 }
 
+/** Server errors that end the join: the socket is closed and the user decides. */
+const FATAL_ERRORS = new Set(["room_full", "server_full", "too_many_rooms", "bad_room", "no_name"]);
+
+/** The message for a server `error`: ours when we know the code, else the server's. */
+function errorText(tr: I18n["tr"], code: string, message: string): string {
+  const key = `error.${code}`;
+  return key in EN ? tr(key as StringKey) : message || tr("error.internal");
+}
+
 function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: boolean }) {
   const { tr } = useT();
   const sockRef = useRef<PokerSocket | null>(null);
@@ -312,6 +373,8 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
   const [participants, setParticipants] = useState<ParticipantView[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [copied, setCopied] = useState(false);
+  // The invite link, shown to copy by hand when the clipboard refused it.
+  const [copyFallback, setCopyFallback] = useState<string | null>(null);
   const [revealerId, setRevealerId] = useState<string | null>(null);
   const [log, setLog] = useState<RoundLog[]>([]);
   // Server closed our socket for inactivity (idle-disconnect, lets Cloud Run scale
@@ -319,6 +382,22 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
   const [idleDisconnected, setIdleDisconnected] = useState(false);
   // Transient toast (e.g. "invite link copied" right after creating the room).
   const [toast, setToast] = useState<string | null>(null);
+  // Socket state, shown as a pill while we're not connected (SERBITO-355).
+  const [conn, setConn] = useState<ConnStatus>("connecting");
+  // A server error that ended the join (room full, ...): the socket is closed.
+  const [fatal, setFatal] = useState<string | null>(null);
+  // Any other server error (rate limited, ...), shown for a few seconds.
+  const [notice, setNotice] = useState<string | null>(null);
+  // A vote (or un-vote: value null) made while the socket was down. Sent once the
+  // server has us back (on `joined`); shown as our pick meanwhile.
+  const [pending, setPending] = useState<{ value: CardValue | null } | null>(null);
+  const pendingRef = useRef<{ value: CardValue | null } | null>(null);
+  const queueVote = (p: { value: CardValue | null } | null) => {
+    pendingRef.current = p;
+    setPending(p);
+  };
+  const trRef = useRef(tr);
+  trRef.current = tr;
 
   // If this room was just created with "copy link on create" ticked, the lobby flagged
   // it — show a one-shot toast on entry so the creator knows the link is on the clipboard.
@@ -344,18 +423,34 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
   // The server re-sends `joined` after every reconnect; the funnel wants one event
   // per room entry. Room is keyed by roomId, so this resets when the room changes.
   const joinTracked = useRef(false);
+  // The room exists for us: we created it here, or we've been in it. Then a join may
+  // (re)create it; otherwise a missing room is "not found".
+  const knownRef = useRef(isKnownRoom(roomId));
+  const [notFound, setNotFound] = useState(false);
+  // The next join is the user's doing (entering the room, Reconnect, Try again), not
+  // an automatic reconnect: the server counts it as activity.
+  const manualRef = useRef(true);
 
   useEffect(() => {
     const sock = new PokerSocket(
       (msg) => {
         switch (msg.type) {
-          case "joined":
+          case "joined": {
             setYouId(msg.youId);
+            setConn("open");
+            knownRef.current = true;
+            rememberRoom(roomId);
             if (!joinTracked.current) {
               joinTracked.current = true;
               trackEvent("room_joined");
             }
+            const p = pendingRef.current;
+            if (p) {
+              sock.send(p.value === null ? { type: "unvote" } : { type: "vote", value: p.value });
+              queueVote(null);
+            }
             break;
+          }
           case "state":
             setPhase(msg.phase);
             setItemTitle(msg.itemTitle);
@@ -367,6 +462,21 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
           case "summary":
             setSummary(msg.summary);
             break;
+          case "error": {
+            if (msg.code === "room_not_found") {
+              sock.close();
+              setNotFound(true);
+              break;
+            }
+            const text = errorText(trRef.current, msg.code, msg.message);
+            if (FATAL_ERRORS.has(msg.code)) {
+              sock.close();
+              setFatal(text);
+            } else {
+              setNotice(text);
+            }
+            break;
+          }
         }
       },
       () => {
@@ -379,25 +489,58 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
           name,
           clientId: getClientId(),
           asObserver: observerRef.current,
+          create: knownRef.current,
+          manual: manualRef.current,
         });
+        manualRef.current = false;
       },
       () => setIdleDisconnected(true),
+      setConn,
     );
     sock.connect();
     sockRef.current = sock;
     return () => sock.close();
   }, [roomId, name]);
 
-  const send = (m: Parameters<PokerSocket["send"]>[0]) => sockRef.current?.send(m);
+  // Hide a transient server notice after a few seconds.
+  useEffect(() => {
+    if (!notice) return;
+    const timer = setTimeout(() => setNotice(null), 5000);
+    return () => clearTimeout(timer);
+  }, [notice]);
+
+  const send = (m: Parameters<PokerSocket["send"]>[0]) => sockRef.current?.send(m) ?? false;
+  const online = conn === "open" && !fatal && !idleDisconnected;
   const me = participants.find((p) => p.id === youId);
+  const myVote = pending ? pending.value : (me?.vote ?? null);
   const isObserver = me?.isObserver ?? false;
   observerRef.current = isObserver;
 
   function copyLink() {
-    navigator.clipboard.writeText(location.href).then(() => {
+    const url = location.href;
+    void copyText(url).then((ok) => {
+      if (!ok) return setCopyFallback(url); // say so, and offer the link to copy by hand
+      setCopyFallback(null);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     });
+  }
+
+  if (notFound) {
+    return (
+      <div className="room not-found">
+        <div className="not-found-card" role="alert">
+          <h1>{tr("room.notFoundTitle")}</h1>
+          <p>{tr("room.notFoundText")}</p>
+          <div className="not-found-actions">
+            <button className="primary" onClick={() => startNewRoom()}>
+              {tr("room.createNew")}
+            </button>
+            <button onClick={() => (location.hash = "")}>{tr("nav.home")}</button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -407,6 +550,36 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
           {toast}
         </div>
       )}
+      {fatal && (
+        <div className="idle-banner" role="alert">
+          <span>{fatal}</span>
+          <button
+            className="primary"
+            onClick={() => {
+              setFatal(null);
+              setConn("connecting");
+              manualRef.current = true;
+              sockRef.current?.connect();
+            }}
+          >
+            {tr("room.tryAgain")}
+          </button>
+        </div>
+      )}
+      {notice && (
+        <div className="notice" role="alert">
+          {notice}
+        </div>
+      )}
+      {!online && !fatal && !idleDisconnected && (
+        <div className="conn-pill" role="status">
+          {conn === "connecting"
+            ? tr("conn.connecting")
+            : pending
+              ? tr("conn.voteQueued")
+              : tr("conn.reconnecting")}
+        </div>
+      )}
       {idleDisconnected && (
         <div className="idle-banner" role="alert">
           <span>{tr("room.idleDisconnected")}</span>
@@ -414,6 +587,7 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
             className="primary"
             onClick={() => {
               setIdleDisconnected(false);
+              manualRef.current = true;
               sockRef.current?.connect();
             }}
           >
@@ -449,12 +623,23 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
         </div>
       </header>
 
+      {copyFallback && (
+        <div className="copy-fallback" role="alert">
+          <label>
+            <span>{tr("room.copyFailed")}</span>
+            <input readOnly value={copyFallback} autoFocus onFocus={(e) => e.target.select()} />
+          </label>
+          <button onClick={() => setCopyFallback(null)}>{tr("room.close")}</button>
+        </div>
+      )}
+
       <div className="reveal-bar">
         {phase === "voting" ? (
           <>
             {youId === revealerId ? (
               <button
                 className="primary"
+                disabled={!online}
                 onClick={() => {
                   trackEvent("round_revealed");
                   send({ type: "reveal" });
@@ -470,12 +655,12 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
                 })}
               </span>
             )}
-            <button onClick={() => send({ type: "reset" })} title={tr("room.resetTitle")}>
+            <button disabled={!online} onClick={() => send({ type: "reset" })} title={tr("room.resetTitle")}>
               {tr("room.reset")}
             </button>
           </>
         ) : (
-          <button className="primary" onClick={() => send({ type: "reset" })}>
+          <button className="primary" disabled={!online} onClick={() => send({ type: "reset" })}>
             {tr("room.newVote")}
           </button>
         )}
@@ -488,6 +673,14 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
           <Participants participants={participants} youId={youId} phase={phase} revealerId={revealerId} />
           <div className="summary-slot">
             {summary && phase === "revealed" && <SummaryView summary={summary} />}
+            {phase === "voting" && me && participants.length === 1 && (
+              <div className="empty-room">
+                <p>{tr("room.alone")}</p>
+                <button className="primary" onClick={copyLink}>
+                  {copied ? tr("room.copied") : tr("room.invite")}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -497,21 +690,28 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
           <>
             <button
               className={`card observer-card ${isObserver ? "active" : ""}`}
+              disabled={!online}
               onClick={() => send({ type: "setObserver", isObserver: !isObserver })}
               title={isObserver ? tr("room.observeJoin") : tr("room.observe")}
+              aria-pressed={isObserver}
             >
-              <span className="mic-off">🎤</span>
+              <span className="mic-off" aria-hidden="true">🎤</span>
+              {/* Shown on phones only, where the toggle is a labelled row above the deck. */}
+              <span className="observer-label">{tr("room.observe")}</span>
             </button>
             {!isObserver && (
               <Deck
-                selected={me?.vote ?? null}
+                selected={myVote}
                 onPick={(v) => {
-                  if (v === (me?.vote ?? null)) {
-                    send({ type: "unvote" });
+                  // Offline: keep the pick and send it once we're back (SERBITO-355).
+                  if (v === myVote) {
+                    if (!send({ type: "unvote" })) queueVote({ value: null });
+                    else if (pending) queueVote(null);
                     return;
                   }
                   trackEvent("vote_cast", { card: String(v) });
-                  send({ type: "vote", value: v });
+                  if (!send({ type: "vote", value: v })) queueVote({ value: v });
+                  else if (pending) queueVote(null);
                 }}
               />
             )}
@@ -539,33 +739,43 @@ function Participants({
   revealerId: string | null;
 }) {
   const { tr } = useT();
+  // Observers don't sit at the table, but the room should see who's watching.
+  const observers = participants.filter((p) => p.isObserver);
   return (
-    <ul className="participants">
-      {participants
-        .filter((p) => !p.isObserver)
-        .map((p) => (
-          <li key={p.id} className={p.connected ? "" : "offline"}>
-            {phase === "revealed" ? (
-              <span className="card-slot">{p.vote ?? "–"}</span>
-            ) : p.vote === "?" || p.vote === "☕" ? (
-              <span className="card-slot">{p.vote}</span>
-            ) : p.hasVoted ? (
-              <span className="card-slot">✓</span>
-            ) : (
-              <span className="card-slot pending">…</span>
-            )}
-            <span className="pname">
-              {p.id === revealerId && (
-                <span className="star" title="Reveals this round">
-                  ⭐
-                </span>
+    <>
+      <ul className="participants">
+        {participants
+          .filter((p) => !p.isObserver)
+          .map((p) => (
+            <li key={p.id} className={p.connected ? "" : "offline"}>
+              {phase === "revealed" ? (
+                <span className="card-slot">{p.vote ?? "–"}</span>
+              ) : p.vote === "?" || p.vote === "☕" ? (
+                <span className="card-slot">{p.vote}</span>
+              ) : p.hasVoted ? (
+                <span className="card-slot">✓</span>
+              ) : (
+                <span className="card-slot pending">…</span>
               )}
-              {p.name}
-              {p.id === youId && ` ${tr("room.you")}`}
-            </span>
-          </li>
-        ))}
-    </ul>
+              <span className="pname">
+                {p.id === revealerId && (
+                  <span className="star" title="Reveals this round">
+                    ⭐
+                  </span>
+                )}
+                {p.name}
+                {p.id === youId && ` ${tr("room.you")}`}
+              </span>
+            </li>
+          ))}
+      </ul>
+      {observers.length > 0 && (
+        <p className="observers">
+          <span aria-hidden="true">🎤</span> {tr("room.observers")}:{" "}
+          {observers.map((p) => (p.id === youId ? `${p.name} ${tr("room.you")}` : p.name)).join(", ")}
+        </p>
+      )}
+    </>
   );
 }
 

@@ -7,6 +7,11 @@ import {
 
 type Handler = (msg: ServerMessage) => void;
 
+/** Connection state for the UI: first connect, in the room, or dropped and retrying.
+ *  The socket only reports "reconnecting"; "open" is the app's to set once the server
+ *  has taken our join (an open socket alone doesn't mean we're in). */
+export type ConnStatus = "connecting" | "open" | "reconnecting";
+
 /**
  * Thin WebSocket client with auto-reconnect. On (re)connect it calls `onOpen`
  * so the caller can re-send `join` — this is how we heal after Cloud Run's
@@ -18,13 +23,20 @@ export class PokerSocket {
   private handler: Handler;
   private onOpen: () => void;
   private onIdle: () => void;
+  private onStatus: (s: ConnStatus) => void;
   private closedByUser = false;
   private backoff = 500;
 
-  constructor(handler: Handler, onOpen: () => void, onIdle: () => void = () => {}) {
+  constructor(
+    handler: Handler,
+    onOpen: () => void,
+    onIdle: () => void = () => {},
+    onStatus: (s: ConnStatus) => void = () => {},
+  ) {
     this.handler = handler;
     this.onOpen = onOpen;
     this.onIdle = onIdle;
+    this.onStatus = onStatus;
     const proto = location.protocol === "https:" ? "wss" : "ws";
     // ?v=2 version-gate: a Cloudflare edge rule blocks /ws WITHOUT this marker, so
     // stale tabs running pre-v2 client JS (which connect to bare /ws and blindly
@@ -57,15 +69,21 @@ export class PokerSocket {
         this.onIdle();
         return;
       }
-      setTimeout(() => this.connect(), this.backoff);
+      this.onStatus("reconnecting");
+      setTimeout(() => {
+        if (!this.closedByUser) this.connect();
+      }, this.backoff);
       this.backoff = Math.min(this.backoff * 2, 5000);
     };
   }
 
-  send(msg: ClientMessage) {
+  /** Send now if the socket is open. Returns false when it isn't (nothing was sent). */
+  send(msg: ClientMessage): boolean {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(msg));
+      return true;
     }
+    return false;
   }
 
   close() {

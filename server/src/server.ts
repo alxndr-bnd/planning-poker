@@ -270,6 +270,12 @@ export function createPokerServer(
             return;
           }
           if (!getRoom(msg.roomId)) {
+            // An invite link to a room that doesn't exist (mistyped, or expired) is
+            // not a request to create one (SERBITO-355).
+            if (msg.create === false) {
+              send(ws, { type: "error", code: "room_not_found", message: "Room not found" });
+              return;
+            }
             // Cap total live rooms — don't create a new one past the limit.
             if (roomCount() >= MAX_ROOMS) {
               send(ws, {
@@ -308,6 +314,10 @@ export function createPokerServer(
             }
             me = room.addParticipant(key, name, Boolean(msg.asObserver));
           }
+          // A join the user started (not an auto-reconnect) is activity: without this,
+          // pressing Reconnect after an idle disconnect got you kicked again within a
+          // minute, since the room still looked idle (SERBITO-355).
+          if (msg.manual) room.engage();
           conn.key = key;
           conn.roomId = room.id;
           clearTimeout(joinTimer);
