@@ -499,8 +499,11 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
               className={`card observer-card ${isObserver ? "active" : ""}`}
               onClick={() => send({ type: "setObserver", isObserver: !isObserver })}
               title={isObserver ? tr("room.observeJoin") : tr("room.observe")}
+              aria-pressed={isObserver}
             >
-              <span className="mic-off">🎤</span>
+              <span className="mic-off" aria-hidden="true">🎤</span>
+              {/* Shown on phones only, where the toggle is a labelled row above the deck. */}
+              <span className="observer-label">{tr("room.observe")}</span>
             </button>
             {!isObserver && (
               <Deck

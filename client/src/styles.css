@@ -176,7 +176,7 @@ input[type="text"], input:not([type]) {
 /* Your hand at the bottom — larger cards, like sitting at the table */
 .hand {
   position: relative;
-  display: flex; justify-content: center;
+  display: flex; justify-content: flex-start; align-items: flex-start; gap: 1.5rem;
   padding: 1.25rem 1.5rem 2rem;
   min-height: 172px; /* fits a 120px card + padding even when the deck is hidden */
   border-top: 1px solid var(--line);
@@ -188,7 +188,7 @@ input[type="text"], input:not([type]) {
    geometry; `min(...)` caps the gap at 0.8rem when there's room to spare. */
 .fan {
   container-type: inline-size;
-  width: 100%;
+  flex: 1; min-width: 0;
   display: flex; flex-wrap: nowrap; justify-content: center; align-items: flex-start;
   --cw: 84px;
 }
@@ -220,10 +220,10 @@ input[type="text"], input:not([type]) {
 .card.selected { outline: 3px solid var(--accent); outline-offset: 2px; transform: translateY(-12px); }
 
 /* Observer mode = a card in your hand, pinned to the LEFT (white, like a card).
-   Absolutely positioned so its place never shifts — including when selected
-   (which only hides the voting cards). */
+   First in the row, so it keeps its place when the voting cards hide, and the fan
+   only gets the width beside it: it no longer lies on top of "1" (SERBITO-355). */
 .observer-card {
-  position: absolute; left: 1.5rem; top: 1.25rem;
+  flex: 0 0 auto;
   background: #fff; color: #15603b; border-color: rgba(0, 0, 0, 0.2);
 }
 .observer-card.active { outline: 3px solid var(--accent); outline-offset: 2px; }
@@ -319,4 +319,48 @@ input[type="text"], input:not([type]) {
 @keyframes toast-in {
   from { opacity: 0; transform: translate(-50%, 8px); }
   to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* Phones and tablets (SERBITO-355). A mouse can raise an overlapped card by hovering;
+   a finger can't, and a tap on a value hit its neighbour. Touch screens get rows of
+   whole cards, phones a 4-column grid. */
+.observer-label { display: none; }
+@media (pointer: coarse) {
+  .fan { flex-wrap: wrap; gap: 0.75rem; }
+  .fan .card:not(:first-child) { margin-left: 0; }
+  .card:hover { transform: none; }
+}
+@media (max-width: 600px) {
+  /* Header wraps instead of widening the page. GitHub and AlternativeTo are in the
+     fixed footer, so the header drops its copies. */
+  .room-top { flex-wrap: wrap; gap: 0.5rem 0.75rem; padding: 0.6rem 1rem; }
+  .room-top h1 { font-size: 1rem; }
+  .brand { gap: 0.5rem; }
+  .room-actions { flex-wrap: wrap; gap: 0.5rem 0.75rem; }
+  .room-actions .altto-link, .room-actions .gh-badge { display: none; }
+
+  .reveal-bar { flex-wrap: wrap; padding: 1rem; }
+  .table-wrap { padding: 0 1rem 1rem; }
+  .table { min-width: 0; width: 100%; min-height: 14rem; padding: 1.25rem 1rem; border-width: 4px; }
+  .participants { gap: 0.75rem; }
+  .participants li { width: 72px; }
+  .card-slot { width: 56px; height: 80px; font-size: 1.5rem; }
+
+  /* The hand: observe toggle as a labelled row, then a 4-column grid of cards. No
+     overlap, no lift on tap, every target at least 44 px. */
+  .hand {
+    flex-direction: column; align-items: stretch; gap: 0.75rem;
+    padding: 1rem 1rem 1.25rem; min-height: 0;
+  }
+  .observer-card {
+    position: static; align-self: center;
+    width: auto; height: 44px; padding: 0 1rem; gap: 0.5rem;
+    font-size: 1rem; font-weight: 600;
+  }
+  .observer-label { display: inline; }
+  .fan { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.5rem; }
+  .fan .card:not(:first-child) { margin-left: 0; }
+  .fan .card { width: auto; height: 56px; font-size: 1.4rem; }
+  .fan .card.toggle { font-size: 0.8rem; padding: 0 4px; }
+  .card:hover, .card.selected { transform: none; }
 }
