@@ -137,6 +137,19 @@ function isKnownRoom(id: string): boolean {
   }
 }
 
+/** Copy `text`; true only once the clipboard has taken it (SERBITO-355). */
+function copyText(text: string): Promise<boolean> {
+  try {
+    if (!navigator.clipboard) return Promise.resolve(false);
+    return navigator.clipboard.writeText(text).then(
+      () => true,
+      () => false,
+    );
+  } catch {
+    return Promise.resolve(false);
+  }
+}
+
 /** Create a room in this tab and go there. */
 function startNewRoom(): string {
   const id = newRoomId();
@@ -218,18 +231,23 @@ function Lobby({
     if (!roomId) {
       const id = newRoomId();
       rememberRoom(id);
-      if (copyOnCreate) {
-        const url = `${location.origin}${location.pathname}#/r/${id}`;
-        navigator.clipboard?.writeText(url).catch(() => {});
-        // Flag the freshly-created room so it toasts "link copied" once on entry.
-        try {
-          sessionStorage.setItem(`pp_link_copied:${id}`, "1");
-        } catch {
-          /* sessionStorage unavailable — skip the toast */
+      const enter = () => {
+        trackEvent("room_created");
+        location.hash = `#/r/${id}`;
+      };
+      if (!copyOnCreate) return enter();
+      const url = `${location.origin}${location.pathname}#/r/${id}`;
+      void copyText(url).then((ok) => {
+        // Flag the room so it toasts "link copied" once on entry — only when it was.
+        if (ok) {
+          try {
+            sessionStorage.setItem(`pp_link_copied:${id}`, "1");
+          } catch {
+            /* sessionStorage unavailable — skip the toast */
+          }
         }
-      }
-      trackEvent("room_created");
-      location.hash = `#/r/${id}`;
+        enter();
+      });
     }
   }
 
@@ -355,6 +373,8 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
   const [participants, setParticipants] = useState<ParticipantView[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [copied, setCopied] = useState(false);
+  // The invite link, shown to copy by hand when the clipboard refused it.
+  const [copyFallback, setCopyFallback] = useState<string | null>(null);
   const [revealerId, setRevealerId] = useState<string | null>(null);
   const [log, setLog] = useState<RoundLog[]>([]);
   // Server closed our socket for inactivity (idle-disconnect, lets Cloud Run scale
@@ -496,7 +516,10 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
   observerRef.current = isObserver;
 
   function copyLink() {
-    navigator.clipboard.writeText(location.href).then(() => {
+    const url = location.href;
+    void copyText(url).then((ok) => {
+      if (!ok) return setCopyFallback(url); // say so, and offer the link to copy by hand
+      setCopyFallback(null);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     });
@@ -598,6 +621,16 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
           <SerbitoSponsor short />
         </div>
       </header>
+
+      {copyFallback && (
+        <div className="copy-fallback" role="alert">
+          <label>
+            <span>{tr("room.copyFailed")}</span>
+            <input readOnly value={copyFallback} autoFocus onFocus={(e) => e.target.select()} />
+          </label>
+          <button onClick={() => setCopyFallback(null)}>{tr("room.close")}</button>
+        </div>
+      )}
 
       <div className="reveal-bar">
         {phase === "voting" ? (

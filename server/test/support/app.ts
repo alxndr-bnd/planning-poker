@@ -117,6 +117,8 @@ export interface OpenOptions {
   touch?: boolean;
   /** Grant clipboard access (default true). */
   clipboard?: boolean;
+  /** Extra script run before the page's own. */
+  init?: string;
 }
 
 export interface Opened {
@@ -145,6 +147,7 @@ export async function openPage(app: App, opts: OpenOptions): Promise<Opened> {
       for (const k in l) localStorage.setItem(k, l[k]);
       for (const k in s) sessionStorage.setItem(k, s[k]); })()`,
   );
+  if (opts.init) await context.addInitScript(opts.init);
   await context.route("**/*", (route) =>
     route.request().url().startsWith(app.origin + "/") ? route.continue() : route.abort(),
   );

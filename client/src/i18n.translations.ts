@@ -226,6 +226,8 @@ export const TRANSLATIONS: Partial<
     "sponsor.full": "При поддержке serbito.rs",
     "sponsor.short": "от serbito.rs",
     "room.linkCopiedToast": "Ссылка-приглашение скопирована в буфер обмена",
+    "room.copyFailed": "Не удалось скопировать ссылку. Скопируйте её отсюда:",
+    "room.close": "Закрыть",
     "altto.featured": "Оцените нас на AlternativeTo ↗",
     "footer.tagline": "Бесплатный planning poker с открытым кодом — без рекламы и регистрации.",
     "footer.github": "Открытый код на GitHub",

@@ -30,6 +30,8 @@ export const EN = {
   "room.invite": "Invite teammates",
   "room.copied": "Copied!",
   "room.linkCopiedToast": "Invite link copied to clipboard",
+  "room.copyFailed": "Couldn't copy the link. Copy it from here:",
+  "room.close": "Close",
   "room.idleDisconnected": "Disconnected due to inactivity.",
   "room.idleReconnect": "Reconnect",
   "room.tryAgain": "Try again",

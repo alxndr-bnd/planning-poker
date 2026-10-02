@@ -89,3 +89,41 @@ describe("P8: rejoin after an idle disconnect", () => {
     }
   }, 30_000);
 });
+
+describe("P9a: Copied only when the link was copied", () => {
+  const BROKEN_CLIPBOARD = `Object.defineProperty(navigator, "clipboard", {
+    value: { writeText: () => Promise.reject(new DOMException("denied", "NotAllowedError")) },
+  })`;
+
+  it("clipboard refused: no 'copied' toast on create, and Invite offers the link to copy by hand", async () => {
+    const { page } = await openPage(app, { path: "/", init: BROKEN_CLIPBOARD });
+    try {
+      await page.getByRole("button", { name: "Create room" }).click();
+      await page.waitForSelector(".fan .card");
+      await page.waitForTimeout(300);
+      expect(await page.getByText("Invite link copied to clipboard").count()).toBe(0);
+
+      await page.locator(".room-top").getByRole("button", { name: "Invite teammates" }).click();
+      const field = page.getByRole("textbox", { name: "Couldn't copy the link. Copy it from here:" });
+      await field.waitFor();
+      expect(await field.inputValue()).toBe(page.url());
+      expect(await page.getByText("Copied!").count()).toBe(0);
+    } finally {
+      await page.context().close();
+    }
+  });
+
+  it("clipboard works: the toast on create, and Copied! on Invite", async () => {
+    const { page } = await openPage(app, { path: "/" });
+    try {
+      await page.getByRole("button", { name: "Create room" }).click();
+      await page.getByText("Invite link copied to clipboard").waitFor();
+      await page.locator(".room-top").getByRole("button", { name: "Invite teammates" }).click();
+      await page.locator(".room-top").getByRole("button", { name: "Copied!" }).waitFor();
+      expect(await page.evaluate("navigator.clipboard.readText()")).toBe(page.url());
+      expect(await page.locator(".copy-fallback").count()).toBe(0);
+    } finally {
+      await page.context().close();
+    }
+  });
+});
