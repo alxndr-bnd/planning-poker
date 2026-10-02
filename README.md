@@ -34,6 +34,7 @@ Requires Node ≥ 20.
 
 ```bash
 npm install
+npx playwright-core install chromium  # once: the browser for server/test/consent_focus.test.ts
 pre-commit install   # run tests + typecheck before every commit (needs `pre-commit`)
 npm run dev          # server on :8080, client on :5173 (Vite proxies /ws → :8080)
 ```
