@@ -127,4 +127,25 @@ describe("WebSocket server", () => {
     expect(legacy.first.type).toBe("joined");
     for (const c of [typo, host, guest, legacy]) c.ws.close();
   });
+
+  // SERBITO-355 (P8): Reconnect after an idle disconnect re-attached without counting
+  // as activity, so the next idle sweep (every minute) kicked the user again.
+  it("a manual join counts as activity; an automatic reconnect does not", async () => {
+    const join = (name: string, extra: Record<string, unknown>) => {
+      const ws = new WebSocket(wsUrl, { origin: ORIGIN });
+      return drive<WebSocket>(
+        ws,
+        () => ws.send(JSON.stringify({ type: "join", roomId: "wsidlejoin", name, ...extra })),
+        (m) => (m.type === "state" ? ws : undefined),
+      );
+    };
+    const host = await join("Host", { create: true });
+    const room = getRoom("wsidlejoin")!;
+    room.lastEngagementAt = 0;
+    const auto = await join("Auto", { clientId: "auto-client-1", manual: false });
+    expect(room.lastEngagementAt).toBe(0);
+    const manual = await join("Manual", { clientId: "manual-client-1", manual: true });
+    expect(room.lastEngagementAt).toBeGreaterThan(0);
+    for (const ws of [host, auto, manual]) ws.close();
+  });
 });

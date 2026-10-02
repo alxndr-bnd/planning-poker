@@ -314,6 +314,10 @@ export function createPokerServer(
             }
             me = room.addParticipant(key, name, Boolean(msg.asObserver));
           }
+          // A join the user started (not an auto-reconnect) is activity: without this,
+          // pressing Reconnect after an idle disconnect got you kicked again within a
+          // minute, since the room still looked idle (SERBITO-355).
+          if (msg.manual) room.engage();
           conn.key = key;
           conn.roomId = room.id;
           clearTimeout(joinTimer);

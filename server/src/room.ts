@@ -61,7 +61,7 @@ export class Room {
   }
 
   /** Record a real user action — resets the idle-disconnect timer. */
-  private engage() {
+  engage() {
     this.lastEngagementAt = Date.now();
   }
 

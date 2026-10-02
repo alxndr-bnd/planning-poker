@@ -98,6 +98,8 @@ export interface Net {
   sent: Record<string, unknown>[];
   down(): void;
   up(): void;
+  /** Close the page's socket with `code`, as the server does (e.g. 4000: idle). */
+  kick(code: number): void;
 }
 
 export interface OpenOptions {
@@ -164,6 +166,10 @@ async function routeNet(context: BrowserContext): Promise<Net> {
     },
     up() {
       online = true;
+    },
+    kick(code: number) {
+      for (const ws of live) ws.close({ code, reason: "test: kicked" });
+      live.clear();
     },
   };
   await context.routeWebSocket(/\/ws/, (ws) => {

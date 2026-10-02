@@ -407,6 +407,9 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
   // (re)create it; otherwise a missing room is "not found".
   const knownRef = useRef(isKnownRoom(roomId));
   const [notFound, setNotFound] = useState(false);
+  // The next join is the user's doing (entering the room, Reconnect, Try again), not
+  // an automatic reconnect: the server counts it as activity.
+  const manualRef = useRef(true);
 
   useEffect(() => {
     const sock = new PokerSocket(
@@ -466,7 +469,9 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
           clientId: getClientId(),
           asObserver: observerRef.current,
           create: knownRef.current,
+          manual: manualRef.current,
         });
+        manualRef.current = false;
       },
       () => setIdleDisconnected(true),
       setConn,
@@ -529,6 +534,7 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
             onClick={() => {
               setFatal(null);
               setConn("connecting");
+              manualRef.current = true;
               sockRef.current?.connect();
             }}
           >
@@ -557,6 +563,7 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
             className="primary"
             onClick={() => {
               setIdleDisconnected(false);
+              manualRef.current = true;
               sockRef.current?.connect();
             }}
           >

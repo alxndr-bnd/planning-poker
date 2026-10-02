@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Page } from "playwright-core";
+import { IDLE_CLOSE_CODE } from "@pp/shared";
 import { openPage, roomId, startApp, type App } from "./support/app.js";
 import { getRoom } from "../src/rooms.js";
 
@@ -65,4 +66,26 @@ describe("P6: room not found, lone host", () => {
       await host.context().close();
     }
   });
+});
+
+describe("P8: rejoin after an idle disconnect", () => {
+  it("Reconnect sends a manual join; an automatic reconnect does not", async () => {
+    const { page, net } = await openPage(app, { path: "/" });
+    try {
+      await page.getByRole("button", { name: "Create room" }).click();
+      await page.waitForSelector(".fan .card");
+      const joins = () => net.sent.filter((m) => m.type === "join").map((m) => m.manual);
+      expect(joins()).toEqual([true]);
+
+      net.down(); // a network blip: the app reconnects by itself
+      net.up();
+      await expect.poll(joins, { timeout: 10_000 }).toEqual([true, false]);
+
+      net.kick(IDLE_CLOSE_CODE); // the server's idle disconnect
+      await page.getByRole("button", { name: "Reconnect" }).click();
+      await expect.poll(joins).toEqual([true, false, true]);
+    } finally {
+      await page.context().close();
+    }
+  }, 30_000);
 });
