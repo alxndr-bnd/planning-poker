@@ -25,6 +25,7 @@ import {
   setLang as persistLang,
 } from "./i18n.js";
 import { resolveUiV2 } from "./ui.js";
+import { localizeShell } from "./shell.js";
 import { trackEvent, trackPageView } from "./analytics.js";
 
 const REPO = "alxndr-bnd/planning-poker";
@@ -129,6 +130,7 @@ export function App() {
 
   useEffect(() => {
     document.documentElement.lang = lang;
+    localizeShell(lang, document);
   }, [lang]);
 
   // GA4 counts one page_view — at load, from the tag in index.html. Hash routing

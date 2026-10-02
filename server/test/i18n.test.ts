@@ -1,6 +1,10 @@
 import { afterEach, describe, it, expect, vi } from "vitest";
 // Client i18n module — tested here so it runs in the existing vitest gate.
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { EN, LANGS, t, detectLang, getInitialLang } from "../../client/src/i18n.js";
+import { TRANSLATIONS } from "../../client/src/i18n.translations.js";
 
 describe("UI i18n", () => {
   it("returns the English string for en", () => {
@@ -118,5 +122,39 @@ describe("initial UI language", () => {
     expect(detectLang(["ZH_tw"])).toBe("zh");
     expect(detectLang(["nl", "fr-CA"])).toBe("fr");
     expect(detectLang([])).toBeNull();
+  });
+});
+
+// SERBITO-355 (5d): under RU the idle notice, the guide links and the footer stayed
+// English. Russian is complete: every UI string has a translation.
+describe("Russian UI", () => {
+  it("translates every string", () => {
+    const missing = (Object.keys(EN) as (keyof typeof EN)[]).filter((k) => !TRANSLATIONS.ru?.[k]);
+    expect(missing).toEqual([]);
+  });
+
+  it("uses «Показать карты» for Reveal and the formal «Вы»", () => {
+    expect(t("ru", "room.reveal")).toBe("Показать карты");
+    for (const v of Object.values(TRANSLATIONS.ru ?? {})) expect(v).not.toMatch(/Лайкни|\bты\b|\bтебя\b|\bтвой\b/i);
+  });
+});
+
+describe("app shell footer strings", () => {
+  const shell = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../../client/index.html"), "utf-8");
+  const tagged = [...shell.matchAll(/data-pp-i18n="([^"]+)"[^>]*>([^<]*)</g)].map(([, key, text]) => ({
+    key,
+    text: text.replace(/&amp;/g, "&").trim(),
+  }));
+
+  it("every data-pp-i18n element is a UI string, and its HTML is the English text", () => {
+    expect(tagged.map((x) => x.key)).toEqual([
+      "footer.tagline",
+      "footer.github",
+      "footer.vote",
+      "footer.altto",
+      "footer.privacy",
+      "footer.cookies",
+    ]);
+    for (const { key, text } of tagged) expect(text, key).toBe(EN[key as keyof typeof EN]);
   });
 });

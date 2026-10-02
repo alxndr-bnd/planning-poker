@@ -71,6 +71,14 @@ export const EN = {
   "sponsor.full": "Sponsored by serbito.rs",
   "sponsor.short": "by serbito.rs",
   "altto.featured": "Like us on AlternativeTo ↗",
+  // The app shell's fixed footer (client/index.html, outside React): elements carrying
+  // data-pp-i18n="<key>" are re-labelled in the UI language by shell.ts.
+  "footer.tagline": "Free & open-source planning poker — no ads, no sign-up.",
+  "footer.github": "Open source on GitHub",
+  "footer.vote": "🗳️ Vote on what we build next",
+  "footer.altto": "Find us on AlternativeTo",
+  "footer.privacy": "Privacy",
+  "footer.cookies": "Cookie settings",
   // "Other projects" footer block: static HTML rendered at build time by crosspromo.ts.
   "crosspromo.title": "Other projects",
   "crosspromo.gtd": "Free GTD task manager with a Telegram bot",
