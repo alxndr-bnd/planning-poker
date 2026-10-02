@@ -12,8 +12,9 @@ Live: **https://poker.serbito.rs** — also listed on
 - Instant room by shareable link — no signup, join by name
 - Real-time voting over WebSocket; many independent rooms in parallel
 - Votes hidden until **reveal**; reset / re-vote for the next item
-- Fibonacci deck (`0 1 2 3 5 8 13 21 ? ☕`)
-- Reveal shows **named votes** + summary (distribution, average, consensus)
+- Fibonacci deck (`1 2 3 5 8 13 21 34 55 ? ☕`, plus `89`–`610` behind "More")
+- Reveal shows **named votes** + summary (distribution, consensus); no average or
+  median by design
 - Observer/spectator role (doesn't vote)
 - Ephemeral, in-memory rooms — no database, no accounts
 - Analytics: Google Analytics 4 (sets cookies; page views and room events, including

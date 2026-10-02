@@ -22,7 +22,7 @@ Source requirements: Product Brief (`docs/planning/product-brief-planning-poker-
 | Real-time sync via WebSocket | ✅ |
 | Votes hidden until reveal; reset / re-vote | ✅ (+ cancel/change own vote) |
 | Fibonacci deck | ✅ `1 2 3 5 8 13 21 34 55 ? ☕` |
-| Reveal: named votes + summary (distribution, average, consensus) | ✅ |
+| Reveal: named votes + summary (distribution, consensus; no average or median, owner decision 2026-10-02, SERBITO-355) | ✅ |
 | Observer / spectator role | ✅ |
 | Open by unguessable link; ephemeral rooms | ✅ |
 
