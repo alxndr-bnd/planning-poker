@@ -33,6 +33,11 @@ export const EN = {
   "room.idleDisconnected": "Disconnected due to inactivity.",
   "room.idleReconnect": "Reconnect",
   "room.tryAgain": "Try again",
+  "room.notFoundTitle": "Room not found",
+  "room.notFoundText":
+    "This link is mistyped or the room has expired: a room closes a few minutes after everyone leaves.",
+  "room.createNew": "Create a new room",
+  "room.alone": "You're the only one here. Share the room link to invite your team.",
   "conn.connecting": "Connecting…",
   "conn.reconnecting": "Connection lost. Reconnecting…",
   "conn.voteQueued": "Connection lost. Your vote will be sent when it's back.",

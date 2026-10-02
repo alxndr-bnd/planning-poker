@@ -116,6 +116,36 @@ function useHashRoom(): string | null {
   return roomId;
 }
 
+/**
+ * Rooms this tab created or has been in (sessionStorage). Only those are (re)created
+ * on join — e.g. after a deploy wiped the server's rooms. Any other link must point
+ * at a live room: a mistyped or expired one shows "room not found" (SERBITO-355).
+ */
+const KNOWN_ROOM = (id: string) => `pp_room:${id}`;
+function rememberRoom(id: string) {
+  try {
+    sessionStorage.setItem(KNOWN_ROOM(id), "1");
+  } catch {
+    /* sessionStorage unavailable: only the in-memory flag in Room */
+  }
+}
+function isKnownRoom(id: string): boolean {
+  try {
+    return sessionStorage.getItem(KNOWN_ROOM(id)) === "1";
+  } catch {
+    return false;
+  }
+}
+
+/** Create a room in this tab and go there. */
+function startNewRoom(): string {
+  const id = newRoomId();
+  rememberRoom(id);
+  trackEvent("room_created");
+  location.hash = `#/r/${id}`;
+  return id;
+}
+
 function parseHash(): string | null {
   const m = location.hash.match(/^#\/r\/([A-Za-z0-9_-]{6,32})$/);
   return m ? m[1] : null;
@@ -187,6 +217,7 @@ function Lobby({
     setName(n);
     if (!roomId) {
       const id = newRoomId();
+      rememberRoom(id);
       if (copyOnCreate) {
         const url = `${location.origin}${location.pathname}#/r/${id}`;
         navigator.clipboard?.writeText(url).catch(() => {});
@@ -372,6 +403,10 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
   // The server re-sends `joined` after every reconnect; the funnel wants one event
   // per room entry. Room is keyed by roomId, so this resets when the room changes.
   const joinTracked = useRef(false);
+  // The room exists for us: we created it here, or we've been in it. Then a join may
+  // (re)create it; otherwise a missing room is "not found".
+  const knownRef = useRef(isKnownRoom(roomId));
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     const sock = new PokerSocket(
@@ -379,6 +414,8 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
         switch (msg.type) {
           case "joined": {
             setYouId(msg.youId);
+            knownRef.current = true;
+            rememberRoom(roomId);
             if (!joinTracked.current) {
               joinTracked.current = true;
               trackEvent("room_joined");
@@ -402,6 +439,11 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
             setSummary(msg.summary);
             break;
           case "error": {
+            if (msg.code === "room_not_found") {
+              sock.close();
+              setNotFound(true);
+              break;
+            }
             const text = errorText(trRef.current, msg.code, msg.message);
             if (FATAL_ERRORS.has(msg.code)) {
               sock.close();
@@ -423,6 +465,7 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
           name,
           clientId: getClientId(),
           asObserver: observerRef.current,
+          create: knownRef.current,
         });
       },
       () => setIdleDisconnected(true),
@@ -452,6 +495,23 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     });
+  }
+
+  if (notFound) {
+    return (
+      <div className="room not-found">
+        <div className="not-found-card" role="alert">
+          <h1>{tr("room.notFoundTitle")}</h1>
+          <p>{tr("room.notFoundText")}</p>
+          <div className="not-found-actions">
+            <button className="primary" onClick={() => startNewRoom()}>
+              {tr("room.createNew")}
+            </button>
+            <button onClick={() => (location.hash = "")}>{tr("nav.home")}</button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -572,6 +632,14 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
           <Participants participants={participants} youId={youId} phase={phase} revealerId={revealerId} />
           <div className="summary-slot">
             {summary && phase === "revealed" && <SummaryView summary={summary} />}
+            {phase === "voting" && me && participants.length === 1 && (
+              <div className="empty-room">
+                <p>{tr("room.alone")}</p>
+                <button className="primary" onClick={copyLink}>
+                  {copied ? tr("room.copied") : tr("room.invite")}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

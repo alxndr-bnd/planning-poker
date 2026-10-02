@@ -270,6 +270,12 @@ export function createPokerServer(
             return;
           }
           if (!getRoom(msg.roomId)) {
+            // An invite link to a room that doesn't exist (mistyped, or expired) is
+            // not a request to create one (SERBITO-355).
+            if (msg.create === false) {
+              send(ws, { type: "error", code: "room_not_found", message: "Room not found" });
+              return;
+            }
             // Cap total live rooms — don't create a new one past the limit.
             if (roomCount() >= MAX_ROOMS) {
               send(ws, {

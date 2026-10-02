@@ -4,6 +4,7 @@ import type { Server } from "node:http";
 import { WebSocket } from "ws";
 import type { ServerMessage } from "@pp/shared";
 import { createPokerServer } from "../src/server.js";
+import { getRoom } from "../src/rooms.js";
 
 /** Browsers always send Origin on a WebSocket; the server refuses one without it. */
 const ORIGIN = "http://localhost:5173";
@@ -101,5 +102,29 @@ describe("WebSocket server", () => {
     b.close();
     expect(aSeenByB.hasVoted).toBe(true); // B knows A voted
     expect(aSeenByB.vote).toBeUndefined(); // ...but not the value (hidden)
+  });
+
+  // SERBITO-355 (P6): a mistyped or expired invite link silently created an empty room.
+  it("create: false joins only an existing room; a missing one is room_not_found", async () => {
+    const join = (roomId: string, name: string, create?: boolean) => {
+      const ws = new WebSocket(wsUrl, { origin: ORIGIN });
+      return drive<{ ws: WebSocket; first: ServerMessage }>(
+        ws,
+        () => ws.send(JSON.stringify({ type: "join", roomId, name, ...(create === undefined ? {} : { create }) })),
+        (m) => (m.type === "joined" || m.type === "error" ? { ws, first: m } : undefined),
+      );
+    };
+    const typo = await join("wsnotfound1", "Ann", false);
+    expect(typo.first).toEqual({ type: "error", code: "room_not_found", message: "Room not found" });
+    expect(getRoom("wsnotfound1")).toBeUndefined();
+
+    const host = await join("wsnotfound2", "Host", true);
+    expect(host.first.type).toBe("joined");
+    const guest = await join("wsnotfound2", "Guest", false);
+    expect(guest.first.type).toBe("joined");
+
+    const legacy = await join("wsnotfound3", "Old client"); // no flag: created, as before
+    expect(legacy.first.type).toBe("joined");
+    for (const c of [typo, host, guest, legacy]) c.ws.close();
   });
 });

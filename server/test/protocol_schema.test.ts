@@ -22,6 +22,12 @@ describe("parseClientMessage", () => {
       clientId: "k".repeat(20),
       asObserver: true,
     });
+    expect(parseClientMessage({ type: "join", roomId: "abcdef", name: "A", create: false })).toEqual({
+      type: "join",
+      roomId: "abcdef",
+      name: "A",
+      create: false,
+    });
     expect(parseClientMessage({ type: "join", roomId: "abcdef", name: "A" })).toEqual({
       type: "join",
       roomId: "abcdef",
@@ -55,6 +61,7 @@ describe("parseClientMessage", () => {
     ["object clientId", { type: "join", roomId: "abcdef", name: "A", clientId: {} }],
     ["oversized clientId", { type: "join", roomId: "abcdef", name: "A", clientId: "c".repeat(65) }],
     ["string asObserver", { type: "join", roomId: "abcdef", name: "A", asObserver: "true" }],
+    ["string create", { type: "join", roomId: "abcdef", name: "A", create: "false" }],
     ["numeric vote", { type: "vote", value: 5 }],
     ["vote not in deck", { type: "vote", value: "4" }],
     ["inherited vote key", { type: "vote", value: "toString" }],
