@@ -14,10 +14,11 @@ import {
   type RoundLog,
   type Summary,
 } from "@pp/shared";
-import { PokerSocket, newRoomId, getClientId } from "./ws.js";
+import { PokerSocket, newRoomId, getClientId, type ConnStatus } from "./ws.js";
 import {
   type Lang,
   type StringKey,
+  EN,
   LANGS,
   t,
   getInitialLang,
@@ -303,6 +304,15 @@ function LearnMore() {
   );
 }
 
+/** Server errors that end the join: the socket is closed and the user decides. */
+const FATAL_ERRORS = new Set(["room_full", "server_full", "too_many_rooms", "bad_room", "no_name"]);
+
+/** The message for a server `error`: ours when we know the code, else the server's. */
+function errorText(tr: I18n["tr"], code: string, message: string): string {
+  const key = `error.${code}`;
+  return key in EN ? tr(key as StringKey) : message || tr("error.internal");
+}
+
 function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: boolean }) {
   const { tr } = useT();
   const sockRef = useRef<PokerSocket | null>(null);
@@ -319,6 +329,22 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
   const [idleDisconnected, setIdleDisconnected] = useState(false);
   // Transient toast (e.g. "invite link copied" right after creating the room).
   const [toast, setToast] = useState<string | null>(null);
+  // Socket state, shown as a pill while we're not connected (SERBITO-355).
+  const [conn, setConn] = useState<ConnStatus>("connecting");
+  // A server error that ended the join (room full, ...): the socket is closed.
+  const [fatal, setFatal] = useState<string | null>(null);
+  // Any other server error (rate limited, ...), shown for a few seconds.
+  const [notice, setNotice] = useState<string | null>(null);
+  // A vote (or un-vote: value null) made while the socket was down. Sent once the
+  // server has us back (on `joined`); shown as our pick meanwhile.
+  const [pending, setPending] = useState<{ value: CardValue | null } | null>(null);
+  const pendingRef = useRef<{ value: CardValue | null } | null>(null);
+  const queueVote = (p: { value: CardValue | null } | null) => {
+    pendingRef.current = p;
+    setPending(p);
+  };
+  const trRef = useRef(tr);
+  trRef.current = tr;
 
   // If this room was just created with "copy link on create" ticked, the lobby flagged
   // it — show a one-shot toast on entry so the creator knows the link is on the clipboard.
@@ -349,13 +375,19 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
     const sock = new PokerSocket(
       (msg) => {
         switch (msg.type) {
-          case "joined":
+          case "joined": {
             setYouId(msg.youId);
             if (!joinTracked.current) {
               joinTracked.current = true;
               trackEvent("room_joined");
             }
+            const p = pendingRef.current;
+            if (p) {
+              sock.send(p.value === null ? { type: "unvote" } : { type: "vote", value: p.value });
+              queueVote(null);
+            }
             break;
+          }
           case "state":
             setPhase(msg.phase);
             setItemTitle(msg.itemTitle);
@@ -367,6 +399,16 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
           case "summary":
             setSummary(msg.summary);
             break;
+          case "error": {
+            const text = errorText(trRef.current, msg.code, msg.message);
+            if (FATAL_ERRORS.has(msg.code)) {
+              sock.close();
+              setFatal(text);
+            } else {
+              setNotice(text);
+            }
+            break;
+          }
         }
       },
       () => {
@@ -382,14 +424,24 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
         });
       },
       () => setIdleDisconnected(true),
+      setConn,
     );
     sock.connect();
     sockRef.current = sock;
     return () => sock.close();
   }, [roomId, name]);
 
-  const send = (m: Parameters<PokerSocket["send"]>[0]) => sockRef.current?.send(m);
+  // Hide a transient server notice after a few seconds.
+  useEffect(() => {
+    if (!notice) return;
+    const timer = setTimeout(() => setNotice(null), 5000);
+    return () => clearTimeout(timer);
+  }, [notice]);
+
+  const send = (m: Parameters<PokerSocket["send"]>[0]) => sockRef.current?.send(m) ?? false;
+  const online = conn === "open" && !fatal && !idleDisconnected;
   const me = participants.find((p) => p.id === youId);
+  const myVote = pending ? pending.value : (me?.vote ?? null);
   const isObserver = me?.isObserver ?? false;
   observerRef.current = isObserver;
 
@@ -405,6 +457,35 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
       {toast && (
         <div className="toast" role="status">
           {toast}
+        </div>
+      )}
+      {fatal && (
+        <div className="idle-banner" role="alert">
+          <span>{fatal}</span>
+          <button
+            className="primary"
+            onClick={() => {
+              setFatal(null);
+              setConn("connecting");
+              sockRef.current?.connect();
+            }}
+          >
+            {tr("room.tryAgain")}
+          </button>
+        </div>
+      )}
+      {notice && (
+        <div className="notice" role="alert">
+          {notice}
+        </div>
+      )}
+      {!online && !fatal && !idleDisconnected && (
+        <div className="conn-pill" role="status">
+          {conn === "connecting"
+            ? tr("conn.connecting")
+            : pending
+              ? tr("conn.voteQueued")
+              : tr("conn.reconnecting")}
         </div>
       )}
       {idleDisconnected && (
@@ -455,6 +536,7 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
             {youId === revealerId ? (
               <button
                 className="primary"
+                disabled={!online}
                 onClick={() => {
                   trackEvent("round_revealed");
                   send({ type: "reveal" });
@@ -470,12 +552,12 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
                 })}
               </span>
             )}
-            <button onClick={() => send({ type: "reset" })} title={tr("room.resetTitle")}>
+            <button disabled={!online} onClick={() => send({ type: "reset" })} title={tr("room.resetTitle")}>
               {tr("room.reset")}
             </button>
           </>
         ) : (
-          <button className="primary" onClick={() => send({ type: "reset" })}>
+          <button className="primary" disabled={!online} onClick={() => send({ type: "reset" })}>
             {tr("room.newVote")}
           </button>
         )}
@@ -497,6 +579,7 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
           <>
             <button
               className={`card observer-card ${isObserver ? "active" : ""}`}
+              disabled={!online}
               onClick={() => send({ type: "setObserver", isObserver: !isObserver })}
               title={isObserver ? tr("room.observeJoin") : tr("room.observe")}
               aria-pressed={isObserver}
@@ -507,14 +590,17 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
             </button>
             {!isObserver && (
               <Deck
-                selected={me?.vote ?? null}
+                selected={myVote}
                 onPick={(v) => {
-                  if (v === (me?.vote ?? null)) {
-                    send({ type: "unvote" });
+                  // Offline: keep the pick and send it once we're back (SERBITO-355).
+                  if (v === myVote) {
+                    if (!send({ type: "unvote" })) queueVote({ value: null });
+                    else if (pending) queueVote(null);
                     return;
                   }
                   trackEvent("vote_cast", { card: String(v) });
-                  send({ type: "vote", value: v });
+                  if (!send({ type: "vote", value: v })) queueVote({ value: v });
+                  else if (pending) queueVote(null);
                 }}
               />
             )}

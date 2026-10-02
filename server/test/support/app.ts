@@ -22,7 +22,7 @@ import {
   type Page,
   type WebSocketRoute,
 } from "playwright-core";
-import { createPokerServer } from "../../src/server.js";
+import { createPokerServer, type PokerServerLimits } from "../../src/server.js";
 import { injectCrossPromo } from "../../../client/src/crosspromo.js";
 
 const here = dirname(fileURLToPath(import.meta.url)); // server/test/support
@@ -63,7 +63,7 @@ export interface App {
   close(): Promise<void>;
 }
 
-export async function startApp(): Promise<App> {
+export async function startApp(limits: Partial<PokerServerLimits> = {}): Promise<App> {
   let browser: Browser;
   try {
     browser = await chromium.launch();
@@ -74,7 +74,7 @@ export async function startApp(): Promise<App> {
     throw e;
   }
   const dist = await buildApp();
-  const server = createPokerServer(dist);
+  const server = createPokerServer(dist, limits);
   await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
   const { port } = server.address() as AddressInfo;
   const origin = `http://localhost:${port}`;

@@ -364,3 +364,13 @@ input[type="text"], input:not([type]) {
   .fan .card.toggle { font-size: 0.8rem; padding: 0 4px; }
   .card:hover, .card.selected { transform: none; }
 }
+
+/* Connection state and server errors (SERBITO-355). */
+.conn-pill, .notice {
+  position: fixed; top: 0.75rem; left: 50%; transform: translateX(-50%); z-index: 40;
+  max-width: calc(100vw - 2rem); padding: 0.45rem 1rem; border-radius: 999px;
+  font-size: 0.9rem; font-weight: 600; text-align: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+.conn-pill { background: #3a2f0b; color: #ffd866; border: 1px solid #806a1a; }
+.notice { background: #4a1714; color: #ffd7d3; border: 1px solid #a33a32; border-radius: 10px; }
