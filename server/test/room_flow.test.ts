@@ -127,3 +127,22 @@ describe("P9a: Copied only when the link was copied", () => {
     }
   });
 });
+
+describe("P9b, P9c: who's in the room", () => {
+  it("observers are listed for everyone; a second Ann gets a suffix", async () => {
+    const { page: host, id } = await newRoom("Ann");
+    const guest = await join(id, "Ann");
+    const names = async () =>
+      (await host.locator(".participants .pname").allTextContents()).map((n) => n.replace("⭐", "")).sort();
+    try {
+      await expect.poll(names).toEqual(["Ann (2)", "Ann (you)"]);
+      await guest.getByRole("button", { name: "Observe (don't vote)" }).click();
+      await expect.poll(() => host.locator(".observers").textContent()).toBe("🎤 Observing: Ann (2)");
+      await expect.poll(() => guest.locator(".observers").textContent()).toBe("🎤 Observing: Ann (2) (you)");
+      expect(await host.locator(".participants li").count()).toBe(1);
+    } finally {
+      await host.context().close();
+      await guest.context().close();
+    }
+  });
+});

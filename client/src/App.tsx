@@ -739,33 +739,43 @@ function Participants({
   revealerId: string | null;
 }) {
   const { tr } = useT();
+  // Observers don't sit at the table, but the room should see who's watching.
+  const observers = participants.filter((p) => p.isObserver);
   return (
-    <ul className="participants">
-      {participants
-        .filter((p) => !p.isObserver)
-        .map((p) => (
-          <li key={p.id} className={p.connected ? "" : "offline"}>
-            {phase === "revealed" ? (
-              <span className="card-slot">{p.vote ?? "–"}</span>
-            ) : p.vote === "?" || p.vote === "☕" ? (
-              <span className="card-slot">{p.vote}</span>
-            ) : p.hasVoted ? (
-              <span className="card-slot">✓</span>
-            ) : (
-              <span className="card-slot pending">…</span>
-            )}
-            <span className="pname">
-              {p.id === revealerId && (
-                <span className="star" title="Reveals this round">
-                  ⭐
-                </span>
+    <>
+      <ul className="participants">
+        {participants
+          .filter((p) => !p.isObserver)
+          .map((p) => (
+            <li key={p.id} className={p.connected ? "" : "offline"}>
+              {phase === "revealed" ? (
+                <span className="card-slot">{p.vote ?? "–"}</span>
+              ) : p.vote === "?" || p.vote === "☕" ? (
+                <span className="card-slot">{p.vote}</span>
+              ) : p.hasVoted ? (
+                <span className="card-slot">✓</span>
+              ) : (
+                <span className="card-slot pending">…</span>
               )}
-              {p.name}
-              {p.id === youId && ` ${tr("room.you")}`}
-            </span>
-          </li>
-        ))}
-    </ul>
+              <span className="pname">
+                {p.id === revealerId && (
+                  <span className="star" title="Reveals this round">
+                    ⭐
+                  </span>
+                )}
+                {p.name}
+                {p.id === youId && ` ${tr("room.you")}`}
+              </span>
+            </li>
+          ))}
+      </ul>
+      {observers.length > 0 && (
+        <p className="observers">
+          <span aria-hidden="true">🎤</span> {tr("room.observers")}:{" "}
+          {observers.map((p) => (p.id === youId ? `${p.name} ${tr("room.you")}` : p.name)).join(", ")}
+        </p>
+      )}
+    </>
   );
 }
 

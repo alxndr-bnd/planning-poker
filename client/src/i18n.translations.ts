@@ -207,6 +207,7 @@ export const TRANSLATIONS: Partial<
     "room.observeJoin": "Вы наблюдаете — нажмите, чтобы голосовать",
     "room.observe": "Наблюдать (без голоса)",
     "room.you": "(вы)",
+    "room.observers": "Наблюдают",
     "deck.more": "Ещё",
     "deck.collapse": "Скрыть старшие карты",
     "deck.showHighTitle": "Показать старшие карты (89–610)",

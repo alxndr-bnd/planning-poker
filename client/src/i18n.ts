@@ -59,6 +59,7 @@ export const EN = {
   "room.observeJoin": "You are observing — click to join voting",
   "room.observe": "Observe (don't vote)",
   "room.you": "(you)",
+  "room.observers": "Observing",
   "deck.more": "More",
   "deck.collapse": "Hide high cards",
   "deck.showHighTitle": "Show high cards (89–610)",
