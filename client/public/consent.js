@@ -60,6 +60,7 @@
   var bar;
   var parts; // the elements that carry text: [question, accept, decline, privacy link]
   var returnFocus = null;
+  var away = null; // the focused element when the window lost focus
   // The page's own bottom-fixed chrome, if it has any: the app shell's footer
   // (client/index.html) marks itself with data-pp-fixed-bottom.
   var foot = d.querySelector ? d.querySelector("[data-pp-fixed-bottom]") : null;
@@ -150,16 +151,29 @@
     else d.documentElement.style.removeProperty("--pp-foot-h");
   }
 
+  /** Whether `n` or an ancestor is position: fixed (scrolling cannot move it clear). */
+  function fixed(n) {
+    for (; n && n.nodeType === 1; n = n.parentElement) {
+      if (w.getComputedStyle && w.getComputedStyle(n).position === "fixed") return true;
+    }
+    return false;
+  }
+
   /**
    * Focus must never end up behind the bar or a fixed footer (WCAG 2.4.11).
    * scroll-padding covers browsers that honour it for focus scrolling, but not an
    * element that is already "in view" behind the cover; this covers the rest: once the
    * browser has scrolled, if the focused element still reaches under, scroll it clear.
+   * When the window gets focus back (another app or tab), the browser fires focusin
+   * again on the element that had it; that is not a move, so nothing scrolls.
    */
   function reveal(e) {
     var t = e.target;
+    var back = t === away;
+    away = null;
+    if (back) return; // the window got focus back: not a focus move (SERBITO-374)
     var c = cover();
-    if (!c || !t || !t.getBoundingClientRect || c.contains(t)) return;
+    if (!c || !t || !t.getBoundingClientRect || c.contains(t) || fixed(t)) return;
     var raf = w.requestAnimationFrame || function (f) { f(); };
     raf(function () {
       if (cover() !== c) return;
@@ -257,6 +271,9 @@
   // clear of the page's fixed footer.
   el("style", {}, d.head).textContent = CSS;
   d.addEventListener("focusin", reveal);
+  w.addEventListener("blur", function (e) {
+    if (e.target === w) away = d.activeElement;
+  });
   if (foot) {
     dock();
     if (w.ResizeObserver) new w.ResizeObserver(dock).observe(foot);
