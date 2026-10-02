@@ -161,6 +161,17 @@ export function serveStatic(
     return true;
   }
 
+  // A guide language root (/ru, /ru/) has no page of its own: open the app in that
+  // language (SERBITO-355; it was a 404). Only for a language that has guides in dist.
+  const langRoot = /^\/([a-z]{2})\/?$/.exec(urlPath)?.[1];
+  if (langRoot) {
+    const dir = join(dist, langRoot);
+    if (existsSync(dir) && statSync(dir).isDirectory()) {
+      res.writeHead(302, { location: `/?lang=${langRoot}`, "cache-control": "no-cache" }).end();
+      return true;
+    }
+  }
+
   // Normalize a trailing slash on a prerendered clean-URL page (/slug/ -> /slug):
   // the canonical is the no-slash form, so 301 to it rather than serving a second
   // crawlable variant. Skips the site root ("/") and anything without an index.html.

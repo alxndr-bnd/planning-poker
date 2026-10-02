@@ -50,6 +50,8 @@ beforeEach(async () => {
   mkdirSync(join(dist, "assets"), { recursive: true });
   writeFileSync(join(dist, "index.html"), "<!doctype html><title>PP SPA</title>");
   writeFileSync(join(dist, "assets", "app-abc123.js"), "console.log('app')");
+  mkdirSync(join(dist, "ru", "glossary"), { recursive: true });
+  writeFileSync(join(dist, "ru", "glossary", "index.html"), "<h1>Глоссарий</h1>");
   mkdirSync(join(dist, "guide"), { recursive: true });
   writeFileSync(
     join(dist, "guide", "index.html"),
@@ -111,6 +113,17 @@ describe("static file serving containment", () => {
       expect(r.body, path).not.toContain("PP SPA");
       expect(r.body).toContain('content="noindex"');
     }
+  });
+
+  // SERBITO-355 (5c): /ru/ was a 404. A guide language root opens the app in it.
+  it("sends a guide language root (/ru, /ru/) to the app in that language", async () => {
+    for (const path of ["/ru", "/ru/"]) {
+      const res = await get(path);
+      expect(res.status, path).toBe(302);
+      expect(res.headers.location, path).toBe("/?lang=ru");
+    }
+    expect((await get("/xx/")).status).toBe(404); // no such guide language
+    expect((await get("/ru/nope")).status).toBe(404);
   });
 
   it("still serves / with a query string (e.g. ?ui=v2)", async () => {
