@@ -14,6 +14,9 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+### Security
+- Real-time voting connections are accepted only through poker.serbito.rs, and every deploy checks that the site sends its security headers.
+
 ## [0.56.0] - 2026-10-03
 
 ### Security
