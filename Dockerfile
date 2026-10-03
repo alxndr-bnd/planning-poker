@@ -25,7 +25,11 @@ ENV NODE_ENV=production \
 # Patch base-image OS packages, then strip npm/npx/corepack: the runtime runs a single
 # precompiled `node` bundle and never needs them. Removing them drops their bundled deps
 # (e.g. npm's undici) and shrinks the attack surface — keeps the Trivy deploy gate green.
-RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/* && \
+# APT_REFRESH is the UTC date (deploy.yml passes it): the RUN reads it, so each day's first
+# build re-runs the upgrade instead of reusing a stale cached layer (SERBITO-369).
+ARG APT_REFRESH
+RUN echo "apt refresh: ${APT_REFRESH:-unset}" && \
+    apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/* && \
     rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
            /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
 
