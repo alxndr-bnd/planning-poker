@@ -59,13 +59,43 @@ export interface PokerServerLimits {
   /** New rooms one client IP may create per window. */
   roomCreatesPerIp: number;
   roomCreateWindowMs: number;
+  /** Host suffixes that reach the container without Cloudflare (see directOriginHost). */
+  directOriginHostSuffixes: readonly string[];
 }
+/**
+ * SERBITO-348 (PLT-4): the Cloud Run URL `planning-poker-….run.app` reaches the container
+ * straight from the internet, so a client there skips every Cloudflare control in front of
+ * poker.serbito.rs (WAF rules, rate limits, the /ws gate). The WebSocket is the only dynamic
+ * endpoint, so it is refused on these hosts. Static pages stay: the deploy smoke check loads
+ * `/` from the run.app URL.
+ */
+export const DIRECT_ORIGIN_HOST_SUFFIXES: readonly string[] = [".run.app"];
 const DEFAULT_LIMITS: PokerServerLimits = {
   joinTimeoutMs: 10 * 1000,
   maxConnectionsPerIp: 30,
   roomCreatesPerIp: 20,
   roomCreateWindowMs: 10 * 60 * 1000,
+  directOriginHostSuffixes: DIRECT_ORIGIN_HOST_SUFFIXES,
 };
+
+/**
+ * True when the Host header names a direct origin (it bypasses Cloudflare). The check
+ * ignores case, a port and a trailing dot. A missing Host is not a direct origin: HTTP/1.1
+ * clients always send one, and the Google front end routes by it.
+ */
+export function directOriginHost(
+  host: string | undefined,
+  suffixes: readonly string[] = DIRECT_ORIGIN_HOST_SUFFIXES,
+): boolean {
+  if (!host) return false;
+  let name = host.trim().toLowerCase();
+  if (name.startsWith("[")) return false; // an IPv6 literal is never a run.app name
+  name = name.replace(/:\d+$/, "").replace(/\.$/, "");
+  return suffixes.some((s) => {
+    const suffix = s.toLowerCase();
+    return name.endsWith(suffix) || name === suffix.replace(/^\./, "");
+  });
+}
 /** Close code for a socket that never joined (4000-4999: private range). */
 export const JOIN_TIMEOUT_CLOSE_CODE = 4001;
 
@@ -156,6 +186,11 @@ export function createPokerServer(
   httpServer.on("upgrade", (req, socket, head) => {
     if ((req.url ?? "").split("?")[0] !== WS_PATH) {
       socket.destroy();
+      return;
+    }
+    // PLT-4: no WebSocket on the run.app URL; it must come through Cloudflare.
+    if (directOriginHost(req.headers.host, limits.directOriginHostSuffixes)) {
+      refuseUpgrade(socket, "403 Forbidden");
       return;
     }
     if (!originAllowed(req.headers.origin)) {
