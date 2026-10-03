@@ -14,6 +14,8 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+## [0.57.0] - 2026-10-03
+
 ### Security
 - Real-time voting connections are accepted only through poker.serbito.rs, and every deploy checks that the site sends its security headers.
 
@@ -57,7 +59,8 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 - Room members cannot take over each other's seat, and one client cannot overload the server.
 - Security headers are on, and dependencies are up to date.
 
-[Unreleased]: https://github.com/alxndr-bnd/planning-poker/compare/v0.56.0...HEAD
+[Unreleased]: https://github.com/alxndr-bnd/planning-poker/compare/v0.57.0...HEAD
+[0.57.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.56.0...v0.57.0
 [0.56.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.55.0...v0.56.0
 [0.55.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.54.0...v0.55.0
 [0.54.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.53.0...v0.54.0
