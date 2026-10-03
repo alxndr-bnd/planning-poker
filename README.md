@@ -61,9 +61,18 @@ docker build -t planning-poker .
 docker run -p 8080:8080 planning-poker   # http://localhost:8080
 ```
 
+## Releasing
+
+1. With every change players notice, add an English line `- ...` under `## [Unreleased]` in
+   [CHANGELOG.md](CHANGELOG.md) (`### Added` / `Changed` / `Fixed` / `Security`).
+2. `scripts/release_minor.sh "message"` refuses to release when `[Unreleased]` is empty. Otherwise it
+   dates the entries as `## [X.Y.0]`, runs the gate, tags, pushes and creates the GitHub Release.
+3. The deploy fails for a tag without its `## [X.Y.Z]` section in CHANGELOG.md.
+
 ## Deploy
 
-Tag-based via GitHub Actions (`.github/workflows/deploy.yml`): push a `v*.*.*` tag.
+Tag-based via GitHub Actions (`.github/workflows/deploy.yml`): push a `v*.*.*` tag
+(with `scripts/release_minor.sh`, see "Releasing").
 One-time domain mapping:
 
 ```bash
