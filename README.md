@@ -68,6 +68,9 @@ docker run -p 8080:8080 planning-poker   # http://localhost:8080
 2. `scripts/release_minor.sh "message"` refuses to release when `[Unreleased]` is empty. Otherwise it
    dates the entries as `## [X.Y.0]`, runs the gate, tags, pushes and creates the GitHub Release.
 3. The deploy fails for a tag without its `## [X.Y.Z]` section in CHANGELOG.md.
+4. Weekly OS refresh (SERBITO-401): every Wednesday 03:00 UTC (or *Run workflow*) the deploy rebuilds the newest
+   `vX.Y.Z` tag with fresh Debian packages and redeploys it (same version, image `<sha>-r<YYYYMMDD>`). If the main
+   page is not 200 after any deploy, traffic goes back to the previous revision and the run fails.
 
 ## Deploy
 

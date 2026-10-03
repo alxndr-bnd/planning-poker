@@ -256,11 +256,13 @@ function guardStep(): { script: string; stepNames: string[]; condition: string }
 describe("deploy.yml CHANGELOG guard", () => {
   const { script, stepNames, condition } = guardStep();
 
-  it("is the first step after checkout and runs for tags", () => {
+  it("runs right after checkout and the tag pick, on every run", () => {
     expect(stepNames[0]).toMatch(/^actions\/checkout@/);
-    expect(stepNames[1]).toBe("CHANGELOG.md has this version");
-    expect(stepNames.indexOf("Build & push image")).toBeGreaterThan(1);
-    expect(condition).toContain("github.ref_type == 'tag'");
+    // SERBITO-401: it checks the tag that deploys (a weekly refresh redeploys the newest tag).
+    expect(stepNames[1]).toBe("Pick the release tag");
+    expect(stepNames[2]).toBe("CHANGELOG.md has this version");
+    expect(stepNames.indexOf("Build & push image")).toBeGreaterThan(2);
+    expect(condition).toBe("");
   });
 
   it.each([
@@ -273,7 +275,7 @@ describe("deploy.yml CHANGELOG guard", () => {
     writeFileSync(join(dir, "CHANGELOG.md"), GOOD);
     const r = spawnSync("bash", ["-e", "-c", script], {
       cwd: dir,
-      env: { GITHUB_REF_NAME: tag, PATH: "/usr/bin:/bin" },
+      env: { RELEASE_TAG: tag, PATH: "/usr/bin:/bin" },
       encoding: "utf-8",
     });
     expect(r.status, r.stdout + r.stderr).toBe(code);
