@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-24.04 # pinned: ubuntu-latest moves to 26.04 on 2026-10-19
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1 (SHA-pinned)
+        with:
+          persist-credentials: false # no step pushes; keep the token out of .git/config (SERBITO-385, Aikido)
       - uses: github/codeql-action/init@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2 (SHA-pinned)
         with:
           languages: javascript-typescript
