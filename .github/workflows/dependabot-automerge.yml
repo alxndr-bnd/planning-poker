@@ -1,0 +1,137 @@
+name: Dependabot auto-merge
+
+# SERBITO-400: a Dependabot patch or minor update merges by itself when the PR's CI is green.
+# A major update gets the `major-update` label and stays open for a person.
+#
+# - Trigger is `pull_request`, not `pull_request_target`: the job never runs PR code with a
+#   privileged token, and it checks out nothing.
+# - Free private repos have no branch protection, so this job is the gate. It waits for all
+#   other check runs on the PR head commit. The CI jobs in REQUIRED_CHECKS must be among
+#   them: a missing CI is never green.
+# - It merges only when every required check concluded `success` and every other check
+#   `success` or `skipped`. Red CI, a timeout or a new head commit: no merge.
+# - A base-image minor (python 3.14 -> 3.15) is a new runtime: it goes the major way.
+#   Other update types (a Docker digest, a version without semver) stay open, no label.
+# - A merge does not release. Releases stay manual (CHANGELOG rule, SERBITO-389).
+on:
+  pull_request:
+
+permissions: {}
+
+# A new push to the PR (a Dependabot rebase) cancels the wait for the old head commit.
+concurrency:
+  group: dependabot-automerge-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  automerge:
+    # The check run carries this name. The wait loop skips it (SELF_CHECK below).
+    name: dependabot-automerge
+    if: github.actor == 'dependabot[bot]' && github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-24.04 # explicit: ubuntu-latest moves to 26.04 on 2026-10-19
+    timeout-minutes: 60
+    permissions:
+      contents: write # gh pr merge
+      pull-requests: write # gh pr merge, the major-update label
+      checks: read # the check runs of the PR head commit
+    steps:
+      - name: Dependabot metadata
+        id: meta
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0 (SHA-pinned)
+
+      # merge: wait for CI, merge if green. review: label, leave open. skip: leave open.
+      - name: Decide
+        id: decide
+        env:
+          UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
+          ECOSYSTEM: ${{ steps.meta.outputs.package-ecosystem }}
+        run: |
+          case "$UPDATE_TYPE" in
+            version-update:semver-patch) action=merge ;;
+            version-update:semver-minor)
+              if [ "$ECOSYSTEM" = docker ]; then action=review; else action=merge; fi ;;
+            version-update:semver-major) action=review ;;
+            *) action=skip ;;
+          esac
+          echo "$ECOSYSTEM ${UPDATE_TYPE:-<no semver type>}: $action"
+          echo "action=$action" >> "$GITHUB_OUTPUT"
+
+      - name: Label for review and leave open
+        if: steps.decide.outputs.action == 'review'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if ! gh api "repos/$GITHUB_REPOSITORY/labels/major-update" --silent 2>/dev/null; then
+            gh api --method POST "repos/$GITHUB_REPOSITORY/labels" --silent \
+              -f name=major-update -f color=B60205 \
+              -f description="Dependabot update for a person to review: a major or a new base-image minor"
+          fi
+          gh api --method POST "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/labels" --silent \
+            -f "labels[]=major-update"
+          echo "::notice::Labelled major-update, left open for review."
+
+      - name: Wait for CI, merge only if all green
+        if: steps.decide.outputs.action == 'merge'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          SELF_CHECK: dependabot-automerge
+          # The PR CI jobs (check run names), one per line. All must exist and pass.
+          REQUIRED_CHECKS: |
+            verify
+          WAIT_SECONDS: "3000" # 50 min, inside the job's timeout-minutes
+          POLL_SECONDS: "30"
+        run: |
+          set -euo pipefail
+          if [ -z "$(tr -d '[:space:]' <<<"$REQUIRED_CHECKS")" ]; then
+            echo "::error::REQUIRED_CHECKS is empty: no CI to wait for. Not merging."
+            exit 1
+          fi
+          deadline=$((SECONDS + WAIT_SECONDS))
+          quiet=0
+          while :; do
+            if ! raw="$(gh api "repos/$GITHUB_REPOSITORY/commits/$HEAD_SHA/check-runs?filter=latest&per_page=100")"; then
+              echo "::warning::GitHub API call failed, retrying."
+              raw='{"check_runs": []}'
+            fi
+            runs="$(jq --arg self "$SELF_CHECK" '[.check_runs[] | select(.name != $self) | {name, status, conclusion}]' <<<"$raw")"
+            missing=""
+            while IFS= read -r check; do
+              [ -n "$check" ] || continue
+              jq -e --arg n "$check" 'any(.[]; .name == $n)' <<<"$runs" >/dev/null || missing="$missing $check;"
+            done <<<"$REQUIRED_CHECKS"
+            pending="$(jq -r '[.[] | select(.status != "completed") | .name] | join("; ")' <<<"$runs")"
+            if [ -z "$missing" ] && [ -z "$pending" ]; then
+              # Two quiet polls in a row: a check run that starts late cannot slip past.
+              quiet=$((quiet + 1))
+              if [ "$quiet" -ge 2 ]; then break; fi
+            else
+              quiet=0
+              echo "Waiting. Missing:${missing:- none}. Running: ${pending:-none}."
+            fi
+            if [ "$SECONDS" -ge "$deadline" ]; then
+              echo "::error::CI did not finish in ${WAIT_SECONDS}s (missing:${missing:- none}; running: ${pending:-none}). Not merging."
+              exit 1
+            fi
+            sleep "$POLL_SECONDS"
+          done
+          failed="$(jq -r --arg req "$REQUIRED_CHECKS" '
+            ($req | split("\n") | map(select(length > 0))) as $required
+            | [.[] | select(
+                (.conclusion != "success")
+                and ((.name | IN($required[])) or .conclusion != "skipped"))
+              | "\(.name): \(.conclusion)"]
+            | join("; ")' <<<"$runs")"
+          if [ -n "$failed" ]; then
+            echo "::notice::CI is not green (${failed}). Not merging."
+            exit 0
+          fi
+          echo "All checks green. Merging $PR_URL."
+          if ! gh pr merge "$PR_URL" --squash --match-head-commit "$HEAD_SHA"; then
+            # GITHUB_TOKEN has no `workflows` permission: GitHub may refuse to merge a
+            # change to .github/workflows (a github-actions bump). Then a person merges it.
+            echo "::error::GitHub refused the merge. Merge this PR by hand."
+            exit 1
+          fi

@@ -1,0 +1,54 @@
+name: CI
+
+# SERBITO-400: the PR gate for Dependabot auto-merge (dependabot-automerge.yml).
+# The same checks as scripts/release_minor.sh: npm test, typecheck, build.
+# Pull requests only: a release still runs the gate locally, and deploy.yml runs on tags.
+# Dependabot PRs get no repo secrets, and this job uses none.
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+# A new push to the same PR cancels the old run.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04 # explicit: ubuntu-latest moves to 26.04 on 2026-10-19
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1 (SHA-pinned)
+        with:
+          persist-credentials: false # no step pushes; keep the token out of .git/config
+          fetch-depth: 0 # the sitemap and changelog scripts read the git history and tags
+
+      # One Node for the image and the tests: the major from the Dockerfile's FROM lines,
+      # which Dependabot bumps.
+      - name: Node version from Dockerfile
+        id: node
+        run: |
+          version="$(sed -nE 's#^FROM node:([0-9]+)-slim AS build$#\1#p' Dockerfile)"
+          if [ -z "$version" ]; then echo "::error file=Dockerfile::FROM node:N-slim AS build not found"; exit 1; fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0 (SHA-pinned)
+        with:
+          node-version: ${{ steps.node.outputs.version }}
+          cache: npm
+
+      - name: Install dependencies (lockfile)
+        run: npm ci
+
+      # server/test drives Chromium through playwright-core (consent_focus uses full Chromium).
+      - name: Chromium for the browser tests
+        run: npx playwright-core install --with-deps chromium
+
+      - name: npm test
+        run: npm test
+      - name: npm run typecheck
+        run: npm run typecheck
+      - name: npm run build
+        run: npm run build
