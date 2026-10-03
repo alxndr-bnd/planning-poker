@@ -9,7 +9,8 @@ name: Dependabot auto-merge
 #   other check runs on the PR head commit. The CI jobs in REQUIRED_CHECKS must be among
 #   them: a missing CI is never green.
 # - It merges only when every required check concluded `success` and every other check
-#   `success` or `skipped`. Red CI, a timeout or a new head commit: no merge.
+#   `success`, `skipped` or `neutral` (SERBITO-417: CodeQL default setup ends `neutral` on a
+#   Dependabot PR). Red CI, a timeout or a new head commit: no merge.
 # - A base-image minor (python 3.14 -> 3.15) is a new runtime: it goes the major way.
 #   Other update types (a Docker digest, a version without semver) stay open, no label.
 # - A merge does not release. Releases stay manual (CHANGELOG rule, SERBITO-389).
@@ -120,8 +121,8 @@ jobs:
           failed="$(jq -r --arg req "$REQUIRED_CHECKS" '
             ($req | split("\n") | map(select(length > 0))) as $required
             | [.[] | select(
-                (.conclusion != "success")
-                and ((.name | IN($required[])) or .conclusion != "skipped"))
+                if (.name | IN($required[])) then .conclusion != "success"
+                else (.conclusion | IN("success", "skipped", "neutral") | not) end)
               | "\(.name): \(.conclusion)"]
             | join("; ")' <<<"$runs")"
           if [ -n "$failed" ]; then
