@@ -200,3 +200,20 @@ jobs:
             --to-revisions "${PREV_REVISION}=100"
           echo "::error::The main page does not return 200 after the deploy. Traffic is back on $PREV_REVISION."
           exit 1
+
+      # SERBITO-348: the deployed page must send the security headers (HSTS, nosniff,
+      # framing, Referrer-Policy, CSP). A missing header fails the run, so GitHub e-mails it.
+      # No rollback: the site still works, and the previous revision has the same headers.
+      # A refresh of a tag older than the script skips the check with a warning.
+      - name: Security headers check
+        run: |
+          set -euo pipefail
+          if [ ! -f scripts/check_security_headers.sh ]; then
+            echo "::warning::$RELEASE_TAG has no scripts/check_security_headers.sh; header check skipped."
+            exit 0
+          fi
+          SVC_URL="$(gcloud run services describe "$SERVICE" --region "$REGION" --format='value(status.url)')"
+          if ! bash scripts/check_security_headers.sh "$SVC_URL/"; then
+            echo "::error::$SVC_URL/ does not send all security headers (see the list above)."
+            exit 1
+          fi
