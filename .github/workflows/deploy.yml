@@ -49,12 +49,21 @@ jobs:
           cache-to: type=registry,ref=${{ env.AR_IMAGE }}:buildcache,mode=max
 
       # --- Security: scan the built image for OS/dep CVEs + leaked secrets (parity with
-      # serbito). Hard gate: a *fixed* HIGH/CRITICAL fails the deploy. Pinned install
-      # (tagged install.sh + binary version, not mutable main) for supply-chain safety. ---
+      # serbito). Hard gate: a *fixed* HIGH/CRITICAL fails the deploy. Trivy comes from the
+      # release tarball checked against a pinned sha256, not a downloaded install.sh piped to
+      # sh (SERBITO-385, Aikido). New version = new hash from trivy_<ver>_checksums.txt. ---
       - name: Trivy image scan
+        env:
+          TRIVY_VERSION: 0.71.2
+          TRIVY_SHA256: 0510e71e2fd39bf863856d499c8dc19feb4e7336546394c502a8f5cc7ab27460
         run: |
-          # install.sh pinned to the immutable commit of tag v0.71.2 (not the mutable tag) — supply-chain integrity (Aikido).
-          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/055a5c8a53bfd61f7a8e276a5b2f0c3fc1673420/contrib/install.sh | sh -s -- -b /usr/local/bin v0.71.2
+          set -euo pipefail
+          curl -sfL --retry 3 -o trivy.tar.gz \
+            "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+          echo "${TRIVY_SHA256}  trivy.tar.gz" | sha256sum -c -
+          tar -xzf trivy.tar.gz trivy
+          sudo install -m 0755 trivy /usr/local/bin/trivy
+          rm -f trivy.tar.gz trivy
           trivy image --scanners vuln,secret --severity HIGH,CRITICAL \
             --ignore-unfixed --exit-code 1 --format table --timeout 10m \
             "${{ env.AR_IMAGE }}:${{ github.sha }}"
