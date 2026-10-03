@@ -75,7 +75,8 @@ describe("P8: rejoin after an idle disconnect", () => {
       await page.getByRole("button", { name: "Create room" }).click();
       await page.waitForSelector(".fan .card");
       const joins = () => net.sent.filter((m) => m.type === "join").map((m) => m.manual);
-      expect(joins()).toEqual([true]);
+      // Poll: the cards can render before the join frame is recorded (flaky on a busy machine).
+      await expect.poll(joins).toEqual([true]);
 
       net.down(); // a network blip: the app reconnects by itself
       net.up();

@@ -1,5 +1,9 @@
 # Dependabot version updates. Security updates (for known CVEs) are enabled
 # separately in the repo's Security settings; this file schedules routine bumps.
+# SERBITO-400: every Monday, one PR per ecosystem for minor + patch bumps; a major gets its
+# own PR. Each PR runs CI (.github/workflows/ci.yml). Patch/minor PRs merge by themselves on
+# green CI; majors get the `major-update` label and wait for a person
+# (.github/workflows/dependabot-automerge.yml).
 # https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 version: 2
 updates:
@@ -8,6 +12,12 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
+    groups:
+      npm-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
     ignore:
       # Types must match the runtime (node:24-slim below), not the newest Node.
       # Lift this when the Dockerfile moves to the next LTS.
@@ -19,6 +29,12 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
+    groups:
+      docker-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
     ignore:
       # Production runs LTS Node only. Odd majors never become LTS; skip them so
       # PRs like "node 24-slim -> 25-slim" stop. An even major is released in April
@@ -31,3 +47,9 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
+    groups:
+      actions-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
