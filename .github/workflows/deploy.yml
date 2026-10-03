@@ -2,20 +2,34 @@ name: Deploy to Cloud Run
 
 # Tag-based deploys: push a v*.*.* tag (e.g. via scripts/release_minor.sh) to ship.
 # Keyless auth via Workload Identity Federation — no service-account JSON key.
+#
+# SERBITO-401: weekly OS refresh. Every Wednesday 03:00 UTC (Cloud SQL maintenance is Tuesday
+# 02:00 UTC) and on a manual run, the job checks out the NEWEST vX.Y.Z tag and rebuilds it with
+# today's APT_REFRESH, so Debian security fixes ship without a product release. A manual run
+# deploys that tag too, never a branch.
 on:
-  workflow_dispatch:
   push:
     tags:
       - "v*.*.*"
+  schedule:
+    - cron: "0 3 * * 3"
+  workflow_dispatch:
 
 permissions:
   contents: read
   id-token: write # required for WIF / OIDC
 
+# SERBITO-401: a refresh and a release never deploy at the same time; a new run waits.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
 env:
   PROJECT_ID: serbito
   REGION: europe-west1
   SERVICE: planning-poker
+  # Image repo. The step "Pick the release tag" sets IMAGE=AR_IMAGE:<commit sha> (a refresh adds
+  # -r<YYYYMMDD>).
   AR_IMAGE: europe-west1-docker.pkg.dev/serbito/planning-poker/planning-poker
   WIF_PROVIDER: projects/488744139718/locations/global/workloadIdentityPools/github-pool/providers/github
   DEPLOYER_SA: pp-deployer@serbito.iam.gserviceaccount.com
@@ -27,16 +41,47 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7 (SHA-pinned)
         with:
           persist-credentials: false # no step pushes; keep the token out of .git/config (SERBITO-385, Aikido)
+          # A refresh needs the tags to find the newest one; a tag push needs one commit.
+          fetch-depth: ${{ github.event_name == 'push' && 1 || 0 }}
+
+      # SERBITO-401: which release this run deploys. A tag push deploys its own tag. A schedule
+      # or manual run (a "refresh") checks out the newest vX.Y.Z tag; its image tag gets
+      # -r<YYYYMMDD>, so the refreshed revision differs from the release image of the same
+      # commit. Later steps read RELEASE_TAG and IMAGE (GITHUB_REF_NAME / github.sha are main
+      # on a schedule run).
+      - name: Pick the release tag
+        id: release
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            tag="$GITHUB_REF_NAME"
+            mode=release
+            suffix=""
+          else
+            tag="$(git tag --list 'v*.*.*' --sort=-v:refname \
+              | awk '/^v[0-9]+\.[0-9]+\.[0-9]+$/ && !t { t = $0 } END { print t }')"
+            if [ -z "$tag" ]; then
+              echo "::error::No vX.Y.Z tag to redeploy."
+              exit 1
+            fi
+            git -c advice.detachedHead=false checkout --quiet "refs/tags/$tag"
+            mode=refresh
+            suffix="-r$(date -u +%Y%m%d)"
+          fi
+          sha="$(git rev-parse HEAD)"
+          echo "RELEASE_TAG=$tag" >> "$GITHUB_ENV"
+          echo "IMAGE=${AR_IMAGE}:${sha}${suffix}" >> "$GITHUB_ENV"
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          echo "Deploying $tag ($mode): ${AR_IMAGE}:${sha}${suffix}" | tee -a "$GITHUB_STEP_SUMMARY"
 
       # SERBITO-389: a tag ships only with its release notes. scripts/release_minor.sh writes the
       # "## [X.Y.Z] - date" section; a tag pushed by hand without it stops here, before the build.
-      # A manual run from a branch has no version, so the check runs on tags only.
+      # Every run checks the tag it deploys (a refresh redeploys a tag that already passed).
       - name: CHANGELOG.md has this version
-        if: github.ref_type == 'tag'
         run: |
-          ver="${GITHUB_REF_NAME#v}"
+          ver="${RELEASE_TAG#v}"
           if ! grep -qxE "## \[${ver//./\\.}\] - [0-9]{4}-[0-9]{2}-[0-9]{2}" CHANGELOG.md; then
-            echo "::error file=CHANGELOG.md::No '## [$ver] - YYYY-MM-DD' section for tag $GITHUB_REF_NAME. Release with scripts/release_minor.sh (README, Releasing)."
+            echo "::error file=CHANGELOG.md::No '## [$ver] - YYYY-MM-DD' section for tag $RELEASE_TAG. Release with scripts/release_minor.sh (README, Releasing)."
             exit 1
           fi
           echo "CHANGELOG.md has [$ver]"
@@ -65,7 +110,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.AR_IMAGE }}:${{ github.sha }}
+          tags: ${{ env.IMAGE }}
           build-args: |
             APT_REFRESH=${{ steps.apt.outputs.refresh }}
           cache-from: type=registry,ref=${{ env.AR_IMAGE }}:buildcache
@@ -89,19 +134,26 @@ jobs:
           rm -f trivy.tar.gz trivy
           trivy image --scanners vuln,secret --severity HIGH,CRITICAL \
             --ignore-unfixed --exit-code 1 --format table --timeout 10m \
-            "${{ env.AR_IMAGE }}:${{ github.sha }}"
+            "$IMAGE"
+
+      # SERBITO-401: the revision that serves 100% now. The smoke check after the deploy routes
+      # traffic back to it if the main page fails. Empty = nothing to roll back to.
+      - name: Remember the serving revision
+        id: prev
+        run: |
+          set -euo pipefail
+          prev="$(gcloud run services describe "$SERVICE" --region "$REGION" --format=json \
+            | jq -r '[.status.traffic[]? | select(.percent == 100) | .revisionName] | first // empty')" || prev=""
+          echo "Serving now: ${prev:-<none>}"
+          echo "revision=$prev" >> "$GITHUB_OUTPUT"
 
       - name: Deploy to Cloud Run
         run: |
-          # Sentry release id from the tag (v1.4.0 -> planning-poker@1.4.0); a manual
-          # workflow_dispatch run from a branch falls back to the commit SHA.
-          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
-            SENTRY_RELEASE="planning-poker@${GITHUB_REF_NAME#v}"
-          else
-            SENTRY_RELEASE="planning-poker@${GITHUB_SHA}"
-          fi
+          # Sentry release id from the deployed tag (v1.4.0 -> planning-poker@1.4.0); a refresh
+          # keeps the release of the tag it redeploys.
+          SENTRY_RELEASE="planning-poker@${RELEASE_TAG#v}"
           gcloud run deploy "$SERVICE" \
-            --image "$AR_IMAGE:${{ github.sha }}" \
+            --image "$IMAGE" \
             --region "$REGION" \
             --platform managed \
             --allow-unauthenticated \
@@ -112,6 +164,9 @@ jobs:
             --timeout=300 \
             --set-secrets="SENTRY_DSN=planning-poker-sentry-dsn:latest" \
             --update-env-vars="SENTRY_RELEASE=${SENTRY_RELEASE}"
+          # After a smoke rollback, traffic is pinned to the old revision by name; a plain deploy
+          # would keep it there. Route 100% to the new revision (a no-op when already latest).
+          gcloud run services update-traffic "$SERVICE" --region "$REGION" --to-latest
         # NB: keep --timeout low (300s, Cloud Run default). A WebSocket is one HTTP
         # request that never returns, so a high timeout (was 3600) lets an abandoned
         # client pin a billable instance up to an hour and blocks scale-to-zero
@@ -121,3 +176,27 @@ jobs:
         # SENTRY_DSN lives in Secret Manager (project serbito); the runtime SA
         # (default compute SA) has secretAccessor on it.
         # One-time domain mapping (poker.serbito.rs -> service) is configured out-of-band.
+
+      # SERBITO-401: smoke check after every deploy (release or refresh). The main page of the
+      # service URL (run.app, redirects followed) must return 200. Otherwise traffic goes back to
+      # the revision that served before, and the run fails (GitHub e-mails the failure).
+      - name: Smoke check (roll back on failure)
+        env:
+          PREV_REVISION: ${{ steps.prev.outputs.revision }}
+        run: |
+          set -euo pipefail
+          SVC_URL="$(gcloud run services describe "$SERVICE" --region "$REGION" --format='value(status.url)')"
+          for i in 1 2 3 4 5; do
+            code="$(curl -sL -o /dev/null -w '%{http_code}' --max-time 30 "$SVC_URL/")" || true
+            echo "  smoke $i -> $code"
+            if [ "$code" = "200" ]; then exit 0; fi
+            sleep 5
+          done
+          if [ -z "$PREV_REVISION" ]; then
+            echo "::error::The main page does not return 200, and there is no previous revision to roll back to."
+            exit 1
+          fi
+          gcloud run services update-traffic "$SERVICE" --region "$REGION" \
+            --to-revisions "${PREV_REVISION}=100"
+          echo "::error::The main page does not return 200 after the deploy. Traffic is back on $PREV_REVISION."
+          exit 1
