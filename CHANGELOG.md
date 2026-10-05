@@ -14,6 +14,8 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+## [0.60.0] - 2026-10-05
+
 ### Added
 - Name each round: type the issue key or title in the field next to Reset or New vote. Everybody sees it on the table and in the estimate log.
 
@@ -81,7 +83,8 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 - Room members cannot take over each other's seat, and one client cannot overload the server.
 - Security headers are on, and dependencies are up to date.
 
-[Unreleased]: https://github.com/alxndr-bnd/planning-poker/compare/v0.59.0...HEAD
+[Unreleased]: https://github.com/alxndr-bnd/planning-poker/compare/v0.60.0...HEAD
+[0.60.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.59.0...v0.60.0
 [0.59.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.58.0...v0.59.0
 [0.58.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.57.0...v0.58.0
 [0.57.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.56.0...v0.57.0
