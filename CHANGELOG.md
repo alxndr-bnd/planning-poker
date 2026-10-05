@@ -14,6 +14,8 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+## [0.62.0] - 2026-10-05
+
 ### Changed
 - The table background loads about half as much data.
 
@@ -98,7 +100,8 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 - Room members cannot take over each other's seat, and one client cannot overload the server.
 - Security headers are on, and dependencies are up to date.
 
-[Unreleased]: https://github.com/alxndr-bnd/planning-poker/compare/v0.61.0...HEAD
+[Unreleased]: https://github.com/alxndr-bnd/planning-poker/compare/v0.62.0...HEAD
+[0.62.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.61.0...v0.62.0
 [0.61.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.60.0...v0.61.0
 [0.60.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.59.0...v0.60.0
 [0.59.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.58.0...v0.59.0
