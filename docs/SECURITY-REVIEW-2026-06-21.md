@@ -11,6 +11,10 @@ deck · ✅ MED-3 WS Origin allowlist · ✅ LOW `npm ci` + non-root `USER node`
 compile TS→JS + `--omit=dev` to drop dev deps/tsx from the runtime image. Tests:
 `server/test/security.test.ts` (+5) and `rooms.test.ts` (+2).
 
+**Remaining — done (checked 2026-10-05):** ✅ branch protection on `main` (force-push and delete blocked) · ✅ server precompiled to one bundle, npm stripped from the runtime image (v0.31.0 `2727c4d`, v0.40.0 `e0d1da3`). Not done: LOW "pin `node:24-slim` by digest" — conflicts with daily APT refresh and weekly rebuilds (SERBITO-369/401); SERBITO-484.
+
+Jira: tracked later by SERBITO-332 (all-products review) · follow-up SERBITO-361, SERBITO-385, SERBITO-369, SERBITO-401
+
 ## Summary
 
 | Area | Result |

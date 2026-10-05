@@ -1,5 +1,7 @@
 # Test suite review (SERBITO-364, 2026-09-29)
 
+Jira: SERBITO-364 (Closed — poker v0.52.0) · optional ideas from "Unsure": [SERBITO-484](https://serbito.atlassian.net/browse/SERBITO-484)
+
 The vitest gate (`npm test`, `server/test/`) was reviewed for tests that repeat each other, check only mocks or source text, or cost time without adding coverage.
 
 ## Before / after

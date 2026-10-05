@@ -1,7 +1,8 @@
 # Planning Poker — Progress
 
-Status as of 2026-05-26. Live: **https://poker.serbito.rs** · Repo: `alxndr-bnd/planning-poker`
+Status as of 2026-05-26; checked against the code on 2026-10-05 (docs audit). Live: **https://poker.serbito.rs** · Repo: `alxndr-bnd/planning-poker`
 Source requirements: Product Brief (`docs/planning/product-brief-planning-poker-2026-05-26.md`) and Architecture doc (`docs/planning/architecture.md`).
+Jira: implemented by SERBITO-307, 320, 355, 361 · tracked by SERBITO-332 · open: [SERBITO-464](https://serbito.atlassian.net/browse/SERBITO-464) (Gap 1), [SERBITO-484](https://serbito.atlassian.net/browse/SERBITO-484) (Gap 2, low value)
 
 ## Releases
 | Tag | What |
@@ -12,7 +13,8 @@ Source requirements: Product Brief (`docs/planning/product-brief-planning-poker-
 | v0.4.0 | SEO meta (no geo/locale), official GitHub badge, serbito.rs sponsor link (lobby + room), constant table height, home icon |
 | v0.5.0 | Felt table background, smaller corner radius, balanced card centering (cards rise on reveal), reveal buttons lower w/ equal spacing, primary "Invite teammates" button, cards 34 & 55 |
 | v0.6.0 | Collapsible "How Planning Poker works" block (theory + books + videos) in lobby and room footer |
-| _(local, unreleased → v0.7.0)_ | 🃏 emoji favicon (icon removed from `<title>` to avoid double icon); `?`/`☕` cards shown immediately (don't anchor); **dead code removed** (host role, rename, ping/pong, setConnected); server refactored into `createPokerServer()` factory; **WS integration tests** + **client typecheck** added to the gate; `PROGRESS.md` |
+| v0.7.0 | 🃏 emoji favicon (icon removed from `<title>` to avoid double icon); `?`/`☕` cards shown immediately (don't anchor); **dead code removed** (host role, rename, ping/pong, setConnected); server refactored into `createPokerServer()` factory; **WS integration tests** + **client typecheck** added to the gate; `PROGRESS.md` |
+| v0.8.0 … v0.58.0 | Later releases (SEO pages, 8 languages, mobile layout, security fixes, consent): see the git tags; `CHANGELOG.md` starts at v0.51.0 |
 
 ## MVP requirements (Product Brief §6) — status
 | Requirement | Status |
@@ -47,15 +49,16 @@ Source requirements: Product Brief (`docs/planning/product-brief-planning-poker-
 SEO meta, GitHub badge, serbito.rs sponsor link, theory/resources info block, felt table background, emoji favicon/title.
 
 ## Deviations from the brief (intentional, user-requested)
-- **Reveal/Reset available to ALL participants** (brief said host-triggered). The "host" role is now vestigial — the server still computes/sends `hostId`, the client ignores it.
+- **Reveal/Reset available to ALL participants** (brief said host-triggered). The host role and `hostId` are removed from the code (resolved gap 4).
+- **No average or median** on reveal (owner decision 2026-10-02, SERBITO-355).
 
 ## Gaps — remaining
-1. **Item-title input** — Brief journey 3 mentions an optional label for "the item being estimated". The protocol/room support `itemTitle` and the UI *displays* it, but there is still **no UI to set it**. → add an input (e.g. alongside Reset, or a field above the table).
-2. **Privacy nuance** — the lobby/room load a **shields.io** GitHub badge (external image request → reveals the visitor to shields.io), disclosed on /privacy (SERBITO-307). → options: self-host a static badge image, or drop the live star-count badge.
+1. **Item-title input** — Brief journey 3 mentions an optional label for "the item being estimated". The protocol/room support `itemTitle` and the UI *displays* it, but there is still **no UI to set it**. → add an input (e.g. alongside Reset, or a field above the table). Still open on 2026-10-05: both Reset buttons send `{type:"reset"}` without a title. → [SERBITO-464](https://serbito.atlassian.net/browse/SERBITO-464)
+2. **Privacy nuance** — the lobby/room load a **shields.io** GitHub badge (external image request → reveals the visitor to shields.io), disclosed on /privacy (SERBITO-307). → options: self-host a static badge image, or drop the live star-count badge. Low value. → [SERBITO-484](https://serbito.atlassian.net/browse/SERBITO-484)
 
 ## Gaps — resolved
 3. ~~Test coverage~~ → ✅ added WebSocket integration tests (`server/test/ws.test.ts`) and client `tsc --noEmit` to the typecheck gate (pre-commit + release).
 4. ~~Vestigial host code~~ → ✅ removed (host role, `hostId`, `rename`, `ping/pong`, `setConnected`).
 
 ## Out of scope (future, per brief)
-Mobile-friendly layout · Jira/Linear integration & writeback · video-conference embeds · async voting with deadlines · session history / export / persistence across restarts · accounts / optional room password.
+Mobile-friendly layout (shipped later, SERBITO-355) · Jira/Linear integration & writeback · video-conference embeds · async voting with deadlines · session history / export / persistence across restarts · accounts / optional room password.

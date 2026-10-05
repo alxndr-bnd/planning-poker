@@ -13,6 +13,8 @@ prd: 'none — built directly from Product Brief by user decision'
 status: draft
 ---
 
+Jira: follow-up SERBITO-361 (protocol hardening notes) · Status 2026-10-05: build sequence §10 steps 1–6 shipped by v0.7.0. Stale: host role, `summary.average`, `hostId` broadcast (all removed); ESLint/Prettier (§2) never added — [SERBITO-484](https://serbito.atlassian.net/browse/SERBITO-484).
+
 # Architecture Decision Document — Planning Poker
 
 Source of truth: the Product Brief. This document makes the technical decisions an

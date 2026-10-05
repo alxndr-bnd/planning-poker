@@ -10,6 +10,8 @@ inputDocuments:
   - docs/planning/research/market-planning-poker-research-2026-05-26.md
 ---
 
+Jira: follow-up SERBITO-355 (no average, mobile), SERBITO-279 (README "no tracking") · open: optional item title (journey 3) — [SERBITO-464](https://serbito.atlassian.net/browse/SERBITO-464). Status 2026-10-05: all 8 MVP scope items shipped by v0.7.0; see `docs/PROGRESS.md`.
+
 # Product Brief: Planning Poker (poker.serbito.rs)
 
 ## 1. Executive Summary
