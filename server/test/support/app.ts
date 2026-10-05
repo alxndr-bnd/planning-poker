@@ -1,7 +1,8 @@
 // The real app in real Chromium, against the real server (SERBITO-355).
 //
 // buildApp() bundles client/src/main.tsx with esbuild into a throwaway dist (the app
-// shell is client/index.html with the cross-promo filled in, as the Vite build does),
+// shell is client/index.html with the cross-promo and the live GA4 tag filled in, as the
+// Vite build for the live site does),
 // startApp() serves it with createPokerServer, and openRoom() opens a page on it with
 // the outside world (GA, Cloudflare, shields.io) cut off. WebSocket traffic runs
 // through page.routeWebSocket, so a test can drop the connection and keep it down.
@@ -24,6 +25,7 @@ import {
 } from "playwright-core";
 import { createPokerServer, type PokerServerLimits } from "../../src/server.js";
 import { injectCrossPromo } from "../../../client/src/crosspromo.js";
+import { renderAnalytics } from "../../../client/src/pageAnalytics.js";
 
 const here = dirname(fileURLToPath(import.meta.url)); // server/test/support
 const clientDir = join(here, "../../../client");
@@ -42,7 +44,10 @@ export async function buildApp(): Promise<string> {
     external: ["/table-felt.jpg"],
     logLevel: "silent",
   });
-  const shell = injectCrossPromo(readFileSync(join(clientDir, "index.html"), "utf-8")).replace(
+  const shell = renderAnalytics(
+    injectCrossPromo(readFileSync(join(clientDir, "index.html"), "utf-8")),
+    { gaMeasurementId: "G-B5CQC4JJV0" },
+  ).replace(
     '<script type="module" src="/src/main.tsx"></script>',
     '<link rel="stylesheet" href="/assets/app.css" /><script type="module" src="/assets/app.js"></script>',
   );

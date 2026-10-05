@@ -16,6 +16,7 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ### Added
 - The "Planning Poker for Jira" guide shows step by step, with screenshots, how to estimate Jira issues in a room.
+- You can run your own copy of Planning Poker on your own domain. It has no analytics and no cookie banner unless you turn them on.
 
 ### Changed
 - The start screen says what the app is: free online planning poker, no sign-up.

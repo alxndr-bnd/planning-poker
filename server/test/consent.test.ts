@@ -5,12 +5,15 @@ import { fileURLToPath } from "node:url";
 import { createContext, runInContext } from "node:vm";
 import { trackEvent } from "../../client/src/analytics.js";
 import { inlineScripts } from "../src/static.js";
+import { renderAnalytics } from "../../client/src/pageAnalytics.js";
 
 // SERBITO-320: GA4 stays, but only with consent. Every page sets the Consent Mode v2
 // default inline, before the gtag "config" (denied unless the visitor accepted within
 // 12 months), and loads the one shared banner script, client/public/consent.js, which
 // asks, stores the answer (pp_consent) and sends the consent update. The footer's
 // "Cookie settings" link reopens it.
+// SERBITO-513: all of it sits in the page's analytics:ga4 block, which the build keeps
+// only with a GA_MEASUREMENT_ID. These tests check the live build (deploy.yml's id).
 
 const here = dirname(fileURLToPath(import.meta.url)); // server/test
 const clientDir = join(here, "../../client");
@@ -48,7 +51,7 @@ const stored = (choice: string, ageDays: number) =>
 describe("consent on every page", () => {
   const pages = allPages().map((file) => ({
     file: relative(clientDir, file),
-    html: read(file),
+    html: renderAnalytics(read(file), { gaMeasurementId: "G-B5CQC4JJV0" }),
   }));
 
   it("covers the app shell, the 36 guides and /privacy", () => {

@@ -13,6 +13,11 @@ RUN npm ci
 # Copy sources and build: client SPA (-> client/dist) + server bundle
 # (-> server/dist/index.js, a single ESM file via esbuild).
 COPY . .
+# Optional analytics for the built pages (SERBITO-513; client/src/pageAnalytics.ts). Empty:
+# no GA4 tag, no cookie banner, no Cloudflare beacon. Both values are public page ids, not
+# secrets; deploy.yml passes the live site's.
+ARG GA_MEASUREMENT_ID=""
+ARG CF_BEACON_TOKEN=""
 RUN npm run build
 
 # ---- runtime stage: Node serving the SPA + WebSocket from the precompiled bundle ----

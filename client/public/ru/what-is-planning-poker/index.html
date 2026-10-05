@@ -4,11 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- analytics:ga4 -->
     <!-- Google tag (gtag.js) — GA4, same property as the app shell. These prerendered
          guide pages are the SEO landing pages: without the tag, all organic traffic
          that lands here is invisible in GA4. Static snippet, like client/index.html.
          No hash routing here, so gtag.js's own page_view is all these pages need. -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-B5CQC4JJV0"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=__GA_MEASUREMENT_ID__"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() { dataLayer.push(arguments); }
@@ -24,15 +25,18 @@
         gtag("consent", "default", { ad_storage: "denied", analytics_storage: a, ad_user_data: "denied", ad_personalization: "denied", wait_for_update: 500 });
       })();
       gtag("js", new Date());
-      gtag("config", "G-B5CQC4JJV0", { cookie_domain: "none" }); // host-only _ga cookies
+      gtag("config", "__GA_MEASUREMENT_ID__", { cookie_domain: "none" }); // host-only _ga cookies
     </script>
     <!-- Cookie consent banner + footer "Cookie settings" (SERBITO-320), shared by every page. -->
     <script defer src="/consent.js"></script>
+    <!-- /analytics:ga4 -->
 
+    <!-- analytics:cloudflare -->
     <!-- Cloudflare Web Analytics (privacy-first, cookieless) — same beacon token as
          client/index.html; CF's automatic injection doesn't fire for this site. -->
-    <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "baa4373b14044e0b83a55a7d437c6019"}'></script>
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "__CF_BEACON_TOKEN__"}'></script>
     <!-- End Cloudflare Web Analytics -->
+    <!-- /analytics:cloudflare -->
 
     <title>Что такое Planning Poker? Руководство по Scrum-оценке (бесплатный инструмент)</title>
     <meta

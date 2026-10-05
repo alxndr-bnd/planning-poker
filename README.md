@@ -17,9 +17,10 @@ Live: **https://poker.serbito.rs** — also listed on
   median by design
 - Observer/spectator role (doesn't vote)
 - Ephemeral, in-memory rooms — no database, no accounts
-- Analytics: Google Analytics 4 (sets cookies; page views and room events, including
-  the card voted) and cookieless Cloudflare Web Analytics; server errors go to Sentry.
-  Names and room ids are never sent.
+- Analytics on poker.serbito.rs: Google Analytics 4 (sets cookies; page views and room
+  events, including the card voted) and cookieless Cloudflare Web Analytics; server errors
+  go to Sentry. Names and room ids are never sent. All three are optional: a self-hosted
+  copy has none of them unless you set them (see "Self-hosting").
 
 ## Tech
 
@@ -72,6 +73,39 @@ docker run -p 8080:8080 planning-poker   # http://localhost:8080
    `vX.Y.Z` tag with fresh Debian packages and redeploys it (same version, image `<sha>-r<YYYYMMDD>`). If the main
    page is not 200 after any deploy, traffic goes back to the previous revision and the run fails.
 
+## Self-hosting
+
+One container, no database. Build it and run it behind your own HTTPS domain:
+
+```bash
+docker build -t planning-poker .
+docker run -p 8080:8080 -e ALLOWED_ORIGINS=https://poker.example.com planning-poker
+```
+
+Or without Docker (Node ≥ 20): `npm ci && npm run build`, then
+`NODE_ENV=production ALLOWED_ORIGINS=https://poker.example.com npm start`.
+
+Set at run time:
+
+| Variable | Required | What it does |
+|---|---|---|
+| `ALLOWED_ORIGINS` | yes | Page origins that may open the WebSocket, comma-separated, e.g. `https://poker.example.com`. Default: `https://poker.serbito.rs` only, so rooms do not connect on another domain until you set it. In production `localhost` is not allowed unless you list it. |
+| `PORT` | no | Listen port. Default `8080`. |
+| `SENTRY_DSN` | no | Send server errors to your Sentry project. Unset: no error reporting. |
+
+Set at build time (`docker build --build-arg NAME=value`, or env vars for `npm run build`):
+
+| Variable | What it does |
+|---|---|
+| `GA_MEASUREMENT_ID` | Your GA4 id (`G-…`). Adds gtag.js and the cookie consent banner to every page. Unset: no Google Analytics and no banner. |
+| `CF_BEACON_TOKEN` | Your Cloudflare Web Analytics token. Unset: no beacon. |
+
+Notes:
+
+- The WebSocket is refused on `*.run.app` hosts (SERBITO-348). On Cloud Run, map your own domain.
+- The guides' canonical links and `/privacy` describe poker.serbito.rs. Edit them for your
+  instance if you publish it.
+
 ## Deploy
 
 Tag-based via GitHub Actions (`.github/workflows/deploy.yml`): push a `v*.*.*` tag
@@ -83,7 +117,8 @@ gcloud run domain-mappings create --service planning-poker \
   --domain poker.serbito.rs --region europe-west1
 ```
 
-Required repo secrets: `GCP_PROJECT_ID`, `GCP_SA_KEY`.
+Required repo secrets: `GCP_PROJECT_ID`, `GCP_SA_KEY`. The live GA4 id and Cloudflare
+beacon token are in `deploy.yml` (`env:`) and reach the image as build args.
 
 ## Repo layout
 
