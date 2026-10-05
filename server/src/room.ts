@@ -228,7 +228,8 @@ export class Room {
     return true;
   }
 
-  reset(itemTitle?: string) {
+  /** `itemTitle` is already cleaned (normalizeItemTitle); null or absent: no title. */
+  reset(itemTitle?: string | null) {
     this.phase = "voting";
     this.itemTitle = itemTitle ?? null;
     for (const p of this.participants.values()) p.vote = null;

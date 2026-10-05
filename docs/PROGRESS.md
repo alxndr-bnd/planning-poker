@@ -53,7 +53,7 @@ SEO meta, GitHub badge, serbito.rs sponsor link, theory/resources info block, fe
 - **No average or median** on reveal (owner decision 2026-10-02, SERBITO-355).
 
 ## Gaps — remaining
-1. **Item-title input** — Brief journey 3 mentions an optional label for "the item being estimated". The protocol/room support `itemTitle` and the UI *displays* it, but there is still **no UI to set it**. → add an input (e.g. alongside Reset, or a field above the table). Still open on 2026-10-05: both Reset buttons send `{type:"reset"}` without a title. → [SERBITO-464](https://serbito.atlassian.net/browse/SERBITO-464)
+1. **Item-title input** — Brief journey 3 mentions an optional label for "the item being estimated". The protocol/room support `itemTitle` and the UI *displays* it, but there is still **no UI to set it**. → add an input (e.g. alongside Reset, or a field above the table). Fixed on branch `poker-464` (2026-10-05, not released yet): a title field next to Reset / New vote sends `reset.itemTitle`; the server cleans it (`normalizeItemTitle`). → [SERBITO-464](https://serbito.atlassian.net/browse/SERBITO-464)
 2. **Privacy nuance** — the lobby/room load a **shields.io** GitHub badge (external image request → reveals the visitor to shields.io), disclosed on /privacy (SERBITO-307). → options: self-host a static badge image, or drop the live star-count badge. Low value. → [SERBITO-484](https://serbito.atlassian.net/browse/SERBITO-484)
 
 ## Gaps — resolved

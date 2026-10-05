@@ -57,6 +57,8 @@ export const EN = {
   "room.reset": "Reset",
   "room.resetTitle": "Restart the voting round",
   "room.newVote": "New vote",
+  "room.itemLabel": "Item title",
+  "room.itemPlaceholder": "Issue key or title, e.g. SHOP-142",
   "room.observeJoin": "You are observing — click to join voting",
   "room.observe": "Observe (don't vote)",
   "room.you": "(you)",

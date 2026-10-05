@@ -14,6 +14,12 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+### Added
+- Name each round: type the issue key or title in the field next to Reset or New vote. Everybody sees it on the table and in the estimate log.
+
+### Changed
+- The "Planning Poker for Jira" guides show how to put the issue key into the room.
+
 ## [0.59.0] - 2026-10-05
 
 ### Added
