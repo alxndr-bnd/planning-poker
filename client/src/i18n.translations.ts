@@ -7,7 +7,7 @@ export const TRANSLATIONS: Partial<
   Record<Exclude<Lang, "en">, Partial<Record<StringKey, string>>>
 > = {
   es: {
-    "lobby.tagline": "Gratis · sin registro · salas ilimitadas",
+    "lobby.tagline": "Planning poker online gratis, sin registro",
     "lobby.enterName": "Escribe tu nombre para unirte a la sala.",
     "lobby.nameLabel": "Tu nombre",
     "lobby.create": "Crear sala",
@@ -48,7 +48,7 @@ export const TRANSLATIONS: Partial<
     "crosspromo.madeBy": "Hecho por {name}",
   },
   de: {
-    "lobby.tagline": "Kostenlos · ohne Anmeldung · unbegrenzte Räume",
+    "lobby.tagline": "Kostenloses Online-Planning-Poker – ohne Anmeldung",
     "lobby.enterName": "Gib deinen Namen ein, um dem Raum beizutreten.",
     "lobby.nameLabel": "Dein Name",
     "lobby.create": "Raum erstellen",
@@ -89,7 +89,7 @@ export const TRANSLATIONS: Partial<
     "crosspromo.madeBy": "Entwickelt von {name}",
   },
   fr: {
-    "lobby.tagline": "Gratuit · sans inscription · salles illimitées",
+    "lobby.tagline": "Planning poker en ligne gratuit, sans inscription",
     "lobby.enterName": "Saisissez votre nom pour rejoindre la salle.",
     "lobby.nameLabel": "Votre nom",
     "lobby.create": "Créer une salle",
@@ -130,7 +130,7 @@ export const TRANSLATIONS: Partial<
     "crosspromo.madeBy": "Réalisé par {name}",
   },
   pt: {
-    "lobby.tagline": "Grátis · sem cadastro · salas ilimitadas",
+    "lobby.tagline": "Planning poker online grátis, sem cadastro",
     "lobby.enterName": "Digite seu nome para entrar na sala.",
     "lobby.nameLabel": "Seu nome",
     "lobby.create": "Criar sala",
@@ -171,7 +171,7 @@ export const TRANSLATIONS: Partial<
     "crosspromo.madeBy": "Feito por {name}",
   },
   ru: {
-    "lobby.tagline": "Бесплатно · без регистрации · неограниченные комнаты",
+    "lobby.tagline": "Бесплатный онлайн planning poker — без регистрации",
     "lobby.enterName": "Введите имя, чтобы войти в комнату.",
     "lobby.nameLabel": "Ваше имя",
     "lobby.create": "Создать комнату",
@@ -243,7 +243,7 @@ export const TRANSLATIONS: Partial<
     "crosspromo.madeBy": "Сделано в {name}",
   },
   sr: {
-    "lobby.tagline": "Besplatno · bez registracije · neograničen broj soba",
+    "lobby.tagline": "Besplatan online planning poker — bez registracije",
     "lobby.enterName": "Unesite svoje ime da biste ušli u sobu.",
     "lobby.nameLabel": "Vaše ime",
     "lobby.create": "Napravi sobu",
@@ -284,7 +284,7 @@ export const TRANSLATIONS: Partial<
     "crosspromo.madeBy": "Napravio {name}",
   },
   ja: {
-    "lobby.tagline": "無料 · 登録不要 · ルーム数無制限",
+    "lobby.tagline": "無料オンラインプランニングポーカー（登録不要）",
     "lobby.enterName": "名前を入力してルームに参加してください。",
     "lobby.nameLabel": "お名前",
     "lobby.create": "ルームを作成",
@@ -325,7 +325,7 @@ export const TRANSLATIONS: Partial<
     "crosspromo.madeBy": "制作: {name}",
   },
   zh: {
-    "lobby.tagline": "免费 · 无需注册 · 房间不限量",
+    "lobby.tagline": "免费在线敏捷估算扑克，无需注册",
     "lobby.enterName": "输入你的名字以加入房间。",
     "lobby.nameLabel": "你的名字",
     "lobby.create": "创建房间",

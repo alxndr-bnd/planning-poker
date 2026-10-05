@@ -8,11 +8,14 @@ import {
   trackEvent,
   trackPageView,
 } from "../../client/src/analytics.js";
+import { renderAnalytics } from "../../client/src/pageAnalytics.js";
 
 // 2026-06-24: GA4 (G-B5CQC4JJV0) to count users via analytics.google.com.
 // Must be the STANDARD static <script src=...gtag/js> snippet — Google's "verify your
 // tag" detection does NOT see a dynamically-injected/host-gated tag (that failed
 // verification on 2026-06-24). Guard the id + that it's a real static script tag.
+// SERBITO-513: the sources hold a placeholder; the build fills in GA_MEASUREMENT_ID (the
+// live id comes from deploy.yml) or drops the tag. These tests check the live build's pages.
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const clientDir = join(__dirname, "../../client");
 
@@ -42,7 +45,12 @@ describe("GA4 analytics", () => {
     const pages = guidePages();
     expect(pages.length).toBeGreaterThan(30); // 4 guides x 9 languages
     const untagged = [join(clientDir, "index.html"), ...pages]
-      .filter((p) => !STATIC_TAG.test(readFileSync(p, "utf-8")))
+      .filter(
+        (p) =>
+          !STATIC_TAG.test(
+            renderAnalytics(readFileSync(p, "utf-8"), { gaMeasurementId: MEASUREMENT_ID }),
+          ),
+      )
       .map((p) => relative(clientDir, p));
     expect(untagged).toEqual([]);
   });

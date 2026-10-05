@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium, type Browser, type ElementHandle, type Page } from "playwright-core";
+import { renderAnalytics } from "../../client/src/pageAnalytics.js";
 
 // SERBITO-374: the "focus never hidden" check (SERBITO-350) must not scroll the page
 // when the browser window gets focus back. On a window refocus (another app, another
@@ -19,7 +20,10 @@ import { chromium, type Browser, type ElementHandle, type Page } from "playwrigh
 const here = dirname(fileURLToPath(import.meta.url)); // server/test
 const clientDir = join(here, "../../client");
 const BASE = "https://poker.test";
-const SHELL = readFileSync(join(clientDir, "index.html"));
+// The live build's shell: the GA4 block (with the cookie banner) kept (SERBITO-513).
+const SHELL = renderAnalytics(readFileSync(join(clientDir, "index.html"), "utf-8"), {
+  gaMeasurementId: "G-B5CQC4JJV0",
+});
 const CONSENT_JS = readFileSync(join(clientDir, "public/consent.js"));
 const CHOICE = JSON.stringify({ choice: "denied", date: new Date().toISOString() });
 

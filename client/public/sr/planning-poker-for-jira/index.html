@@ -4,11 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- analytics:ga4 -->
     <!-- Google tag (gtag.js) — GA4, same property as the app shell. These prerendered
          guide pages are the SEO landing pages: without the tag, all organic traffic
          that lands here is invisible in GA4. Static snippet, like client/index.html.
          No hash routing here, so gtag.js's own page_view is all these pages need. -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-B5CQC4JJV0"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=__GA_MEASUREMENT_ID__"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() { dataLayer.push(arguments); }
@@ -24,15 +25,18 @@
         gtag("consent", "default", { ad_storage: "denied", analytics_storage: a, ad_user_data: "denied", ad_personalization: "denied", wait_for_update: 500 });
       })();
       gtag("js", new Date());
-      gtag("config", "G-B5CQC4JJV0", { cookie_domain: "none" }); // host-only _ga cookies
+      gtag("config", "__GA_MEASUREMENT_ID__", { cookie_domain: "none" }); // host-only _ga cookies
     </script>
     <!-- Cookie consent banner + footer "Cookie settings" (SERBITO-320), shared by every page. -->
     <script defer src="/consent.js"></script>
+    <!-- /analytics:ga4 -->
 
+    <!-- analytics:cloudflare -->
     <!-- Cloudflare Web Analytics (privacy-first, cookieless) — same beacon token as
          client/index.html; CF's automatic injection doesn't fire for this site. -->
-    <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "baa4373b14044e0b83a55a7d437c6019"}'></script>
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "__CF_BEACON_TOKEN__"}'></script>
     <!-- End Cloudflare Web Analytics -->
+    <!-- /analytics:cloudflare -->
 
     <title>Planning Poker za Jira - besplatno, bez dodatka, bez registracije</title>
     <meta
@@ -83,7 +87,7 @@
     {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Planning Poker","item":"https://poker.serbito.rs/"},{"@type":"ListItem","position":2,"name":"Planning Poker za Jira: besplatno, bez dodatka, bez registracije","item":"https://poker.serbito.rs/sr/planning-poker-for-jira"}]}
   </script>
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"Article","headline":"Planning Poker za Jira: besplatno, bez dodatka, bez registracije","description":"Pokrenite besplatan planning poker za Jira story points - bez dodatka, bez plaćanja, bez registracije. Procenite svoj backlog uz Jira i nalepite poene nazad za nekoliko sekundi.","inLanguage":"sr-Latn","image":"https://poker.serbito.rs/og-image.jpg","author":{"@type":"Organization","name":"Serbito Planning Poker","url":"https://poker.serbito.rs/","logo":{"@type":"ImageObject","url":"https://poker.serbito.rs/icon-512.png"}},"publisher":{"@type":"Organization","name":"Serbito Planning Poker","url":"https://poker.serbito.rs/","logo":{"@type":"ImageObject","url":"https://poker.serbito.rs/icon-512.png"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://poker.serbito.rs/sr/planning-poker-for-jira"},"datePublished":"2026-06-21","dateModified":"2026-07-06"}
+    {"@context":"https://schema.org","@type":"Article","headline":"Planning Poker za Jira: besplatno, bez dodatka, bez registracije","description":"Pokrenite besplatan planning poker za Jira story points - bez dodatka, bez plaćanja, bez registracije. Procenite svoj backlog uz Jira i nalepite poene nazad za nekoliko sekundi.","inLanguage":"sr-Latn","image":"https://poker.serbito.rs/og-image.jpg","author":{"@type":"Person","name":"Alexander Bondarchuk","url":"https://github.com/alxndr-bnd","sameAs":["https://github.com/alxndr-bnd"]},"publisher":{"@type":"Organization","name":"Serbito Planning Poker","url":"https://poker.serbito.rs/","logo":{"@type":"ImageObject","url":"https://poker.serbito.rs/icon-512.png"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://poker.serbito.rs/sr/planning-poker-for-jira"},"datePublished":"2026-06-21","dateModified":"2026-10-05"}
   </script>
   </head>
   <body>
@@ -92,7 +96,7 @@
       <article>
         <h1>Planning Poker za Jira: besplatno, bez dodatka, bez registracije</h1>
 
-        <p>Tražite besplatan način da pokrenete <strong>planning poker za Jira</strong> bez plaćanja još jednog dodatka sa marketplace-a? Na pravom ste mestu. Naš planning poker alat otvorenog koda omogućava vašem timu da procenjuje Jira story points u realnom vremenu, rame uz rame sa vašom postojećom Jira tablom - bez dodatka za instaliranje, bez čekanja na odobrenje administratora i bez kreditne kartice. Ubacite ključeve svojih priča, glasajte, složite se i nalepite poene direktno nazad u Jira.</p>
+        <p>Tražite besplatan način da pokrenete <strong>planning poker za Jira</strong> bez plaćanja još jednog dodatka sa marketplace-a? Na pravom ste mestu. Naš planning poker alat otvorenog koda omogućava vašem timu da procenjuje Jira story points u realnom vremenu, rame uz rame sa vašom postojećom Jira tablom - bez dodatka za instaliranje, bez čekanja na odobrenje administratora i bez kreditne kartice. Držite zadatak otvoren u Jira, glasajte u sobi, dogovorite se i upišite poene u zadatak. <a href="#how-to">Uputstvo korak po korak ispod</a> prikazuje ceo postupak.</p>
 
         <h2>Procenite stavke Jira backlog-a uz Planning Poker</h2>
         <p>Planning poker je tehnika <strong>agilne procene</strong> zasnovana na konsenzusu: tim diskutuje o stavki backlog-a, svi istovremeno glasaju kartom, a skriveno otkrivanje izlaže neslaganje pre nego što se pretvori u lošu procenu. To je najbrži način da bučan sastanak <strong>planiranja sprinta</strong> pretvorite u jasan skup <strong>Jira story points</strong>.</p>
@@ -102,20 +106,26 @@
         <p>Većina alata za procenu za Jira živi na Atlassian Marketplace-u, i većina njih naplaćuje po korisniku, mesečno. Za tim od deset ljudi taj „mali“ dodatak tiho postaje stavka koja se ponavlja, povrh vaših Jira licenci, samo da bi se jednom u sprintu igrala kartaška igra. Još gore, instaliranje aplikacije sa marketplace-a obično zahteva administratorska prava za Jira, bezbednosnu proveru i odobrenje pristupa podacima - tako da se stvar koju ste hteli da isprobate ovog popodneva pretvara u nabavni tiket.</p>
         <p>Mi smatramo da procena treba da bude besplatna. Nema plaćanja, nema cene po sedištu, nema „premium“ nivoa koji skriva tajmer ili rezultate iza pretplate. Ceo alat je otvorenog koda, tako da možete tačno pročitati šta radi, samostalno ga hostovati ako želite i nikada vas neće iznenaditi promena cene.</p>
 
-        <h2>Kako pokrenuti sesiju pored Jira već danas (bez instalacije, bez registracije)</h2>
-        <p>Možete pokrenuti potpunu sesiju procene odmah bez dodirivanja vašeg Jira administratora. Evo toka rada koji timovi koriste:</p>
-        <ul>
-          <li><strong>Otvorite sobu.</strong> Idite na <a href="https://poker.serbito.rs/?lang=sr">besplatan planning poker alat</a> i kreirajte sesiju - bez naloga, bez imejla.</li>
-          <li><strong>Pozovite tim.</strong> Podelite link sobe u Slack-u, Teams-u ili svom video pozivu. Svi se pridružuju jednim klikom, na bilo kom uređaju.</li>
-          <li><strong>Unesite backlog.</strong> Kopirajte Jira ključ priče i naslov (na primer, „PROJ-142 - Dodati SSO na prijavu“) sa svoje table i nalepite ga kao stavku koja se procenjuje.</li>
-          <li><strong>Glasajte u isto vreme.</strong> Svaka osoba bira kartu. Glasovi ostaju skriveni dok svi ne učestvuju, tako da se niko ne usidrava na najglasniji glas.</li>
-          <li><strong>Otkrijte i prodiskutujte.</strong> Okrenite karte, prođite kroz visoka i niska odstupanja i ponovo glasajte ako je potrebno dok ne postignete konsenzus.</li>
-          <li><strong>Nalepite poene nazad.</strong> Uzmite dogovoreni broj i ubacite ga u polje Story Points na tom Jira problemu. Pređite na sledeći ključ i ponovite.</li>
-        </ul>
-        <p>To je petlja kopiraj-unutra, proceni, nalepi-nazad. Pomalo ručno, ali potpuno besplatno, trenutno za pokretanje, i radi sa Jira Cloud, Jira Data Center ili bilo kojim drugim trekerom koji koristite. Novi ste u ovom formatu? Pročitajte <a href="/sr/what-is-planning-poker">šta je planning poker</a> za detaljniji prikaz tehnike.</p>
+        <section id="how-to">
+        <h2>Kako da vodite planning poker za Jira zadatke, korak po korak</h2>
+        <p>Potrebna su vam dva taba u pregledaču: vaša Jira tabla i planning poker soba. Jira ostaje izvor istine. Soba samo prikuplja skrivene glasove i prikazuje ih sve u istom trenutku. Ništa ih ne povezuje, pa vam ne trebaju Jira administrator, API token ni dodatak.</p>
+        <ol>
+          <li><strong>Pripremite zadatke u Jira.</strong> Otvorite backlog ili filter sa pričama koje želite da procenite, po prioritetu. Podelite taj tab u video pozivu, da svi čitaju isti opis i iste kriterijume prihvatanja.</li>
+          <li><strong>Napravite sobu.</strong> Otvorite <a href="https://poker.serbito.rs/?lang=sr">besplatnu planning poker aplikaciju</a>, upišite svoje ime i kliknite na <em>Napravi sobu</em>. Link za poziv ide u vaš klipbord (<em>Pozovi saigrače</em> ga ponovo kopira). Nalepite ga u čet poziva. Kolege otvaraju link, upisuju ime i ulaze. Niko ne pravi nalog.</li>
+          <li><strong>Odredite ko samo posmatra.</strong> Product Owner ili zainteresovana strana koja ne procenjuje klikne na kartu sa mikrofonom za <em>Posmatraj (bez glasanja)</em>. Soba prikazuje posmatrače, ali oni nemaju kartu na stolu.</li>
+          <li><strong>Pročitajte zadatak naglas.</strong> Soba nema polje za zadatak, pa voditelj kaže ključ i naslov, na primer „SHOP-142, dodati SSO na prijavu“. Odgovorite na pitanja o obimu pre nego što iko glasa.</li>
+          <li><strong>Glasajte u isto vreme.</strong> Svaki glasač bira kartu: 1, 2, 3, 5, 8, 13, 21, 34 ili 55. <em>Više</em> otvara vrednosti od 89 do 610, <em>?</em> znači „nisam siguran“, a šolja kafe traži pauzu. Sto prikazuje kvačicu za svakoga ko je izabrao broj, ali nikad sam broj.</li>
+          <li><strong>Otkrijte karte.</strong> U svakoj rundi jedan nasumično izabran glasač drži zvezdicu i samo on vidi <em>Otkrij</em>. Posle otkrivanja vidi se svako ime sa svojom kartom i zbir poput „8 × 2, 5 × 1, 13 × 1“. Kada su sve karte iste, soba prikazuje <em>Konsenzus</em>. Proseka namerno nema: tim se dogovara oko broja, aplikacija ga ne računa.</li>
+          <li><strong>Prodiskutujte i glasajte ponovo.</strong> Zamolite onoga sa najvišom i onoga sa najnižom kartom da objasne izbor. Zatim kliknite na <em>Novo glasanje</em> i ponovo procenite isti zadatak dok se brojevi ne slože.</li>
+          <li><strong>Upišite procenu u Jira.</strong> Upišite dogovoreni broj u polje zadatka <em>Story point estimate</em> (projekti kojima upravlja tim) ili <em>Story Points</em> (projekti kojima upravlja kompanija). Uradite to pre sledećeg zadatka. Soba ništa ne šalje u Jira.</li>
+          <li><strong>Pređite na sledeći zadatak.</strong> Kliknite na <em>Novo glasanje</em>, pročitajte sledeći ključ i ponovite.</li>
+        </ol>
+        <p>Pre nego što završite poziv, otvorite <em>Dnevnik procena</em> ispod stola. On redom navodi svaku otkrivenu rundu (#1, #2, …) sa brojem glasova i oznakom konsenzusa, bez imena. Uporedite ga sa zadacima u Jira, da nijedan zadatak ne ostane bez poena. Svako ponovno glasanje dodaje svoj red, pa je provera laka ako pored svakog ključa zapišete broj runde. Sobe postoje samo u memoriji: ubrzo pošto svi izađu, soba i njen dnevnik nestaju.</p>
+        <p>Novi ste u ovom formatu? Pročitajte <a href="/sr/what-is-planning-poker">šta je planning poker</a> za detaljniji prikaz tehnike.</p>
+        </section>
 
         <h2>Šta je na planu: Jira i CSV uvoz</h2>
-        <p>Da budemo jasni i iskreni: ovaj alat <strong>još uvek</strong> nema ugrađenu Jira integraciju. Danas ručno kopirate ključeve i naslove priča i ručno lepite poene nazad - to je namerno postavka bez dodatka i bez OAuth-a tako da možete da počnete za nekoliko sekundi bez davanja pristupa vašim Jira podacima.</p>
+        <p>Da budemo jasni i iskreni: ovaj alat <strong>još uvek</strong> nema ugrađenu Jira integraciju. Danas svaki zadatak navodite u pozivu i ručno upisujete poene u Jira - to je namerno postavka bez dodatka i bez OAuth-a tako da možete da počnete za nekoliko sekundi bez davanja pristupa vašim Jira podacima.</p>
         <p>Tešnja integracija je u planu. Na javnom planu imamo direktan Jira uvoz (povucite sprint ili JQL upit direktno u sesiju) i CSV uvoz (masovno učitavanje backlog-a izvezenog iz bilo kog alata). Ovo su funkcije koje prioritizuje zajednica. Ako bi vam Jira ili CSV uvoz ubrzao planiranje sprinta, <a href="https://github.com/alxndr-bnd/planning-poker/issues?q=is%3Aissue+label%3Afeature-vote">glasajte za to na GitHub-u</a> - što više glasova funkcija dobije, to će pre biti isporučena.</p>
 
         <h2>Zašto timovi biraju ovaj besplatan Planning Poker alat</h2>
@@ -130,15 +140,15 @@
         <h2>Često postavljana pitanja</h2>
         <dl>
           <dt>Da li se ovaj alat direktno integriše sa Jira?</dt>
-          <dd>Još ne. Danas nema ugrađene Jira integracije - kopirate ključeve i naslove priča u sesiju i ručno lepite dogovorene story points nazad u Jira. Direktan Jira uvoz je na javnom planu; možete glasati za njega na GitHub-u.</dd>
+          <dd>Još ne. Danas nema ugrađene Jira integracije - zadatak držite otvoren u Jira, glasate u sobi i ručno upisujete dogovorene story points u Jira. Direktan Jira uvoz je na javnom planu; možete glasati za njega na GitHub-u.</dd>
           <dt>Da li je zaista besplatno?</dt>
           <dd>Da. Alat je besplatan i otvorenog koda. Nema plaćanja, nema cene po korisniku i nema premium nivoa.</dd>
           <dt>Da li moje kolege treba da se registruju ili nešto instaliraju?</dt>
           <dd>Ne. Nema registracije i nema instalacije. Podelite link sobe i svi se pridružuju u svom pregledaču - nisu potrebna Jira administratorska prava niti odobrenje sa marketplace-a.</dd>
           <dt>Možemo li da procenjujemo Jira story points sa njim?</dt>
-          <dd>Apsolutno. Većina timova ga koristi za dodeljivanje Jira story points: nalepite stavku backlog-a, glasajte, postignite konsenzus i kopirajte broj nazad u polje Story Points.</dd>
+          <dd>Da. Pročitajte zadatak naglas, glasajte, postignite konsenzus i upišite broj u polje Story Points zadatka. <a href="#how-to">Uputstvo korak po korak</a> iznad prikazuje svaki korak.</dd>
           <dt>Da li radi sa Jira Cloud i Data Center?</dt>
-          <dd>Da. Pošto je tok rada kopiraj-unutra, nalepi-nazad nezavisan od vaše Jira instance, radi sa Jira Cloud, Jira Data Center i bilo kojim drugim trekerom problema.</dd>
+          <dd>Da. Soba se nikad ne povezuje sa vašom Jira instancom, pa isti postupak radi sa Jira Cloud, Jira Data Center i bilo kojim drugim trekerom zadataka.</dd>
         </dl>
 
         <h2>Počnite sa procenom za nekoliko sekundi</h2>

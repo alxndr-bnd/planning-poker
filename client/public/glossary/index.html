@@ -4,11 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- analytics:ga4 -->
     <!-- Google tag (gtag.js) — GA4, same property as the app shell. These prerendered
          guide pages are the SEO landing pages: without the tag, all organic traffic
          that lands here is invisible in GA4. Static snippet, like client/index.html.
          No hash routing here, so gtag.js's own page_view is all these pages need. -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-B5CQC4JJV0"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=__GA_MEASUREMENT_ID__"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() { dataLayer.push(arguments); }
@@ -24,15 +25,18 @@
         gtag("consent", "default", { ad_storage: "denied", analytics_storage: a, ad_user_data: "denied", ad_personalization: "denied", wait_for_update: 500 });
       })();
       gtag("js", new Date());
-      gtag("config", "G-B5CQC4JJV0", { cookie_domain: "none" }); // host-only _ga cookies
+      gtag("config", "__GA_MEASUREMENT_ID__", { cookie_domain: "none" }); // host-only _ga cookies
     </script>
     <!-- Cookie consent banner + footer "Cookie settings" (SERBITO-320), shared by every page. -->
     <script defer src="/consent.js"></script>
+    <!-- /analytics:ga4 -->
 
+    <!-- analytics:cloudflare -->
     <!-- Cloudflare Web Analytics (privacy-first, cookieless) — same beacon token as
          client/index.html; CF's automatic injection doesn't fire for this site. -->
-    <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "baa4373b14044e0b83a55a7d437c6019"}'></script>
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "__CF_BEACON_TOKEN__"}'></script>
     <!-- End Cloudflare Web Analytics -->
+    <!-- /analytics:cloudflare -->
 
     <title>Agile Estimation Glossary - Planning Poker Terms</title>
     <meta
@@ -157,7 +161,7 @@
         <dt>Three-Point Estimation</dt>
         <dd>Three-point estimation combines an optimistic, a most likely, and a pessimistic estimate to account for uncertainty in a single figure. It is more often used in traditional project management, but the underlying idea of reasoning about a range rather than one number complements agile estimation well. Planning Poker captures a similar instinct through its discussion of outliers.</dd>
       </dl>
-      <p>Ready to put these terms into practice? Gather your team and run a fast, distraction-free estimation session with our free, open-source <a href="https://poker.serbito.rs/">Planning Poker tool</a> - no sign-up, no cost, and a built-in spectator mode for stakeholders. If you want the full walkthrough first, read <a href="/what-is-planning-poker">our complete guide to Planning Poker</a>.</p>
+      <p>Ready to put these terms into practice? Gather your team and run a fast, distraction-free estimation session with our free, open-source <a href="https://poker.serbito.rs/">Planning Poker tool</a> - no sign-up, no cost, and a built-in spectator mode for stakeholders. If you want the full walkthrough first, read <a href="/what-is-planning-poker">our complete guide to Planning Poker</a>. Does your team track work in Jira? Read <a href="/planning-poker-for-jira">how to estimate Jira story points with Planning Poker</a>.</p>
     </main>
     <footer class="site">
       Free, open-source planning poker — no ads, no sign-up.<br />

@@ -1,0 +1,19 @@
+# Planning Poker
+
+> Planning Poker (poker.serbito.rs) is a free online planning poker app for agile teams. Create a room, share the link, and estimate story points together in real time with Fibonacci cards. No sign-up: people join by name only. Votes stay hidden until one person reveals them. Rooms live in memory and are not stored. Open source (MIT), 9 interface languages.
+
+## Pages
+
+- [App](https://poker.serbito.rs/): create a room or join one by link
+- [What is Planning Poker?](https://poker.serbito.rs/what-is-planning-poker): the technique step by step, the Fibonacci scale, story points
+- [Planning Poker for Jira](https://poker.serbito.rs/planning-poker-for-jira): estimate Jira issues without a plugin; story points go back into Jira by hand
+- [Planning Poker for remote teams](https://poker.serbito.rs/planning-poker-for-remote-teams): run estimation on a video call
+- [Agile estimation glossary](https://poker.serbito.rs/glossary): story points, velocity, Fibonacci and other terms
+- [Privacy](https://poker.serbito.rs/privacy): what the app collects
+
+Each guide also exists in Spanish, German, French, Portuguese, Russian, Serbian, Japanese and Chinese under a language prefix, for example /de/what-is-planning-poker.
+
+## Elsewhere
+
+- [Source code on GitHub](https://github.com/alxndr-bnd/planning-poker): MIT license, self-hosting with one container
+- [Feature votes](https://github.com/alxndr-bnd/planning-poker/issues?q=is%3Aissue+is%3Aopen+label%3Afeature-vote): what to build next

@@ -1,5 +1,6 @@
-// GA4 (G-B5CQC4JJV0) is loaded by the static gtag.js snippet in index.html, which
-// counts exactly one page_view: the one at load. The app routes on the URL hash
+// GA4 is loaded by the static gtag.js snippet in index.html (only in a build with
+// GA_MEASUREMENT_ID, see pageAnalytics.ts; without it window.gtag is missing and this module
+// sends nothing). The snippet counts exactly one page_view: the one at load. The app routes on the URL hash
 // (`#/r/<id>`), and assigning `location.hash` fires none of the history events GA4's
 // enhanced measurement listens for (pushState / replaceState / popstate) — so every
 // room a user entered was invisible, and an hour-long session showed up as a single

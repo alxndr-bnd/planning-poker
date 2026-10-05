@@ -61,6 +61,8 @@ export interface PokerServerLimits {
   roomCreateWindowMs: number;
   /** Host suffixes that reach the container without Cloudflare (see directOriginHost). */
   directOriginHostSuffixes: readonly string[];
+  /** Page origins allowed to open the WebSocket (see originAllowed). */
+  allowedOrigins: readonly string[];
 }
 /**
  * SERBITO-348 (PLT-4): the Cloud Run URL `planning-poker-….run.app` reaches the container
@@ -70,7 +72,7 @@ export interface PokerServerLimits {
  * `/` from the run.app URL.
  */
 export const DIRECT_ORIGIN_HOST_SUFFIXES: readonly string[] = [".run.app"];
-const DEFAULT_LIMITS: PokerServerLimits = {
+const DEFAULT_LIMITS: Omit<PokerServerLimits, "allowedOrigins"> = {
   joinTimeoutMs: 10 * 1000,
   maxConnectionsPerIp: 30,
   roomCreatesPerIp: 20,
@@ -100,19 +102,61 @@ export function directOriginHost(
 export const JOIN_TIMEOUT_CLOSE_CODE = 4001;
 
 /**
- * Allow the WS only from our own pages. Browsers always send Origin on a WebSocket, so a
- * missing one means a script, not our app; it is refused. localhost is for dev and tests
- * only, never in production (SERBITO-361: PKR-3, PKR-7).
+ * SERBITO-513: the page origins that may open the WebSocket when ALLOWED_ORIGINS is unset.
+ * The live site needs no setting, and a copy on another domain fails closed until its
+ * operator lists its own origin.
+ */
+export const DEFAULT_ALLOWED_ORIGINS: readonly string[] = ["https://poker.serbito.rs"];
+
+/**
+ * ALLOWED_ORIGINS: comma-separated origins (scheme://host[:port]), e.g.
+ * `https://poker.example.com,http://127.0.0.1:8080`. Empty or unset: DEFAULT_ALLOWED_ORIGINS.
+ * A value that is not an origin throws, so a typo stops the server at start instead of
+ * refusing every room.
+ */
+export function parseAllowedOrigins(value: string | undefined): string[] {
+  const items = (value ?? "").split(",").map((s) => s.trim()).filter(Boolean);
+  if (items.length === 0) return [...DEFAULT_ALLOWED_ORIGINS];
+  return items.map((item) => {
+    let url: URL | null = null;
+    try {
+      url = new URL(item);
+    } catch {
+      /* reported below */
+    }
+    if (
+      !url ||
+      (url.protocol !== "https:" && url.protocol !== "http:") ||
+      url.pathname !== "/" ||
+      url.search ||
+      url.hash ||
+      url.username ||
+      url.password
+    ) {
+      throw new Error(
+        `ALLOWED_ORIGINS: ${JSON.stringify(item)} is not an origin like https://poker.example.com`,
+      );
+    }
+    return url.origin;
+  });
+}
+
+/**
+ * Allow the WS only from our own pages: an Origin in `allowed` (exact scheme, host and
+ * port). Browsers always send Origin on a WebSocket, so a missing one means a script, not
+ * our app; it is refused. Implicit localhost is for dev and tests only, never in production
+ * (SERBITO-361: PKR-3, PKR-7); in production it must be listed in ALLOWED_ORIGINS.
  */
 export function originAllowed(
   origin: string | undefined,
   production = process.env.NODE_ENV === "production",
+  allowed: readonly string[] = DEFAULT_ALLOWED_ORIGINS,
 ): boolean {
   if (!origin) return false;
   try {
-    const { hostname, protocol } = new URL(origin);
-    if (hostname === "poker.serbito.rs" && protocol === "https:") return true;
-    if (!production && (hostname === "localhost" || hostname === "127.0.0.1")) return true;
+    const url = new URL(origin);
+    if (allowed.includes(url.origin)) return true;
+    if (!production && (url.hostname === "localhost" || url.hostname === "127.0.0.1")) return true;
     return false;
   } catch {
     return false;
@@ -141,7 +185,12 @@ export function createPokerServer(
   staticDir: string = DEFAULT_STATIC_DIR,
   limitOverrides: Partial<PokerServerLimits> = {},
 ): Server {
-  const limits: PokerServerLimits = { ...DEFAULT_LIMITS, ...limitOverrides };
+  const limits: PokerServerLimits = {
+    ...DEFAULT_LIMITS,
+    allowedOrigins:
+      limitOverrides.allowedOrigins ?? parseAllowedOrigins(process.env.ALLOWED_ORIGINS),
+    ...limitOverrides,
+  };
   /** sockKey(room, participant key) -> socket, for broadcasting to a room's members. */
   const sockets = new Map<string, WebSocket>();
   /** client IP -> open WebSockets (PKR-3). */
@@ -193,7 +242,7 @@ export function createPokerServer(
       refuseUpgrade(socket, "403 Forbidden");
       return;
     }
-    if (!originAllowed(req.headers.origin)) {
+    if (!originAllowed(req.headers.origin, undefined, limits.allowedOrigins)) {
       socket.destroy(); // reject cross-site WebSocket hijacking and Origin-less scripts
       return;
     }

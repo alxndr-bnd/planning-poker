@@ -51,7 +51,9 @@ input[type="text"], input:not([type]) {
   padding: 2rem;
   text-align: center;
 }
-.lobby h1 { margin: 0; }
+/* The app name: looks like a heading, is not one (the page H1 is the static landing). */
+.app-title { font-size: 2em; font-weight: 700; line-height: 1.2; }
+.lobby .app-title { margin: 0; }
 .lobby input { text-align: center; }
 .name-field { display: flex; flex-direction: column; gap: 0.35rem; }
 .name-field label { font-weight: 600; }
@@ -68,7 +70,7 @@ input[type="text"], input:not([type]) {
   display: flex; align-items: center; justify-content: space-between;
   padding: 0.9rem 1.5rem; border-bottom: 1px solid var(--line);
 }
-.room-top h1 { font-size: 1.15rem; margin: 0; }
+.room-top .app-title { font-size: 1.15rem; margin: 0; }
 .brand { display: flex; align-items: center; gap: 1rem; }
 .ghost { background: transparent; border-color: transparent; color: var(--muted); }
 .ghost:hover { color: var(--ink); border-color: var(--line); }
@@ -334,7 +336,7 @@ input[type="text"], input:not([type]) {
   /* Header wraps instead of widening the page. GitHub and AlternativeTo are in the
      fixed footer, so the header drops its copies. */
   .room-top { flex-wrap: wrap; gap: 0.5rem 0.75rem; padding: 0.6rem 1rem; }
-  .room-top h1 { font-size: 1rem; }
+  .room-top .app-title { font-size: 1rem; }
   .brand { gap: 0.5rem; }
   .room-actions { flex-wrap: wrap; gap: 0.5rem 0.75rem; }
   .room-actions .altto-link, .room-actions .gh-badge { display: none; }
@@ -381,7 +383,7 @@ input[type="text"], input:not([type]) {
   max-width: 420px; text-align: center; background: var(--panel);
   border: 1px solid var(--line); border-radius: 12px; padding: 1.5rem;
 }
-.not-found-card h1 { margin: 0 0 0.5rem; font-size: 1.4rem; }
+.not-found-card h2 { margin: 0 0 0.5rem; font-size: 1.4rem; }
 .not-found-card p { color: var(--muted); line-height: 1.5; }
 .not-found-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin-top: 1rem; }
 

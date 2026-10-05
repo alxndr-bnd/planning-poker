@@ -1,5 +1,5 @@
 import "./instrument.js"; // must stay first: initializes Sentry before the app loads
-import { createPokerServer } from "./server.js";
+import { createPokerServer, parseAllowedOrigins } from "./server.js";
 
 const PORT = Number(process.env.PORT ?? 8080);
 
@@ -14,6 +14,11 @@ process.on("unhandledRejection", (reason) => {
   console.error("unhandledRejection:", reason);
 });
 
-createPokerServer().listen(PORT, () => {
+// SERBITO-513: a bad ALLOWED_ORIGINS stops the server here, before it takes traffic.
+const allowedOrigins = parseAllowedOrigins(process.env.ALLOWED_ORIGINS);
+
+createPokerServer(undefined, { allowedOrigins }).listen(PORT, () => {
   console.log(`planning-poker server listening on :${PORT}`);
+  // A self-hosted copy that forgot ALLOWED_ORIGINS sees why its rooms do not connect.
+  console.log(`WebSocket accepted from: ${allowedOrigins.join(", ")} (ALLOWED_ORIGINS)`);
 });
