@@ -36,12 +36,19 @@ the allowed origin (and analytics ids) come from env vars and the README says ho
 
 ---
 
+## Owner decisions (2026-10-06)
+
+- AlternativeTo: keep the title; remove the "no database/tracking" claim (§1).
+- PeerPush and opensourcealternative.to: use the free queues; do not pay.
+- Product Hunt: poker may already have a launch. A new launch of the same product needs 6+ months
+  and a significant update; otherwise update the existing product page (§4 texts) instead.
+- SaaSHub: submit, and verify with an @serbito.rs address (owner action).
+
 ## 1. AlternativeTo fix
 
 Listing: `alternativeto.net/software/estimation-poker-serbito/about/`. Current title: "Panning Poker Serbito".
 
-- **Title:** `Serbito Planning Poker`
-  (matches the site's Organization JSON-LD name and footer text. Minimal alternative: `Planning Poker Serbito`.)
+- **Title:** keep the current title (owner decision 2026-10-06: no rename).
 - **Tagline:** `Free, open-source planning poker. No sign-up, no ads.`
 - **Description** (no links):
 
@@ -87,7 +94,7 @@ openalternative.co (submission terms not readable); planningpoker.live knowledge
 ## 3. Submission texts (English, ≤ 120 words each)
 
 ### 3.1 AlternativeTo
-Use §1. If AlternativeTo needs a reason for the name change: "Fix a typo: the product name is Serbito Planning Poker."
+Use §1. Do not rename the listing; only fix the features (remove the "no tracking" claim).
 
 ### 3.2 Scrum Expert (follow-up via /mail/)
 **Subject:** Missing tool for "Open source planning poker tools": Serbito Planning Poker
