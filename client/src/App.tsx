@@ -253,7 +253,9 @@ function Lobby({
 
   return (
     <div className="lobby">
-      <h1>Planning Poker</h1>
+      {/* The app's name, not a heading: the page's one H1 is the static landing heading
+          below #root, which crawlers read (SERBITO-502: React added a second H1). */}
+      <p className="app-title">Planning Poker</p>
       <p className="muted">{roomId ? tr("lobby.enterName") : tr("lobby.tagline")}</p>
       {/* A visible label, not a placeholder (WCAG 3.3.2). Autofocus only on an invite
           link, where joining is the one thing to do; on the landing it would skip the
@@ -530,7 +532,7 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
     return (
       <div className="room not-found">
         <div className="not-found-card" role="alert">
-          <h1>{tr("room.notFoundTitle")}</h1>
+          <h2>{tr("room.notFoundTitle")}</h2>
           <p>{tr("room.notFoundText")}</p>
           <div className="not-found-actions">
             <button className="primary" onClick={() => startNewRoom()}>
@@ -610,7 +612,7 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
             </svg>
             <span>{tr("nav.home")}</span>
           </button>
-          <h1>Planning Poker</h1>
+          <p className="app-title">Planning Poker</p>
         </div>
         <div className="room-actions">
           <button className="primary" onClick={copyLink}>

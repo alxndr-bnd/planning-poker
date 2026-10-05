@@ -14,6 +14,13 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+### Added
+- The "Planning Poker for Jira" guide shows step by step, with screenshots, how to estimate Jira issues in a room.
+
+### Changed
+- The start screen says what the app is: free online planning poker, no sign-up.
+- Search engines get a shorter page summary, the guides' author and their real update date.
+
 ## [0.58.0] - 2026-10-05
 
 ### Security

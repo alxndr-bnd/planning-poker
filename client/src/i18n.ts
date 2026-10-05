@@ -19,7 +19,8 @@ export const LANGS: { code: Lang; label: string }[] = [
 
 // English strings = the source of truth (keys are derived from this object).
 export const EN = {
-  "lobby.tagline": "Free · no sign-up · unlimited rooms",
+  // The lobby subtitle, above the fold: the home page's search phrase (SERBITO-502).
+  "lobby.tagline": "Free online planning poker — no sign-up",
   "lobby.enterName": "Enter your name to join the room.",
   "lobby.nameLabel": "Your name",
   "lobby.create": "Create room",

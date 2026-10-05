@@ -9,6 +9,9 @@
 // `npm run build` only regenerates it where full history exists. server/test/seo.test.ts
 // fails if the committed file is stale — fix with `npm run sitemap`.
 //
+// The same git date is each guide's Article JSON-LD "dateModified" (SERBITO-504): the
+// script rewrites it first, so the page and the sitemap never disagree.
+//
 // Usage:  node scripts/sitemap.ts            regenerate (fails without git history)
 //         node scripts/sitemap.ts --if-git   regenerate, or keep the committed file
 import { execFileSync } from "node:child_process";
@@ -110,6 +113,36 @@ export function lastCommitDate(file: string, today: Date = new Date()): string {
   return dirty || !committed ? localDate(today) : committed;
 }
 
+// The Article JSON-LD on the guides is one line of JSON (no spaces), as in the pages.
+const ARTICLE_DATE = /("@type":"Article"[^<]*?"dateModified":")(\d{4}-\d{2}-\d{2})(")/;
+
+/** The Article JSON-LD "dateModified" of a page, or null when it has none. */
+export function articleDateModified(html: string): string | null {
+  return html.match(ARTICLE_DATE)?.[2] ?? null;
+}
+
+/** The page with its Article JSON-LD "dateModified" set to `date` (no Article: as is). */
+export function setDateModified(html: string, date: string): string {
+  return html.replace(ARTICLE_DATE, (_, a: string, _d: string, b: string) => `${a}${date}${b}`);
+}
+
+/**
+ * Set each page's Article "dateModified" to its sitemap lastmod (SERBITO-504). A page
+ * whose date is wrong gets today's date: the rewrite itself is an uncommitted change,
+ * so today is the lastmod it will have. Returns the files it rewrote.
+ */
+export function syncDateModified(clientDir: string = CLIENT_DIR, today: Date = new Date()): string[] {
+  const changed: string[] = [];
+  for (const { file } of listPages(clientDir)) {
+    const html = readFileSync(file, "utf-8");
+    const current = articleDateModified(html);
+    if (current === null || current === lastCommitDate(file, today)) continue;
+    writeFileSync(file, setDateModified(html, localDate(today)));
+    changed.push(relative(REPO_ROOT, file));
+  }
+  return changed;
+}
+
 export function buildEntries(clientDir: string = CLIENT_DIR): SitemapEntry[] {
   return listPages(clientDir).map((page) => ({
     ...page,
@@ -164,6 +197,8 @@ function main(argv: string[]): void {
     console.error("sitemap: needs a git checkout with full history (lastmod = last commit)");
     process.exit(1);
   }
+  const dated = syncDateModified();
+  if (dated.length) console.log(`sitemap: set Article dateModified in ${dated.length} page(s) — commit them`);
   const xml = generateSitemap();
   let before = "";
   try {
