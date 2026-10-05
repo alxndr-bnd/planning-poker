@@ -12,11 +12,11 @@
   },
   "dependencies": {
     "@pp/shared": "*",
-    "@sentry/node": "^11.1.0",
+    "@sentry/node": "^11.4.0",
     "ws": "^8.22.0"
   },
   "devDependencies": {
-    "@types/node": "^24.19.0",
+    "@types/node": "^24.19.1",
     "@types/ws": "^8.18.2",
     "esbuild": "^0.28.2",
     "playwright-core": "^1.63.0",
