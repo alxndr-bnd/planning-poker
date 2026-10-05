@@ -4,7 +4,7 @@
 // shell is client/index.html with the cross-promo and the live GA4 tag filled in, as the
 // Vite build for the live site does),
 // startApp() serves it with createPokerServer, and openRoom() opens a page on it with
-// the outside world (GA, Cloudflare, shields.io) cut off. WebSocket traffic runs
+// the outside world (GA, Cloudflare) cut off. WebSocket traffic runs
 // through page.routeWebSocket, so a test can drop the connection and keep it down.
 //
 // The server's tsconfig has no DOM lib (and must not get one): browser-side code is
@@ -41,7 +41,7 @@ export async function buildApp(): Promise<string> {
     entryNames: "app",
     jsx: "automatic",
     define: { "process.env.NODE_ENV": '"production"' },
-    external: ["/table-felt.jpg"],
+    external: ["/table-felt.webp"],
     logLevel: "silent",
   });
   const shell = renderAnalytics(

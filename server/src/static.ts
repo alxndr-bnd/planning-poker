@@ -53,8 +53,6 @@ const NOT_FOUND_PAGE = `<!doctype html>
 const GA = "https://*.googletagmanager.com";
 const GA_COLLECT = "https://*.google-analytics.com https://*.analytics.google.com";
 const CF_BEACON = "https://static.cloudflareinsights.com";
-/** The GitHub-stars badge in the app footer. */
-const BADGES = "https://img.shields.io";
 
 /** Bodies of the inline <script>s (not src=, not JSON-LD data blocks) in `html`. */
 export function inlineScripts(html: string): string[] {
@@ -94,8 +92,7 @@ function inlineScriptHashes(dist: string): string[] {
 
 /**
  * Headers for every response. The CSP is REPORT-ONLY for now: it lists what the pages
- * are known to need (own scripts + hashed inline gtag snippet, GA4, Cloudflare beacon,
- * the shields.io badge),
+ * are known to need (own scripts + hashed inline gtag snippet, GA4, Cloudflare beacon),
  * so violations surface in the browser console without breaking the consent banner or
  * GA. Enforce it once it has run clean. Framing is enforced right away: frame-ancestors
  * only works in an enforced policy, so it gets its own one-directive CSP.
@@ -106,7 +103,7 @@ export function securityHeaders(dist: string): Record<string, string> {
     "default-src 'self'",
     `script-src 'self' ${inlineScriptHashes(dist).join(" ")} ${GA} ${CF_BEACON}`.replace(/ +/g, " "),
     "style-src 'self' 'unsafe-inline'",
-    `img-src 'self' data: ${GA} ${GA_COLLECT} ${BADGES}`,
+    `img-src 'self' data: ${GA} ${GA_COLLECT}`,
     `connect-src 'self' wss://poker.serbito.rs ${GA} ${GA_COLLECT} https://cloudflareinsights.com`,
     "font-src 'self'",
     "manifest-src 'self'",

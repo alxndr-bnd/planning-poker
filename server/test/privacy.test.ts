@@ -65,7 +65,7 @@ describe("/privacy page (SERBITO-307)", () => {
   });
 
   it("names the processors and a contact", () => {
-    for (const s of ["Google Cloud Run", "Google Analytics", "Cloudflare", "Sentry", "shields.io"]) {
+    for (const s of ["Google Cloud Run", "Google Analytics", "Cloudflare", "Sentry"]) {
       expect(privacy).toContain(s);
     }
     expect(privacy).toContain('href="mailto:alexander.bondarchuk@gmail.com"');

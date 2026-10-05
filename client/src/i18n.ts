@@ -82,6 +82,7 @@ export const EN = {
   "sponsor.full": "Sponsored by serbito.rs",
   "sponsor.short": "by serbito.rs",
   "altto.featured": "Like us on AlternativeTo ↗",
+  "github.star": "★ Star on GitHub",
   // The app shell's fixed footer (client/index.html, outside React): elements carrying
   // data-pp-i18n="<key>" are re-labelled in the UI language by shell.ts.
   "footer.tagline": "Free & open-source planning poker — no ads, no sign-up.",

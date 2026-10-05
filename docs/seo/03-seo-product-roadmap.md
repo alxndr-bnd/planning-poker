@@ -29,9 +29,9 @@ Jira: implemented by SERBITO-305 (sitemap), SERBITO-435 (Search Console access) 
 - [x] **Add schema:** `BreadcrumbList` + `Organization` (and `AggregateRating` once we have
       reviews). The SEO leader has all of these; 2/3 web rivals have none.
       *Done: Organization on the home page; BreadcrumbList + Article on guides — v0.33.0 (353e542). `AggregateRating` — blocked until reviews exist, SERBITO-484.*
-- [ ] **Core Web Vitals:** the `table-felt.jpg` background is **1.26 MB** — compress to WebP
+- [x] **Core Web Vitals:** the `table-felt.jpg` background is **1.26 MB** — compress to WebP
       (<150 KB) + `loading=lazy`/responsive; it's an LCP/bandwidth liability. Audit with Lighthouse.
-      *Partly: compressed to a 285 KB JPEG — v0.10.0 (30f5bdf). WebP <150 KB — SERBITO-484.*
+      *Done: compressed to a 285 KB JPEG — v0.10.0 (30f5bdf); now `table-felt.webp`, 142 KB, no JPEG fallback (the CSS minifier breaks an image-set() fallback) — branch `poker-484`, SERBITO-484.*
 - [x] **Per-page `<title>`/meta/canonical** once cluster pages exist (needs prerender or SSR).
 - [x] Update `sitemap.xml` `lastmod` on each release; add new pages as they ship. *Sitemap is generated from the pages — v0.48.0 (SERBITO-305).*
 

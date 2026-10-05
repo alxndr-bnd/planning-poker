@@ -90,7 +90,7 @@
     <header class="site"><a href="https://poker.serbito.rs/">🃏 Serbito Planning Poker</a></header>
     <main class="page">
       <h1>Privacy</h1>
-      <p class="updated">Last updated: 27 September 2026</p>
+      <p class="updated">Last updated: 5 October 2026</p>
 
       <p><strong>In short:</strong> no accounts, no ads, nothing sold. What you type into a room lives only in the server's memory and is gone within minutes after everyone leaves. We count visits with Google Analytics, which sets cookies only if you accept them in the banner, and Cloudflare Web Analytics, which sets none; the server reports its own errors to Sentry.</p>
 
@@ -141,9 +141,6 @@
       <h2>Sentry (server errors)</h2>
       <p>When the server hits an error, it sends a report to Sentry: the error message, the stack trace, the app version and the environment. Sentry also receives timing data for about 10% of requests (path, status, duration). It is configured not to collect IP addresses, cookies, headers, request bodies, query strings or variable values from the code, so names and votes stay out of it. Sentry deletes the data after its retention period (at most 90 days). The app in your browser sends nothing to Sentry.</p>
 
-      <h2>GitHub badge</h2>
-      <p>The app's lobby and rooms show a GitHub star badge, an image loaded from shields.io. Like any image request, it lets shields.io see your IP address and browser.</p>
-
       <h2>Who processes data</h2>
       <div class="table-wrap">
         <table>
@@ -155,7 +152,6 @@
             <tr><td>Google Analytics</td><td>Visit and usage statistics (up to 14 months)</td><td>Google</td></tr>
             <tr><td>Cloudflare</td><td>DNS, TLS, delivery; cookieless Web Analytics</td><td>Cloudflare network</td></tr>
             <tr><td>Sentry</td><td>Server error reports (up to 90 days)</td><td>US</td></tr>
-            <tr><td>shields.io</td><td>GitHub star badge image</td><td>shields.io</td></tr>
           </tbody>
         </table>
       </div>

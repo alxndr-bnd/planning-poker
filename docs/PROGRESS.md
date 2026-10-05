@@ -2,7 +2,7 @@
 
 Status as of 2026-05-26; checked against the code on 2026-10-05 (docs audit). Live: **https://poker.serbito.rs** · Repo: `alxndr-bnd/planning-poker`
 Source requirements: Product Brief (`docs/planning/product-brief-planning-poker-2026-05-26.md`) and Architecture doc (`docs/planning/architecture.md`).
-Jira: implemented by SERBITO-307, 320, 355, 361 · tracked by SERBITO-332 · open: [SERBITO-464](https://serbito.atlassian.net/browse/SERBITO-464) (Gap 1), [SERBITO-484](https://serbito.atlassian.net/browse/SERBITO-484) (Gap 2, low value)
+Jira: implemented by SERBITO-307, 320, 355, 361 · tracked by SERBITO-332 · open: [SERBITO-464](https://serbito.atlassian.net/browse/SERBITO-464) (Gap 1) · Gap 2 fixed on branch `poker-484` (SERBITO-484)
 
 ## Releases
 | Tag | What |
@@ -54,7 +54,7 @@ SEO meta, GitHub badge, serbito.rs sponsor link, theory/resources info block, fe
 
 ## Gaps — remaining
 1. **Item-title input** — Brief journey 3 mentions an optional label for "the item being estimated". The protocol/room support `itemTitle` and the UI *displays* it, but there is still **no UI to set it**. → add an input (e.g. alongside Reset, or a field above the table). Fixed on branch `poker-464` (2026-10-05, not released yet): a title field next to Reset / New vote sends `reset.itemTitle`; the server cleans it (`normalizeItemTitle`). → [SERBITO-464](https://serbito.atlassian.net/browse/SERBITO-464)
-2. **Privacy nuance** — the lobby/room load a **shields.io** GitHub badge (external image request → reveals the visitor to shields.io), disclosed on /privacy (SERBITO-307). → options: self-host a static badge image, or drop the live star-count badge. Low value. → [SERBITO-484](https://serbito.atlassian.net/browse/SERBITO-484)
+2. **Privacy nuance** — the lobby/room loaded a **shields.io** GitHub badge (external image request → reveals the visitor to shields.io), disclosed on /privacy (SERBITO-307). Fixed on branch `poker-484` (2026-10-05, not released yet): a plain text link "★ Star on GitHub" replaces the image; shields.io is gone from the CSP and /privacy. → [SERBITO-484](https://serbito.atlassian.net/browse/SERBITO-484)
 
 ## Gaps — resolved
 3. ~~Test coverage~~ → ✅ added WebSocket integration tests (`server/test/ws.test.ts`) and client `tsc --noEmit` to the typecheck gate (pre-commit + release).

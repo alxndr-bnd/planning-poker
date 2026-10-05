@@ -74,11 +74,13 @@ function LanguageSwitcher() {
   );
 }
 
-// Official GitHub badge (shields.io) — image only, no external JS/tracking.
+// A plain text link to the repo (SERBITO-484): the old star-count badge image was a
+// third-party image request on every visit.
 function GitHubBadge() {
+  const { tr } = useT();
   return (
-    <a className="gh-badge" href={REPO_URL} target="_blank" rel="noopener noreferrer" aria-label="GitHub repository">
-      <img alt="GitHub repo" height="28" src={`https://img.shields.io/github/stars/${REPO}?style=social&logo=github&label=GitHub`} />
+    <a className="gh-badge" href={REPO_URL} target="_blank" rel="noopener noreferrer">
+      {tr("github.star")}
     </a>
   );
 }
