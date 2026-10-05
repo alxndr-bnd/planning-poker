@@ -76,6 +76,8 @@
       header.site a{color:#fff;text-decoration:none;font-weight:700}
       main.page{max-width:760px;margin:0 auto;padding:1.5rem 1.1rem 2.5rem}
       main.page h1{color:#15603b;font-size:1.9rem;line-height:1.25;margin:.2rem 0 1rem}
+      main.page h2{color:#15603b;font-size:1.3rem;margin-top:2rem}
+      main.page h3{color:#15603b;font-size:1.05rem;line-height:1.35;margin:1.3rem 0 .3rem}
       main.page a{color:#15603b}
       main.page dt{font-weight:600;margin-top:1.1rem;color:#15603b}
       main.page dd{margin:.25rem 0 0}
@@ -155,6 +157,19 @@
         <dt>三点估算（Three-Point Estimation）</dt>
         <dd>三点估算把一个乐观估算、一个最可能估算和一个悲观估算结合起来，用单一数值来体现不确定性。它更常用于传统项目管理，但其底层思想——围绕一个区间而非单个数字进行推理——与敏捷估算很好地互补。敏捷估算扑克通过对离群者的讨论体现了类似的直觉。</dd>
       </dl>
+      <section id="faq">
+        <h2>常见问题</h2>
+        <h3>故事点和小时有什么区别？</h3>
+        <p>小时预测一个人需要多长时间。故事点把事项相互比较，同时考虑工作量、复杂度和风险。比较比预测时间更可靠，所以团队使用点数。</p>
+        <h3>为什么估算扑克的牌用斐波那契数列？</h3>
+        <p>数值越大，间隔越大：1、2、3、5、8、13。大的事项不确定性更高，这个刻度可以避免争论 12 还是 13。超过 21 的事项通常需要拆分。</p>
+        <h3>“?”牌和咖啡牌是什么意思？</h3>
+        <p>“?”表示“我现在还无法估算”，通常是因为事项不清楚。咖啡杯表示需要休息。这两张牌都不算作数字。</p>
+        <h3>团队应该取投票的平均值吗？</h3>
+        <p>不应该。平均值会掩盖亮牌时暴露的分歧。请出牌最高和最低的人说明理由，然后重新投票，直到团队就一个数字达成一致。我们的应用会显示每个名字和所出的牌以及计数，但不显示平均值。</p>
+        <h3>估算扑克中应该由谁投票？</h3>
+        <p>由真正做这项工作的人投票：开发、测试和设计人员。产品负责人回答有关范围的问题。经理和干系人以观察者身份参加。</p>
+      </section>
       <p>准备好把这些术语付诸实践了吗？召集你的团队，用我们免费、开源的<a href="https://poker.serbito.rs/?lang=zh">敏捷估算扑克工具</a>进行一次快速、无干扰的估算会议——无需注册、无需付费，还为利益相关者内置了旁观者模式。如果你想先看完整的逐步讲解，请阅读<a href="/zh/what-is-planning-poker">我们的敏捷估算扑克完全指南</a>。</p>
     </main>
     <footer class="site">

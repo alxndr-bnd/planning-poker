@@ -14,6 +14,13 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+### Added
+- New pages compare free planning poker tools, show a free alternative to planningpokeronline.com and scrum poker without ads, and explain planning poker vs open estimation meetings.
+
+### Changed
+- Every guide and the glossary answer common questions under clear question headings.
+- The roadmap on the start page lists only features that are still open for votes.
+
 ## [0.60.0] - 2026-10-05
 
 ### Added

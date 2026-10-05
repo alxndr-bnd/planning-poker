@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- analytics:ga4 -->
+    <!-- Google tag (gtag.js) — GA4, same property as the app shell. These prerendered
+         guide pages are the SEO landing pages: without the tag, all organic traffic
+         that lands here is invisible in GA4. Static snippet, like client/index.html.
+         No hash routing here, so gtag.js's own page_view is all these pages need. -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=__GA_MEASUREMENT_ID__"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      // Consent Mode v2 (SERBITO-320): no analytics cookies until the visitor accepts in
+      // the banner (/consent.js); a choice stored in the last 12 months applies at once.
+      // Must run before "config". Identical on every page (server/test/consent.test.ts).
+      (function () {
+        var a = "denied";
+        try {
+          var c = JSON.parse(localStorage.getItem("pp_consent"));
+          if (c && c.choice === "granted" && Date.now() - Date.parse(c.date) < 31536000000) a = "granted";
+        } catch (e) {}
+        gtag("consent", "default", { ad_storage: "denied", analytics_storage: a, ad_user_data: "denied", ad_personalization: "denied", wait_for_update: 500 });
+      })();
+      gtag("js", new Date());
+      gtag("config", "__GA_MEASUREMENT_ID__", { cookie_domain: "none" }); // host-only _ga cookies
+    </script>
+    <!-- Cookie consent banner + footer "Cookie settings" (SERBITO-320), shared by every page. -->
+    <script defer src="/consent.js"></script>
+    <!-- /analytics:ga4 -->
+
+    <!-- analytics:cloudflare -->
+    <!-- Cloudflare Web Analytics (privacy-first, cookieless) — same beacon token as
+         client/index.html; CF's automatic injection doesn't fire for this site. -->
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "__CF_BEACON_TOKEN__"}'></script>
+    <!-- End Cloudflare Web Analytics -->
+    <!-- /analytics:cloudflare -->
+
+    <!-- SERBITO-482. English only (no translations until the English pages are indexed).
+         Every competitor fact is dated and links to the vendor's own page in "Sources";
+         every claim about this app is checked against the code (README, shared/protocol.ts,
+         server/src/room.ts). Re-check both before you edit the facts. -->
+    <title>A Free Alternative to planningpokeronline.com</title>
+    <meta
+      name="description"
+      content="Need more than 9 votings per game? Serbito Planning Poker is free and open source: no vote cap, no sign-up, no ads. Facts as of October 2026."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://poker.serbito.rs/planningpokeronline-alternative" />
+    <link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planningpokeronline-alternative" />
+    <link rel="alternate" hreflang="x-default" href="https://poker.serbito.rs/planningpokeronline-alternative" />
+    <meta property="og:site_name" content="Planning Poker" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content="A Free Alternative to planningpokeronline.com" />
+    <meta property="og:description" content="Free planning poker with no vote cap, no sign-up and no ads, compared with planningpokeronline.com." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://poker.serbito.rs/planningpokeronline-alternative" />
+    <meta property="og:image" content="https://poker.serbito.rs/og-image.jpg" />
+    <meta property="og:image:secure_url" content="https://poker.serbito.rs/og-image.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Free Online Planning Poker — real-time Scrum estimation for agile teams." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://poker.serbito.rs/og-image.jpg" />
+    <style>
+      *{box-sizing:border-box}
+      body{margin:0;font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1a2b22;background:#fff}
+      header.site{background:#15603b;padding:.8rem 1rem}
+      header.site a{color:#fff;text-decoration:none;font-weight:700}
+      main.page{max-width:760px;margin:0 auto;padding:1.5rem 1.1rem 2.5rem}
+      main.page h1{color:#15603b;font-size:1.9rem;line-height:1.25;margin:.2rem 0 1rem}
+      main.page h2{color:#15603b;font-size:1.3rem;line-height:1.3;margin:2rem 0 .6rem}
+      main.page h3{color:#15603b;font-size:1.05rem;line-height:1.35;margin:1.3rem 0 .3rem}
+      main.page a{color:#15603b}
+      main.page li{margin:.3rem 0}
+      main.page .updated{color:#5b6b62;font-size:.9rem}
+      main.page .table-wrap{overflow-x:auto}
+      main.page table{border-collapse:collapse;width:100%;font-size:.92rem}
+      main.page th,main.page td{text-align:left;vertical-align:top;padding:.45rem .6rem;border-bottom:1px solid #e3e9e5}
+      main.page thead th{border-bottom:2px solid #15603b}
+      main.page tbody th{font-weight:600;white-space:nowrap}
+      main.page .note{color:#5b6b62;font-size:.9rem}
+      footer.site{border-top:1px solid #e3e9e5;background:#f4f7f5;padding:1rem;text-align:center;font-size:.85rem;color:#5b6b62;line-height:1.9}
+      footer.site a{color:#15603b;font-weight:600}
+    </style>
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Planning Poker","item":"https://poker.serbito.rs/"},{"@type":"ListItem","position":2,"name":"A Free Alternative to planningpokeronline.com","item":"https://poker.serbito.rs/planningpokeronline-alternative"}]}
+  </script>
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"Article","headline":"A Free Alternative to planningpokeronline.com","description":"Need more than 9 votings per game? Serbito Planning Poker is free and open source: no vote cap, no sign-up, no ads. Facts as of October 2026.","inLanguage":"en","image":"https://poker.serbito.rs/og-image.jpg","author":{"@type":"Person","name":"Alexander Bondarchuk","url":"https://github.com/alxndr-bnd","sameAs":["https://github.com/alxndr-bnd"]},"publisher":{"@type":"Organization","name":"Serbito Planning Poker","url":"https://poker.serbito.rs/","logo":{"@type":"ImageObject","url":"https://poker.serbito.rs/icon-512.png"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://poker.serbito.rs/planningpokeronline-alternative"},"datePublished":"2026-10-05","dateModified":"2026-10-05"}
+  </script>
+  </head>
+  <body>
+    <header class="site"><a href="https://poker.serbito.rs/">🃏 Serbito Planning Poker</a></header>
+    <main class="page">
+      <article>
+        <h1>A Free Alternative to planningpokeronline.com</h1>
+        <p class="updated">As of October 2026. Facts about other tools were checked on 2026-10-05 on each vendor's own website.</p>
+
+        <p>planningpokeronline.com is a capable tool, and its free plan has limits. If your team hits them, <a href="https://poker.serbito.rs/">Serbito Planning Poker</a> is a free alternative with no cap on rounds and no paid plan. This page compares the two. Facts about planningpokeronline.com come from its <a href="https://planningpokeronline.com/pricing/">pricing page</a>; facts about our tool come from its code. We also say where their tool is the better choice.</p>
+
+        <h2>What the free plan of planningpokeronline.com includes</h2>
+        <ul>
+          <li>9 votings per game and 5 issues voted per game.</li>
+          <li>Unlimited games for 6 weeks.</li>
+          <li>No limit on players, permanent game URLs and CSV import.</li>
+        </ul>
+        <p>Premium costs $30 per facilitator per month or $300 billed yearly, with a 15-day trial. It removes the voting and issue limits, keeps your created games and their history, lets you resume a game at any time, and lets you add or remove facilitators.</p>
+
+        <h2>Side by side</h2>
+        <p>A dash (—) means that the vendor's page did not state it on 2026-10-05.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th scope="col">Feature</th><th scope="col">Serbito Planning Poker</th><th scope="col">planningpokeronline.com</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Price</th><td>Free, no paid plan</td><td>Free plan; Premium $30 per facilitator per month or $300 billed yearly</td></tr>
+              <tr><th scope="row">Votings per game</th><td>No cap</td><td>9 on the free plan; unlimited on Premium</td></tr>
+              <tr><th scope="row">Issues per game</th><td>No cap. No issue list: you type each issue key or title in the room, one round at a time</td><td>5 voted issues on the free plan; unlimited on Premium</td></tr>
+              <tr><th scope="row">How long you can use it</th><td>No time limit. A room is deleted soon after everyone leaves</td><td>Free plan: unlimited games for 6 weeks</td></tr>
+              <tr><th scope="row">Account to start</th><td>No, a name only</td><td>—</td></tr>
+              <tr><th scope="row">Card decks</th><td>Fibonacci only</td><td>Fibonacci, T-shirt sizes or custom decks</td></tr>
+              <tr><th scope="row">Integrations</th><td>None: you type the points into your tracker</td><td>Linear; Jira plugin on the Atlassian Marketplace; CSV import</td></tr>
+              <tr><th scope="row">Saved games and history</th><td>No: rooms live in server memory only</td><td>Premium</td></tr>
+              <tr><th scope="row">Ads</th><td>None</td><td>—</td></tr>
+              <tr><th scope="row">Open source, self-hosting</th><td>Yes: MIT license, one container</td><td>—</td></tr>
+              <tr><th scope="row">Interface languages</th><td>9</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>When planningpokeronline.com is the better choice</h2>
+        <ul>
+          <li>You want to estimate inside Jira with a plugin, or you work in Linear.</li>
+          <li>You import a backlog from CSV and vote through it item by item.</li>
+          <li>Your team uses T-shirt sizes or a custom deck.</li>
+          <li>You want to resume a game later or keep its history (Premium).</li>
+          <li>Several facilitators share one account (Premium).</li>
+        </ul>
+
+        <h2>When Serbito Planning Poker fits better</h2>
+        <ul>
+          <li><strong>Long refinement sessions.</strong> There is no cap on votings, so the tenth story costs nothing extra.</li>
+          <li><strong>Guests and contractors.</strong> People type a name and join. Nobody makes an account.</li>
+          <li><strong>No budget.</strong> There is no paid plan and no trial that ends.</li>
+          <li><strong>Data that must stay in house.</strong> The code is MIT-licensed, and you can <a href="https://github.com/alxndr-bnd/planning-poker#self-hosting">run your own copy</a> in one container.</li>
+          <li><strong>Teams in several languages.</strong> The interface has 9 languages and opens in the browser's language.</li>
+        </ul>
+
+        <h2>Switch in two minutes</h2>
+        <ol>
+          <li>Open the <a href="https://poker.serbito.rs/">free planning poker app</a>, type your name and click <em>Create room</em>. The invite link goes to your clipboard.</li>
+          <li>Paste the link into the call chat. Teammates open it, type a name and join.</li>
+          <li>Type the issue key or title in the <em>Item title</em> field and press Enter. Everybody votes, the person with the star reveals, and the team discusses the highest and the lowest card.</li>
+          <li>Click <em>New vote</em> to vote again, or go to the next issue. Type the agreed number into your tracker: the room sends nothing to Jira or Linear.</li>
+        </ol>
+        <p>Do you estimate Jira issues? The <a href="/planning-poker-for-jira">Planning Poker for Jira guide</a> shows the full loop with screenshots.</p>
+
+        <section id="faq">
+          <h2>Questions</h2>
+          <h3>Is Serbito Planning Poker really free?</h3>
+          <p>Yes. There is no paid plan, no trial and no ads. The code is open source under the MIT license.</p>
+          <h3>Can I import issues from CSV or Jira?</h3>
+          <p>Not today. Issue import is a <a href="https://github.com/alxndr-bnd/planning-poker/issues?q=is%3Aissue+is%3Aopen+label%3Afeature-vote+sort%3Areactions-%2B1-desc">feature vote on GitHub</a>. Add your vote if you need it.</p>
+          <h3>Are rooms and results saved?</h3>
+          <p>No. Rooms live in server memory. The estimate log shows the revealed rounds while the room is open, and the room is deleted soon after everyone leaves.</p>
+        </section>
+
+        <p>Compare more tools: <a href="/best-planning-poker-tools">free planning poker tools compared</a>.</p>
+
+        <section id="sources">
+          <h2>Sources</h2>
+          <ul>
+            <li>planningpokeronline.com: <a href="https://planningpokeronline.com/pricing/">pricing page</a> (plans, prices, free-plan limits, decks, integrations). Checked on 2026-10-05.</li>
+            <li>Serbito Planning Poker: <a href="https://github.com/alxndr-bnd/planning-poker">source code and README</a>, and the <a href="/privacy">privacy page</a>.</li>
+          </ul>
+        </section>
+
+        <p class="note">Product names and trademarks belong to their owners. Serbito Planning Poker is not affiliated with, or endorsed by, any vendor named on this page. Prices and limits change, so check the vendor's page before you decide. Found a mistake? <a href="https://github.com/alxndr-bnd/planning-poker/issues">Tell us on GitHub</a> and we will fix it.</p>
+      </article>
+    </main>
+    <footer class="site">
+      Free, open-source planning poker — no ads, no sign-up.<br />
+      <a href="https://poker.serbito.rs/">Start a room</a> ·
+      <a href="/what-is-planning-poker">Guide</a> ·
+      <a href="/glossary">Glossary</a> ·
+      <a href="/planning-poker-for-jira">For Jira</a> ·
+      <a href="/planning-poker-for-remote-teams">Remote teams</a> ·
+      <a href="/best-planning-poker-tools">Compare tools</a> ·
+      <a href="https://github.com/alxndr-bnd/planning-poker">GitHub</a> ·
+      <a href="/privacy">Privacy</a> ·
+      <a href="/privacy#cookies" data-pp-consent>Cookie settings</a>
+      <!-- crosspromo -->
+    </footer>
+  </body>
+</html>

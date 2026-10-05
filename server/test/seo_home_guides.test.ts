@@ -234,8 +234,8 @@ const articles = listPages(clientDir)
   .filter((p) => p.article);
 
 describe("guide Article JSON-LD (SERBITO-504)", () => {
-  it("covers the prose guides in every language", () => {
-    expect(articles.length).toBe(27); // 3 prose topics x 9 languages
+  it("covers the prose guides in every language and the English comparison pages", () => {
+    expect(articles.length).toBe(31); // 3 prose topics x 9 languages + 4 comparisons (SERBITO-482)
   });
 
   it("names the owner as a Person author, with the GitHub profile", () => {

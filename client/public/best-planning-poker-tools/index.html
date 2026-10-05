@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- analytics:ga4 -->
+    <!-- Google tag (gtag.js) — GA4, same property as the app shell. These prerendered
+         guide pages are the SEO landing pages: without the tag, all organic traffic
+         that lands here is invisible in GA4. Static snippet, like client/index.html.
+         No hash routing here, so gtag.js's own page_view is all these pages need. -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=__GA_MEASUREMENT_ID__"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      // Consent Mode v2 (SERBITO-320): no analytics cookies until the visitor accepts in
+      // the banner (/consent.js); a choice stored in the last 12 months applies at once.
+      // Must run before "config". Identical on every page (server/test/consent.test.ts).
+      (function () {
+        var a = "denied";
+        try {
+          var c = JSON.parse(localStorage.getItem("pp_consent"));
+          if (c && c.choice === "granted" && Date.now() - Date.parse(c.date) < 31536000000) a = "granted";
+        } catch (e) {}
+        gtag("consent", "default", { ad_storage: "denied", analytics_storage: a, ad_user_data: "denied", ad_personalization: "denied", wait_for_update: 500 });
+      })();
+      gtag("js", new Date());
+      gtag("config", "__GA_MEASUREMENT_ID__", { cookie_domain: "none" }); // host-only _ga cookies
+    </script>
+    <!-- Cookie consent banner + footer "Cookie settings" (SERBITO-320), shared by every page. -->
+    <script defer src="/consent.js"></script>
+    <!-- /analytics:ga4 -->
+
+    <!-- analytics:cloudflare -->
+    <!-- Cloudflare Web Analytics (privacy-first, cookieless) — same beacon token as
+         client/index.html; CF's automatic injection doesn't fire for this site. -->
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "__CF_BEACON_TOKEN__"}'></script>
+    <!-- End Cloudflare Web Analytics -->
+    <!-- /analytics:cloudflare -->
+
+    <!-- SERBITO-482. English only (no translations until the English pages are indexed).
+         Every competitor fact is dated and links to the vendor's own page in "Sources";
+         every claim about this app is checked against the code (README, shared/protocol.ts,
+         server/src/room.ts). Re-check both before you edit the facts. -->
+    <title>Best Free Planning Poker Tools Compared (2026)</title>
+    <meta
+      name="description"
+      content="Four free planning poker tools compared on price, ads, sign-up, card decks and Jira. Facts from each vendor's own page, as of October 2026."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://poker.serbito.rs/best-planning-poker-tools" />
+    <link rel="alternate" hreflang="en" href="https://poker.serbito.rs/best-planning-poker-tools" />
+    <link rel="alternate" hreflang="x-default" href="https://poker.serbito.rs/best-planning-poker-tools" />
+    <meta property="og:site_name" content="Planning Poker" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content="Best Free Planning Poker Tools Compared (2026)" />
+    <meta property="og:description" content="Price, ads, sign-up, card decks and Jira support of four planning poker tools, with sources." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://poker.serbito.rs/best-planning-poker-tools" />
+    <meta property="og:image" content="https://poker.serbito.rs/og-image.jpg" />
+    <meta property="og:image:secure_url" content="https://poker.serbito.rs/og-image.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Free Online Planning Poker — real-time Scrum estimation for agile teams." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://poker.serbito.rs/og-image.jpg" />
+    <style>
+      *{box-sizing:border-box}
+      body{margin:0;font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1a2b22;background:#fff}
+      header.site{background:#15603b;padding:.8rem 1rem}
+      header.site a{color:#fff;text-decoration:none;font-weight:700}
+      main.page{max-width:760px;margin:0 auto;padding:1.5rem 1.1rem 2.5rem}
+      main.page h1{color:#15603b;font-size:1.9rem;line-height:1.25;margin:.2rem 0 1rem}
+      main.page h2{color:#15603b;font-size:1.3rem;line-height:1.3;margin:2rem 0 .6rem}
+      main.page h3{color:#15603b;font-size:1.05rem;line-height:1.35;margin:1.3rem 0 .3rem}
+      main.page a{color:#15603b}
+      main.page li{margin:.3rem 0}
+      main.page .updated{color:#5b6b62;font-size:.9rem}
+      main.page .table-wrap{overflow-x:auto}
+      main.page table{border-collapse:collapse;width:100%;font-size:.92rem}
+      main.page th,main.page td{text-align:left;vertical-align:top;padding:.45rem .6rem;border-bottom:1px solid #e3e9e5}
+      main.page thead th{border-bottom:2px solid #15603b}
+      main.page tbody th{font-weight:600;white-space:nowrap}
+      main.page .note{color:#5b6b62;font-size:.9rem}
+      footer.site{border-top:1px solid #e3e9e5;background:#f4f7f5;padding:1rem;text-align:center;font-size:.85rem;color:#5b6b62;line-height:1.9}
+      footer.site a{color:#15603b;font-weight:600}
+    </style>
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Planning Poker","item":"https://poker.serbito.rs/"},{"@type":"ListItem","position":2,"name":"Free Planning Poker Tools Compared","item":"https://poker.serbito.rs/best-planning-poker-tools"}]}
+  </script>
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"Article","headline":"Free Planning Poker Tools Compared","description":"Four free planning poker tools compared on price, ads, sign-up, card decks and Jira. Facts from each vendor's own page, as of October 2026.","inLanguage":"en","image":"https://poker.serbito.rs/og-image.jpg","author":{"@type":"Person","name":"Alexander Bondarchuk","url":"https://github.com/alxndr-bnd","sameAs":["https://github.com/alxndr-bnd"]},"publisher":{"@type":"Organization","name":"Serbito Planning Poker","url":"https://poker.serbito.rs/","logo":{"@type":"ImageObject","url":"https://poker.serbito.rs/icon-512.png"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://poker.serbito.rs/best-planning-poker-tools"},"datePublished":"2026-10-05","dateModified":"2026-10-05"}
+  </script>
+  </head>
+  <body>
+    <header class="site"><a href="https://poker.serbito.rs/">🃏 Serbito Planning Poker</a></header>
+    <main class="page">
+      <article>
+        <h1>Free Planning Poker Tools Compared</h1>
+        <p class="updated">As of October 2026. Facts about other tools were checked on 2026-10-05 on each vendor's own website.</p>
+
+        <p><strong>Disclosure:</strong> we build <a href="https://poker.serbito.rs/">Serbito Planning Poker</a>, one of the four tools on this page. To keep the comparison fair, every fact about another tool comes from that vendor's own page (see <a href="#sources">Sources</a>), and a dash means that the page did not say. We also list what our own tool does not do.</p>
+
+        <h2>Short answer: which tool fits which team</h2>
+        <ul>
+          <li><strong>You want no ads, no account and open source:</strong> Serbito Planning Poker. It is free, MIT-licensed, and you can run your own copy.</li>
+          <li><strong>You need T-shirt sizes or your own card values:</strong> scrumpoker-online.org (custom values with a free account) or planningpokeronline.com (Fibonacci, T-shirt sizes or custom decks). Our tool has the Fibonacci deck only.</li>
+          <li><strong>You want to estimate inside Jira:</strong> planningpokeronline.com has a Jira plugin on the Atlassian Marketplace. Our tool and scrumpoker-online.org have no Jira sync: you type the points into Jira yourself.</li>
+          <li><strong>You also run retrospectives:</strong> pointingpoker.com has retrospective sessions next to its pointing sessions.</li>
+        </ul>
+
+        <h2>Comparison table</h2>
+        <p>A dash (—) means that the vendor's page did not state it on 2026-10-05.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th scope="col">Feature</th><th scope="col">Serbito Planning Poker</th><th scope="col">planningpokeronline.com</th><th scope="col">scrumpoker-online.org</th><th scope="col">pointingpoker.com</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Price</th><td>Free, no paid plan</td><td>Free plan with limits; Premium $30 per facilitator per month or $300 billed yearly</td><td>Free; Premium 40 USD a year</td><td>Free</td></tr>
+              <tr><th scope="row">Ads</th><td>None</td><td>—</td><td>In free rooms; Premium removes them for the whole room</td><td>Yes: "sustained by unobtrusive ads"</td></tr>
+              <tr><th scope="row">Account to start</th><td>No, a name only</td><td>—</td><td>No</td><td>No</td></tr>
+              <tr><th scope="row">Free-plan limits</th><td>No cap on rounds; up to 100 people in one room</td><td>9 votings per game, 5 issues voted per game, unlimited games for 6 weeks</td><td>—</td><td>—</td></tr>
+              <tr><th scope="row">Card decks</th><td>Fibonacci only (1 to 55, more up to 610, ?, coffee)</td><td>Fibonacci, T-shirt sizes or custom decks</td><td>Fibonacci by default; custom values with a free account</td><td>—</td></tr>
+              <tr><th scope="row">Average and median</th><td>No, on purpose: the team agrees on a number</td><td>—</td><td>Premium</td><td>—</td></tr>
+              <tr><th scope="row">Jira</th><td>No integration</td><td>Plugin on the Atlassian Marketplace</td><td>No native Jira sync</td><td>—</td></tr>
+              <tr><th scope="row">Saved history</th><td>No: rooms live in server memory and are deleted soon after everyone leaves</td><td>Premium: created games and history</td><td>—</td><td>—</td></tr>
+              <tr><th scope="row">Open source</th><td>Yes, MIT license</td><td>—</td><td>—</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Serbito Planning Poker</h2>
+        <p>A free, open-source planning poker in the browser. You type a name, create a room and share the link. Votes stay hidden until the person with the star reveals them. The reveal shows each name with a card, a count per card and a consensus mark when all numbers match. You can type an issue key or title for each round, and the estimate log lists the revealed rounds with their titles. Observers can follow without a card. The interface has 9 languages.</p>
+        <p><strong>What it does not do:</strong> no custom decks, no timer, no average, no export, no Jira or CSV import, and rooms are not saved. Custom decks, export, issue import and saved rooms are open for <a href="https://github.com/alxndr-bnd/planning-poker/issues?q=is%3Aissue+is%3Aopen+label%3Afeature-vote+sort%3Areactions-%2B1-desc">votes on GitHub</a>: we build what gets votes. The site counts visits with Google Analytics after you accept the cookie banner, and with Cloudflare Web Analytics. The <a href="/privacy">privacy page</a> lists what they get.</p>
+
+        <h2>planningpokeronline.com</h2>
+        <p>A planning poker by We Agile You with a free Basic plan and a paid Premium plan. The free plan allows 9 votings per game and 5 issues voted per game, with unlimited games for 6 weeks. Premium costs $30 per facilitator per month or $300 billed yearly, with a 15-day trial. It removes those limits and adds saved games, history and more facilitators. The site lists a Linear integration, CSV import, pasting from the clipboard and a Jira plugin on the Atlassian Marketplace. Choose it when you need those integrations and a paid plan is fine. More detail: <a href="/planningpokeronline-alternative">a free alternative to planningpokeronline.com</a>.</p>
+
+        <h2>scrumpoker-online.org</h2>
+        <p>A free tool with no sign-up: you open a room and share the room ID. Free rooms show ads. Premium costs 40 USD a year and gives an ad-free room for everyone who joins, a voting timer, automatic average and median, a personal room ID and an attendance indicator. A free account lets you set custom card values, for example T-shirt sizes. It has no native Jira sync. Choose it when you need custom decks or a timer, and ads or a small fee are fine. See also <a href="/scrum-poker-online-without-ads">scrum poker online without ads</a>.</p>
+
+        <h2>pointingpoker.com</h2>
+        <p>A free tool with no downloads and no sign-up. It says that it is "sustained by unobtrusive ads" and that it collects no personal data. Next to pointing sessions, it offers retrospective sessions. Choose it when you want a simple free tool and ads are fine for your team.</p>
+
+        <h2>How to choose</h2>
+        <ol>
+          <li><strong>Check the limits against your session.</strong> Count the items you size in one meeting. A cap of 5 issues per game can be too small for one refinement session.</li>
+          <li><strong>Check what your screen shows.</strong> If you share your screen with a client, the ads in the room go with it.</li>
+          <li><strong>Check who needs an account.</strong> Guests and contractors join faster with a link and a name.</li>
+          <li><strong>Check the deck.</strong> If your team estimates in T-shirt sizes, pick a tool with that deck.</li>
+          <li><strong>Check where the data goes.</strong> Read the privacy page. If the data must stay in house, pick an open-source tool that you can host yourself.</li>
+        </ol>
+        <p>Not sure that you need planning poker at all? Read <a href="/planning-poker-vs-estimation-meetings">planning poker vs open estimation meetings</a>. New to the technique? Start with <a href="/what-is-planning-poker">what planning poker is</a>.</p>
+
+        <section id="sources">
+          <h2>Sources</h2>
+          <ul>
+            <li>planningpokeronline.com: <a href="https://planningpokeronline.com/pricing/">pricing page</a> (plans, prices, free-plan limits, decks, integrations). Checked on 2026-10-05.</li>
+            <li>scrumpoker-online.org: <a href="https://www.scrumpoker-online.org/en/">home page and FAQ</a> (sign-up, ads, Premium, custom card values, Jira). Checked on 2026-10-05.</li>
+            <li>pointingpoker.com: <a href="https://www.pointingpoker.com/">home page</a> (sign-up, ads, retrospectives). Checked on 2026-10-05.</li>
+            <li>Serbito Planning Poker: <a href="https://github.com/alxndr-bnd/planning-poker">source code and README</a>, and the <a href="/privacy">privacy page</a>.</li>
+          </ul>
+        </section>
+
+        <p class="note">Product names and trademarks belong to their owners. Serbito Planning Poker is not affiliated with, or endorsed by, any vendor named on this page. Prices and limits change, so check the vendor's page before you decide. Found a mistake? <a href="https://github.com/alxndr-bnd/planning-poker/issues">Tell us on GitHub</a> and we will fix it.</p>
+      </article>
+    </main>
+    <footer class="site">
+      Free, open-source planning poker — no ads, no sign-up.<br />
+      <a href="https://poker.serbito.rs/">Start a room</a> ·
+      <a href="/what-is-planning-poker">Guide</a> ·
+      <a href="/glossary">Glossary</a> ·
+      <a href="/planning-poker-for-jira">For Jira</a> ·
+      <a href="/planning-poker-for-remote-teams">Remote teams</a> ·
+      <a href="/best-planning-poker-tools">Compare tools</a> ·
+      <a href="https://github.com/alxndr-bnd/planning-poker">GitHub</a> ·
+      <a href="/privacy">Privacy</a> ·
+      <a href="/privacy#cookies" data-pp-consent>Cookie settings</a>
+      <!-- crosspromo -->
+    </footer>
+  </body>
+</html>
