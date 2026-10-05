@@ -9,9 +9,13 @@
 - [Planning Poker for Jira](https://poker.serbito.rs/planning-poker-for-jira): estimate Jira issues without a plugin; story points go back into Jira by hand
 - [Planning Poker for remote teams](https://poker.serbito.rs/planning-poker-for-remote-teams): run estimation on a video call
 - [Agile estimation glossary](https://poker.serbito.rs/glossary): story points, velocity, Fibonacci and other terms
+- [Planning poker vs estimation meetings](https://poker.serbito.rs/planning-poker-vs-estimation-meetings): when to vote in private and when an open discussion is enough
+- [Free planning poker tools compared](https://poker.serbito.rs/best-planning-poker-tools): price, ads, sign-up, decks and Jira of four tools, with sources
+- [Free alternative to planningpokeronline.com](https://poker.serbito.rs/planningpokeronline-alternative): no vote cap, no sign-up
+- [Scrum poker online without ads](https://poker.serbito.rs/scrum-poker-online-without-ads): which tools show ads
 - [Privacy](https://poker.serbito.rs/privacy): what the app collects
 
-Each guide also exists in Spanish, German, French, Portuguese, Russian, Serbian, Japanese and Chinese under a language prefix, for example /de/what-is-planning-poker.
+The first four guides also exist in Spanish, German, French, Portuguese, Russian, Serbian, Japanese and Chinese under a language prefix, for example /de/what-is-planning-poker.
 
 ## Elsewhere
 

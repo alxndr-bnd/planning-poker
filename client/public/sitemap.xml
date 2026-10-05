@@ -8,6 +8,14 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://poker.serbito.rs/best-planning-poker-tools</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/best-planning-poker-tools" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://poker.serbito.rs/best-planning-poker-tools" />
+  </url>
+  <url>
     <loc>https://poker.serbito.rs/glossary</loc>
     <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
@@ -56,12 +64,36 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://poker.serbito.rs/planning-poker-for-remote-teams" />
   </url>
   <url>
+    <loc>https://poker.serbito.rs/planning-poker-vs-estimation-meetings</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planning-poker-vs-estimation-meetings" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://poker.serbito.rs/planning-poker-vs-estimation-meetings" />
+  </url>
+  <url>
+    <loc>https://poker.serbito.rs/planningpokeronline-alternative</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/planningpokeronline-alternative" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://poker.serbito.rs/planningpokeronline-alternative" />
+  </url>
+  <url>
     <loc>https://poker.serbito.rs/privacy</loc>
     <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/privacy" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://poker.serbito.rs/privacy" />
+  </url>
+  <url>
+    <loc>https://poker.serbito.rs/scrum-poker-online-without-ads</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://poker.serbito.rs/scrum-poker-online-without-ads" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://poker.serbito.rs/scrum-poker-online-without-ads" />
   </url>
   <url>
     <loc>https://poker.serbito.rs/what-is-planning-poker</loc>

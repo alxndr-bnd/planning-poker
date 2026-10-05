@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- analytics:ga4 -->
+    <!-- Google tag (gtag.js) — GA4, same property as the app shell. These prerendered
+         guide pages are the SEO landing pages: without the tag, all organic traffic
+         that lands here is invisible in GA4. Static snippet, like client/index.html.
+         No hash routing here, so gtag.js's own page_view is all these pages need. -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=__GA_MEASUREMENT_ID__"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      // Consent Mode v2 (SERBITO-320): no analytics cookies until the visitor accepts in
+      // the banner (/consent.js); a choice stored in the last 12 months applies at once.
+      // Must run before "config". Identical on every page (server/test/consent.test.ts).
+      (function () {
+        var a = "denied";
+        try {
+          var c = JSON.parse(localStorage.getItem("pp_consent"));
+          if (c && c.choice === "granted" && Date.now() - Date.parse(c.date) < 31536000000) a = "granted";
+        } catch (e) {}
+        gtag("consent", "default", { ad_storage: "denied", analytics_storage: a, ad_user_data: "denied", ad_personalization: "denied", wait_for_update: 500 });
+      })();
+      gtag("js", new Date());
+      gtag("config", "__GA_MEASUREMENT_ID__", { cookie_domain: "none" }); // host-only _ga cookies
+    </script>
+    <!-- Cookie consent banner + footer "Cookie settings" (SERBITO-320), shared by every page. -->
+    <script defer src="/consent.js"></script>
+    <!-- /analytics:ga4 -->
+
+    <!-- analytics:cloudflare -->
+    <!-- Cloudflare Web Analytics (privacy-first, cookieless) — same beacon token as
+         client/index.html; CF's automatic injection doesn't fire for this site. -->
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "__CF_BEACON_TOKEN__"}'></script>
+    <!-- End Cloudflare Web Analytics -->
+    <!-- /analytics:cloudflare -->
+
+    <!-- SERBITO-482. English only (no translations until the English pages are indexed).
+         Every competitor fact is dated and links to the vendor's own page in "Sources";
+         every claim about this app is checked against the code (README, shared/protocol.ts,
+         server/src/room.ts). Re-check both before you edit the facts. -->
+    <title>Scrum Poker Online Without Ads: Free, No Sign-up</title>
+    <meta
+      name="description"
+      content="Run scrum poker online with no ads on the screen you share. Free, open source, no sign-up. Which tools show ads, as of October 2026."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://poker.serbito.rs/scrum-poker-online-without-ads" />
+    <link rel="alternate" hreflang="en" href="https://poker.serbito.rs/scrum-poker-online-without-ads" />
+    <link rel="alternate" hreflang="x-default" href="https://poker.serbito.rs/scrum-poker-online-without-ads" />
+    <meta property="og:site_name" content="Planning Poker" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content="Scrum Poker Online Without Ads: Free, No Sign-up" />
+    <meta property="og:description" content="Free, open-source scrum poker with no ads and no sign-up." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://poker.serbito.rs/scrum-poker-online-without-ads" />
+    <meta property="og:image" content="https://poker.serbito.rs/og-image.jpg" />
+    <meta property="og:image:secure_url" content="https://poker.serbito.rs/og-image.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Free Online Planning Poker — real-time Scrum estimation for agile teams." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://poker.serbito.rs/og-image.jpg" />
+    <style>
+      *{box-sizing:border-box}
+      body{margin:0;font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1a2b22;background:#fff}
+      header.site{background:#15603b;padding:.8rem 1rem}
+      header.site a{color:#fff;text-decoration:none;font-weight:700}
+      main.page{max-width:760px;margin:0 auto;padding:1.5rem 1.1rem 2.5rem}
+      main.page h1{color:#15603b;font-size:1.9rem;line-height:1.25;margin:.2rem 0 1rem}
+      main.page h2{color:#15603b;font-size:1.3rem;line-height:1.3;margin:2rem 0 .6rem}
+      main.page h3{color:#15603b;font-size:1.05rem;line-height:1.35;margin:1.3rem 0 .3rem}
+      main.page a{color:#15603b}
+      main.page li{margin:.3rem 0}
+      main.page .updated{color:#5b6b62;font-size:.9rem}
+      main.page .table-wrap{overflow-x:auto}
+      main.page table{border-collapse:collapse;width:100%;font-size:.92rem}
+      main.page th,main.page td{text-align:left;vertical-align:top;padding:.45rem .6rem;border-bottom:1px solid #e3e9e5}
+      main.page thead th{border-bottom:2px solid #15603b}
+      main.page tbody th{font-weight:600;white-space:nowrap}
+      main.page .note{color:#5b6b62;font-size:.9rem}
+      footer.site{border-top:1px solid #e3e9e5;background:#f4f7f5;padding:1rem;text-align:center;font-size:.85rem;color:#5b6b62;line-height:1.9}
+      footer.site a{color:#15603b;font-weight:600}
+    </style>
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Planning Poker","item":"https://poker.serbito.rs/"},{"@type":"ListItem","position":2,"name":"Scrum Poker Online Without Ads","item":"https://poker.serbito.rs/scrum-poker-online-without-ads"}]}
+  </script>
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"Article","headline":"Scrum Poker Online Without Ads","description":"Run scrum poker online with no ads on the screen you share. Free, open source, no sign-up. Which tools show ads, as of October 2026.","inLanguage":"en","image":"https://poker.serbito.rs/og-image.jpg","author":{"@type":"Person","name":"Alexander Bondarchuk","url":"https://github.com/alxndr-bnd","sameAs":["https://github.com/alxndr-bnd"]},"publisher":{"@type":"Organization","name":"Serbito Planning Poker","url":"https://poker.serbito.rs/","logo":{"@type":"ImageObject","url":"https://poker.serbito.rs/icon-512.png"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://poker.serbito.rs/scrum-poker-online-without-ads"},"datePublished":"2026-10-05","dateModified":"2026-10-05"}
+  </script>
+  </head>
+  <body>
+    <header class="site"><a href="https://poker.serbito.rs/">🃏 Serbito Planning Poker</a></header>
+    <main class="page">
+      <article>
+        <h1>Scrum Poker Online Without Ads</h1>
+        <p class="updated">As of October 2026. Facts about other tools were checked on 2026-10-05 on each vendor's own website.</p>
+
+        <p>Many free scrum poker tools pay for their servers with ads. That is a fair model. But in an estimation meeting, the room is often on a shared screen, and the ads go to everybody on the call. <a href="https://poker.serbito.rs/">Serbito Planning Poker</a> has no ads and no paid plan. You type a name, share the link and vote.</p>
+
+        <h2>Why ads get in the way during estimation</h2>
+        <ul>
+          <li><strong>Shared screens.</strong> When the facilitator shares the room, every ad goes to the team, and sometimes to a client.</li>
+          <li><strong>Attention.</strong> A moving banner competes with the story that the team must understand.</li>
+          <li><strong>Page weight.</strong> Ad networks load extra scripts, so the room loads more slowly on a weak connection.</li>
+        </ul>
+
+        <h2>Which tools show ads</h2>
+        <p>Facts from each vendor's own page, checked on 2026-10-05:</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th scope="col">Tool</th><th scope="col">Ads</th><th scope="col">Way to remove them</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">scrumpoker-online.org</th><td>In free rooms</td><td>Premium, 40 USD a year: an ad-free room for everyone who joins</td></tr>
+              <tr><th scope="row">pointingpoker.com</th><td>Yes: the tool is "sustained by unobtrusive ads"</td><td>—</td></tr>
+              <tr><th scope="row">Serbito Planning Poker</th><td>None</td><td>Not needed</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Both ad-funded tools are free to start and need no sign-up. Premium on scrumpoker-online.org also adds a voting timer, automatic average and median, a personal room ID and an attendance indicator. If you need those, the fee can be worth it.</p>
+
+        <h2>How this tool stays free without ads</h2>
+        <p>Alexander Bondarchuk builds and runs Serbito Planning Poker. The server is one small container that scales to zero when nobody plays, so hosting costs little. There are no accounts and no database: rooms live in server memory and are deleted soon after everyone leaves.</p>
+        <p>No ads does not mean no analytics. The site counts visits with Google Analytics, which sets cookies only after you accept the banner, and with cookieless Cloudflare Web Analytics. The server reports its errors to Sentry. Names and room ids are never sent. The <a href="/privacy">privacy page</a> has the details. A copy that you <a href="https://github.com/alxndr-bnd/planning-poker#self-hosting">host yourself</a> has none of these unless you turn them on.</p>
+
+        <h2>What you get</h2>
+        <ul>
+          <li>A room by link: people type a name and join, with no account.</li>
+          <li>Hidden votes until the reveal. Each round, one random voter holds the star and reveals.</li>
+          <li>Each name with its card, a count per card and a consensus mark.</li>
+          <li>An observer mode for people who watch but do not vote.</li>
+          <li>An item title for each round, and an estimate log of the revealed rounds with their titles while the room is open.</li>
+          <li>9 interface languages and an MIT license.</li>
+        </ul>
+
+        <h2>What you do not get</h2>
+        <p>The tool has the Fibonacci deck only, and it has no timer, no average or median, no export and no saved rooms. Custom decks, export and saved rooms are open for <a href="https://github.com/alxndr-bnd/planning-poker/issues?q=is%3Aissue+is%3Aopen+label%3Afeature-vote+sort%3Areactions-%2B1-desc">votes on GitHub</a>.</p>
+
+        <section id="faq">
+          <h2>Questions</h2>
+          <h3>Is there really no catch?</h3>
+          <p>There are no ads and no paid plan. The site uses analytics, as described above, and the code is public, so you can check it.</p>
+          <h3>Do players need an account?</h3>
+          <p>No. Everybody opens the room link, types a name and joins.</p>
+          <h3>Can we use T-shirt sizes?</h3>
+          <p>Not yet. The deck is Fibonacci only. Custom decks are a feature vote on GitHub.</p>
+        </section>
+
+        <p><a href="https://poker.serbito.rs/">Start an ad-free room now</a>, or <a href="/best-planning-poker-tools">compare free planning poker tools</a> first.</p>
+
+        <section id="sources">
+          <h2>Sources</h2>
+          <ul>
+            <li>scrumpoker-online.org: <a href="https://www.scrumpoker-online.org/en/">home page and FAQ</a> (sign-up, ads, Premium, custom card values, Jira). Checked on 2026-10-05.</li>
+            <li>pointingpoker.com: <a href="https://www.pointingpoker.com/">home page</a> (sign-up, ads, retrospectives). Checked on 2026-10-05.</li>
+            <li>Serbito Planning Poker: <a href="https://github.com/alxndr-bnd/planning-poker">source code and README</a>, and the <a href="/privacy">privacy page</a>.</li>
+          </ul>
+        </section>
+
+        <p class="note">Product names and trademarks belong to their owners. Serbito Planning Poker is not affiliated with, or endorsed by, any vendor named on this page. Prices and limits change, so check the vendor's page before you decide. Found a mistake? <a href="https://github.com/alxndr-bnd/planning-poker/issues">Tell us on GitHub</a> and we will fix it.</p>
+      </article>
+    </main>
+    <footer class="site">
+      Free, open-source planning poker — no ads, no sign-up.<br />
+      <a href="https://poker.serbito.rs/">Start a room</a> ·
+      <a href="/what-is-planning-poker">Guide</a> ·
+      <a href="/glossary">Glossary</a> ·
+      <a href="/planning-poker-for-jira">For Jira</a> ·
+      <a href="/planning-poker-for-remote-teams">Remote teams</a> ·
+      <a href="/best-planning-poker-tools">Compare tools</a> ·
+      <a href="https://github.com/alxndr-bnd/planning-poker">GitHub</a> ·
+      <a href="/privacy">Privacy</a> ·
+      <a href="/privacy#cookies" data-pp-consent>Cookie settings</a>
+      <!-- crosspromo -->
+    </footer>
+  </body>
+</html>
