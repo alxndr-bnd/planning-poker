@@ -96,7 +96,7 @@
       <article>
         <h1>Planning Poker para Jira: Grátis, Sem Plugin, Sem Cadastro</h1>
 
-        <p>Procurando uma forma gratuita de rodar <strong>planning poker para Jira</strong> sem pagar por mais um add-on de marketplace? Você está no lugar certo. Nossa ferramenta de planning poker open source permite que sua equipe estime story points do Jira em tempo real, lado a lado com seu quadro do Jira existente - sem plugin para instalar, sem aprovação de admin para esperar e sem cartão de crédito. Insira as chaves das suas histórias, vote, chegue a um acordo e cole os pontos de volta no Jira.</p>
+        <p>Procurando uma forma gratuita de rodar <strong>planning poker para Jira</strong> sem pagar por mais um add-on de marketplace? Você está no lugar certo. Nossa ferramenta de planning poker open source permite que sua equipe estime story points do Jira em tempo real, lado a lado com seu quadro do Jira existente - sem plugin para instalar, sem aprovação de admin para esperar e sem cartão de crédito. Deixe a issue aberta no Jira, votem na sala, cheguem a um acordo e digite os pontos na issue. O <a href="#how-to">passo a passo abaixo</a> mostra o ciclo completo.</p>
 
         <h2>Estime Itens do Backlog do Jira com Planning Poker</h2>
         <p>O planning poker é uma técnica de <strong>estimativa ágil</strong> baseada em consenso: a equipe discute um item do backlog, todos votam uma carta simultaneamente, e a revelação oculta expõe a divergência antes que ela se transforme em uma estimativa ruim. É a forma mais rápida de transformar uma reunião barulhenta de <strong>planejamento de sprint</strong> em um conjunto claro de <strong>story points do Jira</strong>.</p>
@@ -106,20 +106,26 @@
         <p>A maioria das ferramentas de estimativa para Jira vive no Atlassian Marketplace, e a maioria delas cobra por usuário, por mês. Para uma equipe de dez pessoas, esse "pequeno" add-on silenciosamente se torna um item recorrente de despesa, além das suas licenças do Jira, só para jogar um jogo de cartas uma vez por sprint. Pior ainda, instalar um app de marketplace normalmente exige direitos de admin do Jira, uma revisão de segurança e aprovação de acesso a dados - então aquilo que você queria experimentar nesta tarde vira um chamado de compras.</p>
         <p>Acreditamos que a estimativa deveria ser gratuita. Não há paywall, nem preço por assento, nem um nível "premium" escondendo o cronômetro ou os resultados atrás de uma assinatura. A ferramenta inteira é open source, então você pode ler exatamente o que ela faz, hospedá-la por conta própria se quiser e nunca ser surpreendido por uma mudança de preço.</p>
 
-        <h2>Como Rodar uma Sessão ao Lado do Jira Hoje (Sem Instalar, Sem Cadastro)</h2>
-        <p>Você pode rodar uma sessão de estimativa completa agora mesmo sem tocar no admin do seu Jira. Veja o fluxo que as equipes usam:</p>
-        <ul>
-          <li><strong>Abra a sala.</strong> Acesse a <a href="https://poker.serbito.rs/?lang=pt">ferramenta gratuita de planning poker</a> e crie uma sessão - sem conta, sem e-mail.</li>
-          <li><strong>Convide a equipe.</strong> Compartilhe o link da sala no Slack, no Teams ou na sua chamada de vídeo. Todos entram com um clique, em qualquer dispositivo.</li>
-          <li><strong>Traga o backlog.</strong> Copie a chave e o título da história do Jira (por exemplo, "PROJ-142 - Adicionar SSO ao login") do seu quadro e cole como o item a ser estimado.</li>
-          <li><strong>Votem ao mesmo tempo.</strong> Cada pessoa escolhe uma carta. Os votos ficam ocultos até que todos tenham votado, então ninguém ancora na voz mais alta.</li>
-          <li><strong>Revelem e discutam.</strong> Vire as cartas, converse sobre os pontos fora da curva, altos e baixos, e vote de novo se necessário até chegar a um consenso.</li>
-          <li><strong>Cole os pontos de volta.</strong> Pegue o número acordado e coloque-o no campo Story Points daquela issue do Jira. Vá para a próxima chave e repita.</li>
-        </ul>
-        <p>É um ciclo de copiar, estimar, colar de volta. Um pouco manual, mas completamente gratuito, instantâneo para começar, e funciona com o Jira Cloud, o Jira Data Center ou qualquer outro rastreador que você use. Novo no formato? Leia <a href="/pt/what-is-planning-poker">o que é planning poker</a> para um passo a passo mais aprofundado da técnica.</p>
+        <section id="how-to">
+        <h2>Como Rodar Planning Poker para Issues do Jira, Passo a Passo</h2>
+        <p>Você precisa de duas abas no navegador: seu quadro do Jira e uma sala de planning poker. O Jira continua sendo a fonte da verdade. A sala só coleta votos ocultos e mostra todos no mesmo momento. As duas não se conectam, então você não precisa de admin do Jira, de token de API nem de plugin.</p>
+        <ol>
+          <li><strong>Prepare as issues no Jira.</strong> Abra o backlog ou um filtro com as histórias que vocês vão estimar, em ordem de prioridade. Compartilhe essa aba na chamada de vídeo, para que todos leiam a mesma descrição e os mesmos critérios de aceite.</li>
+          <li><strong>Crie uma sala.</strong> Abra o <a href="https://poker.serbito.rs/?lang=pt">app gratuito de planning poker</a>, digite seu nome e clique em <em>Criar sala</em>. O link de convite vai para a sua área de transferência (<em>Convidar colegas</em> copia de novo). Cole o link no chat da chamada. Os colegas abrem o link, digitam um nome e entram. Ninguém cria conta.</li>
+          <li><strong>Defina quem só acompanha.</strong> Um Product Owner ou stakeholder que não estima clica na carta do microfone para <em>Observar (sem votar)</em>. A sala lista os observadores, mas eles não ganham carta na mesa.</li>
+          <li><strong>Leia a issue em voz alta.</strong> A sala não tem campo para a issue, então quem facilita diz a chave e o título, por exemplo "SHOP-142, adicionar SSO ao login". Tirem as dúvidas sobre o escopo antes de alguém votar.</li>
+          <li><strong>Votem ao mesmo tempo.</strong> Cada votante escolhe uma carta: 1, 2, 3, 5, 8, 13, 21, 34 ou 55. <em>Mais</em> abre os valores de 89 a 610, <em>?</em> significa "não tenho certeza" e a xícara de café pede uma pausa. A mesa mostra um sinal de visto para cada pessoa que escolheu um número, nunca o número em si.</li>
+          <li><strong>Revele.</strong> A cada rodada, um votante sorteado fica com a estrela e é a única pessoa que vê <em>Revelar</em>. A revelação mostra cada nome com sua carta e uma contagem como "8 × 2, 5 × 1, 13 × 1". Quando todas as cartas são iguais, a sala mostra <em>Consenso</em>. Não há média de propósito: a equipe combina um número, o app não calcula nenhum.</li>
+          <li><strong>Discutam e votem de novo.</strong> Peça para quem votou mais alto e para quem votou mais baixo explicarem a escolha. Depois clique em <em>Nova votação</em> e estimem a mesma issue de novo até os números se encontrarem.</li>
+          <li><strong>Registre a estimativa no Jira.</strong> Digite o número combinado no campo <em>Story point estimate</em> da issue (projetos gerenciados pela equipe) ou <em>Story Points</em> (projetos gerenciados pela empresa). Faça isso antes da próxima issue. A sala não envia nada para o Jira.</li>
+          <li><strong>Passe para a próxima issue.</strong> Clique em <em>Nova votação</em>, leia a próxima chave e repita.</li>
+        </ol>
+        <p>Antes de encerrar a chamada, abra o <em>Registro de estimativas</em> abaixo da mesa. Ele lista cada rodada revelada em ordem (#1, #2, …) com a contagem de votos e uma marca de consenso, sem nomes. Compare com as issues no Jira, para que nenhuma fique sem pontos. Cada nova votação ganha sua própria linha, então anotar o número da rodada ao lado de cada chave facilita a conferência. As salas ficam só na memória: pouco depois que todos saem, a sala e o registro somem.</p>
+        <p>Novo no formato? Leia <a href="/pt/what-is-planning-poker">o que é planning poker</a> para um passo a passo mais aprofundado da técnica.</p>
+        </section>
 
         <h2>O que está no Roadmap: Importação do Jira e de CSV</h2>
-        <p>Para ser claro e honesto: esta ferramenta <strong>ainda não</strong> tem uma integração nativa com o Jira. Hoje você copia as chaves e os títulos das histórias à mão e cola os pontos de volta à mão - é deliberadamente uma configuração sem plugin e sem OAuth para que você possa começar em segundos sem conceder acesso aos dados do seu Jira.</p>
+        <p>Para ser claro e honesto: esta ferramenta <strong>ainda não</strong> tem uma integração nativa com o Jira. Hoje você fala cada issue na chamada e digita os pontos no Jira à mão - é deliberadamente uma configuração sem plugin e sem OAuth para que você possa começar em segundos sem conceder acesso aos dados do seu Jira.</p>
         <p>Uma integração mais próxima está planejada. No roadmap público temos a importação direta do Jira (puxar um sprint ou uma consulta JQL direto para uma sessão) e a importação de CSV (carregar em massa um backlog exportado de qualquer ferramenta). Esses são recursos priorizados pela comunidade. Se uma importação do Jira ou de CSV deixaria seu planejamento de sprint mais rápido, <a href="https://github.com/alxndr-bnd/planning-poker/issues?q=is%3Aissue+label%3Afeature-vote">vote nela no GitHub</a> - quanto mais votos um recurso recebe, mais cedo ele é lançado.</p>
 
         <h2>Por que as Equipes Escolhem Esta Ferramenta Gratuita de Planning Poker</h2>
@@ -134,15 +140,15 @@
         <h2>Perguntas Frequentes</h2>
         <dl>
           <dt>Esta ferramenta integra diretamente com o Jira?</dt>
-          <dd>Ainda não. Hoje não há integração nativa com o Jira - você copia as chaves e os títulos das histórias para uma sessão e cola os story points acordados de volta no Jira manualmente. A importação direta do Jira está no roadmap público; você pode votar nela no GitHub.</dd>
+          <dd>Ainda não. Hoje não há integração nativa com o Jira - você deixa a issue aberta no Jira, vota na sala e digita os story points combinados no Jira manualmente. A importação direta do Jira está no roadmap público; você pode votar nela no GitHub.</dd>
           <dt>É realmente gratuito?</dt>
           <dd>Sim. A ferramenta é gratuita e open source. Não há paywall, nem preço por usuário, nem nível premium.</dd>
           <dt>Meus colegas precisam se cadastrar ou instalar algo?</dt>
           <dd>Não. Não há cadastro nem instalação. Você compartilha o link de uma sala e todos entram pelo navegador - sem direitos de admin do Jira nem aprovação de marketplace.</dd>
           <dt>Podemos estimar story points do Jira com ela?</dt>
-          <dd>Com certeza. A maioria das equipes a usa para atribuir story points do Jira: cole o item do backlog, vote, chegue a um consenso e copie o número de volta para o campo Story Points.</dd>
+          <dd>Sim. Leia a issue em voz alta, votem, cheguem a um consenso e digite o número no campo Story Points da issue. O <a href="#how-to">passo a passo</a> acima mostra cada etapa.</dd>
           <dt>Funciona com Jira Cloud e Data Center?</dt>
-          <dd>Sim. Como o fluxo de copiar e colar de volta é independente da sua instância do Jira, ele funciona com o Jira Cloud, o Jira Data Center e qualquer outro rastreador de issues.</dd>
+          <dd>Sim. A sala nunca se conecta à sua instância do Jira, então o mesmo fluxo funciona com o Jira Cloud, o Jira Data Center e qualquer outro rastreador de issues.</dd>
         </dl>
 
         <h2>Comece a Estimar em Segundos</h2>

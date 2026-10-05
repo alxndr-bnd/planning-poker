@@ -20,6 +20,7 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ### Changed
 - The start screen says what the app is: free online planning poker, no sign-up.
+- The translated "Planning Poker for Jira" guides show the real steps: read the issue key aloud in the call and type the agreed points into Jira.
 - Search engines get a shorter page summary, the guides' author and their real update date.
 
 ## [0.58.0] - 2026-10-05

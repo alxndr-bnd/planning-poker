@@ -166,6 +166,51 @@ describe("/planning-poker-for-jira: its own how-to (SERBITO-502)", () => {
   });
 });
 
+// The 8 translations told people to paste the issue key into the room, which has no field
+// for it. They follow the English workflow now: read the key aloud, type the points into Jira.
+describe("translated Jira guides tell the truth", () => {
+  const NO_FIELD: Record<string, string> = {
+    es: "La sala no tiene un campo para la incidencia",
+    de: "Der Raum hat kein Feld für den Vorgang",
+    fr: "La salle n'a pas de champ pour le ticket",
+    pt: "A sala não tem campo para a issue",
+    ru: "В комнате нет поля для задачи",
+    sr: "Soba nema polje za zadatak",
+    ja: "ルームには課題を入れる欄がない",
+    zh: "房间里没有填写事项的字段",
+  };
+  // The old "bring the backlog in" step, which pasted "PROJ-142 - ..." into the room.
+  const OLD_STEP: Record<string, string> = {
+    es: "Trae el backlog",
+    de: "Den Backlog einbringen",
+    fr: "Importez le backlog",
+    pt: "Traga o backlog",
+    ru: "Перенесите бэклог",
+    sr: "Unesite backlog",
+    ja: "バックログを持ち込む",
+    zh: "引入待办事项",
+  };
+
+  it.each(Object.keys(NO_FIELD))("/%s/planning-poker-for-jira", (lang) => {
+    const html = guideHtml(`${lang}/planning-poker-for-jira`);
+    const main = mainOf(html);
+    expect(main).toContain(NO_FIELD[lang]);
+    expect(main).not.toContain(OLD_STEP[lang]);
+    expect(main).not.toContain("PROJ-142");
+    // Same shape as the English how-to: a section with the 9 steps, linked from the intro.
+    const at = html.indexOf('<section id="how-to">');
+    expect(at).toBeGreaterThan(0);
+    const section = html.slice(at, html.indexOf("</section>", at));
+    expect(section.match(/<li>/g)).toHaveLength(9);
+    expect(main.slice(0, main.indexOf("<h2>"))).toContain('<a href="#how-to">');
+    // The app links stay in the page's language.
+    expect(section).toContain(`<a href="https://poker.serbito.rs/?lang=${lang}">`);
+    expect(section).toContain(`<a href="/${lang}/what-is-planning-poker">`);
+    // English UI screenshots do not belong on a translated page.
+    expect(main).not.toMatch(/<img\b/);
+  });
+});
+
 // --------------------------------------------------------------------------- #
 // SERBITO-504: Article JSON-LD names a real person and the page's real date.
 // --------------------------------------------------------------------------- #
