@@ -76,11 +76,32 @@ export type ClientMessage =
   | { type: "reset"; itemTitle?: string }
   | { type: "setObserver"; isObserver: boolean };
 
-/** Longest raw `name` / `itemTitle` a client may send (the server then trims to 40 / 120
- *  for display). Generous on purpose: the lobby input caps names at 40, but a limit
+/** Longest raw `name` / `itemTitle` a client may send (the server then trims to 40 /
+ *  MAX_ITEM_TITLE for display). Generous on purpose: the lobby input caps names at 40, but a limit
  *  bigger than any real value never locks a legitimate user out. */
 export const MAX_NAME_INPUT = 100;
 export const MAX_ITEM_TITLE_INPUT = 200;
+/** Longest item title the room stores and shows (characters, not UTF-16 units). The
+ *  client's title field uses it as its maxlength. */
+export const MAX_ITEM_TITLE = 120;
+
+// C0/C1 control characters (incl. line breaks) become a space. Bidi embeddings,
+// overrides and isolates go: they can flip how other people's screens show the text.
+const CONTROL_RE = /[\u0000-\u001f\u007f-\u009f\u2028\u2029]/g;
+const BIDI_RE = /[\u202a-\u202e\u2066-\u2069]/g;
+
+/**
+ * The item title a room stores for `reset.itemTitle` (SERBITO-464): one line of plain
+ * text, at most MAX_ITEM_TITLE characters; blank or missing is null (no title). The
+ * server applies it to whatever a client sends. Clients render the result as text,
+ * never as HTML.
+ */
+export function normalizeItemTitle(raw: string | undefined): string | null {
+  if (raw === undefined) return null;
+  const line = raw.replace(BIDI_RE, "").replace(CONTROL_RE, " ").replace(/\s+/g, " ").trim();
+  const cut = Array.from(line).slice(0, MAX_ITEM_TITLE).join("").trim();
+  return cut || null;
+}
 const MAX_ROOM_ID = 32;
 const MAX_CLIENT_ID = 64;
 

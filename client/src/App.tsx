@@ -8,6 +8,7 @@ import {
 } from "react";
 import {
   FIBONACCI_DECK,
+  MAX_ITEM_TITLE,
   type CardValue,
   type ParticipantView,
   type Phase,
@@ -372,6 +373,14 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
   const [youId, setYouId] = useState<string>("");
   const [phase, setPhase] = useState<Phase>("voting");
   const [itemTitle, setItemTitle] = useState<string | null>(null);
+  // The title field next to Reset / New vote (SERBITO-464). It shows the round's title,
+  // so New vote re-votes the same item; typing names the next one. While I edit it,
+  // someone else's reset does not overwrite my text.
+  const [titleDraft, setTitleDraft] = useState("");
+  const titleDirty = useRef(false);
+  useEffect(() => {
+    if (!titleDirty.current) setTitleDraft(itemTitle ?? "");
+  }, [itemTitle]);
   const [participants, setParticipants] = useState<ParticipantView[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [copied, setCopied] = useState(false);
@@ -512,11 +521,39 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
   }, [notice]);
 
   const send = (m: Parameters<PokerSocket["send"]>[0]) => sockRef.current?.send(m) ?? false;
+  /** Reset / New vote: the next round gets the title in the field (blank: no title).
+   *  The server cleans and cuts it; the title is never sent to analytics. */
+  const resetRound = () => {
+    const title = titleDraft.trim();
+    titleDirty.current = false;
+    send(title ? { type: "reset", itemTitle: title } : { type: "reset" });
+  };
   const online = conn === "open" && !fatal && !idleDisconnected;
   const me = participants.find((p) => p.id === youId);
   const myVote = pending ? pending.value : (me?.vote ?? null);
   const isObserver = me?.isObserver ?? false;
   observerRef.current = isObserver;
+
+  const titleField = (
+    <input
+      className="item-title-input"
+      type="text"
+      value={titleDraft}
+      maxLength={MAX_ITEM_TITLE}
+      aria-label={tr("room.itemLabel")}
+      placeholder={tr("room.itemPlaceholder")}
+      autoComplete="off"
+      enterKeyHint="go"
+      onChange={(e) => {
+        titleDirty.current = true;
+        setTitleDraft(e.target.value);
+      }}
+      onKeyDown={(e) => {
+        // Enter = Reset / New vote. Not while an IME (Japanese, Chinese) is composing.
+        if (e.key === "Enter" && !e.nativeEvent.isComposing && online) resetRound();
+      }}
+    />
+  );
 
   function copyLink() {
     const url = location.href;
@@ -657,14 +694,20 @@ function Room({ roomId, name, uiV2 }: { roomId: string; name: string; uiV2: bool
                 })}
               </span>
             )}
-            <button disabled={!online} onClick={() => send({ type: "reset" })} title={tr("room.resetTitle")}>
-              {tr("room.reset")}
-            </button>
+            <div className="next-round">
+              {titleField}
+              <button disabled={!online} onClick={resetRound} title={tr("room.resetTitle")}>
+                {tr("room.reset")}
+              </button>
+            </div>
           </>
         ) : (
-          <button className="primary" disabled={!online} onClick={() => send({ type: "reset" })}>
-            {tr("room.newVote")}
-          </button>
+          <div className="next-round">
+            {titleField}
+            <button className="primary" disabled={!online} onClick={resetRound}>
+              {tr("room.newVote")}
+            </button>
+          </div>
         )}
       </div>
 

@@ -8,6 +8,7 @@ import {
   WS_PATH,
   IDLE_CLOSE_CODE,
   parseClientMessage,
+  normalizeItemTitle,
   type ServerMessage,
 } from "@pp/shared";
 import {
@@ -429,7 +430,7 @@ export function createPokerServer(
             room.reveal(conn.key); // ignored unless this conn holds the star
             break;
           case "reset":
-            room.reset(msg.itemTitle?.trim().slice(0, 120));
+            room.reset(normalizeItemTitle(msg.itemTitle));
             break;
           case "setObserver":
             room.setObserver(conn.key, msg.isObserver);

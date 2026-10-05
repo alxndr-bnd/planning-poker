@@ -116,28 +116,28 @@
           <li><strong>Prepare the issues in Jira.</strong> Open the backlog or a filter with the stories you want to size, in priority order. Share this tab on your video call, so everybody reads the same description and acceptance criteria.</li>
           <li><strong>Create a room.</strong> Open the <a href="https://poker.serbito.rs/">free planning poker app</a>, type your name and click <em>Create room</em>. The invite link goes to your clipboard (<em>Invite teammates</em> copies it again). Paste it in the call chat. Teammates open the link, type a name and join. Nobody makes an account.</li>
           <li><strong>Choose who only watches.</strong> A Product Owner or a stakeholder who does not estimate clicks the microphone card to <em>Observe (don't vote)</em>. The room lists observers, but they do not get a card on the table.</li>
-          <li><strong>Read the issue out loud.</strong> The room has no field for the issue, so the facilitator says the key and title, for example "SHOP-142, add SSO to login". Answer questions about scope before anybody votes.</li>
+          <li><strong>Name the issue in the room.</strong> Type the key and title in the <em>Item title</em> field next to <em>Reset</em>, for example "SHOP-142 Add SSO to login", and press Enter. Everybody sees it on the table. Answer questions about scope before anybody votes.</li>
           <li><strong>Vote at the same time.</strong> Each voter picks a card: 1, 2, 3, 5, 8, 13, 21, 34 or 55. <em>More</em> opens 89 to 610, <em>?</em> means "I am not sure" and the coffee cup asks for a break. The table shows a check mark for each person who picked a number, never the number itself.</li>
         </ol>
         <figure>
-          <img src="/planning-poker-for-jira/room-voting.jpg" width="1000" height="680" loading="lazy" alt="Planning poker room during a vote: three of four players show a check mark, one is still choosing, and the player with the star sees the Reveal button" />
+          <img src="/planning-poker-for-jira/room-voting.jpg" width="1000" height="680" loading="lazy" alt="Planning poker room during a vote on SHOP-142: the issue title is on the table, three of four players show a check mark, one is still choosing, and the player with the star sees the Reveal button" />
           <figcaption>Votes stay hidden. The player with the star sees <em>Reveal</em>.</figcaption>
         </figure>
         <ol start="6">
           <li><strong>Reveal.</strong> Each round, one random voter holds the star and is the only person who sees <em>Reveal</em>. The reveal shows every name with a card and a count such as "8 × 2, 5 × 1, 13 × 1". When all cards match, the room says <em>Consensus</em>. There is no average on purpose: the team agrees on a number, the app does not calculate one.</li>
-          <li><strong>Discuss and vote again.</strong> Ask the highest and the lowest voter to explain. Then click <em>New vote</em> and estimate the same issue again until the numbers meet.</li>
+          <li><strong>Discuss and vote again.</strong> Ask the highest and the lowest voter to explain. Then click <em>New vote</em> and estimate the same issue again until the numbers meet. The field keeps the issue title for the new round.</li>
           <li><strong>Record the estimate in Jira.</strong> Type the agreed number into the issue's <em>Story point estimate</em> field (team-managed projects) or <em>Story Points</em> field (company-managed projects). Do it before the next issue. The room sends nothing to Jira.</li>
-          <li><strong>Go to the next issue.</strong> Click <em>New vote</em>, read the next key and repeat.</li>
+          <li><strong>Go to the next issue.</strong> Type the next key in the field, click <em>New vote</em> and repeat.</li>
         </ol>
         <figure>
-          <img src="/planning-poker-for-jira/room-revealed.jpg" width="1000" height="777" loading="lazy" alt="Revealed planning poker round with cards 8, 8, 13 and 5, and the estimate log below it listing four numbered rounds with their vote counts and consensus marks" />
+          <img src="/planning-poker-for-jira/room-revealed.jpg" width="1000" height="830" loading="lazy" alt="Revealed planning poker round for SHOP-142 with cards 13, 8, 8 and 5, and the estimate log below it listing four rounds with their issue titles, vote counts and consensus marks" />
           <figcaption>After the reveal: the cards, the counts and the estimate log of earlier rounds.</figcaption>
         </figure>
-        <p>Before you close the call, open the <em>Estimate log</em> under the table. It lists every revealed round in order (#1, #2, ...) with the vote counts and a consensus mark, without names. Compare it with the issues in Jira, so that no issue is left without points. A re-vote adds its own row, so a quick note of the round number next to each key makes the check easy. Rooms are kept in memory only: soon after everybody leaves, the room and its log are gone.</p>
+        <p>Before you close the call, open the <em>Estimate log</em> under the table. It lists every revealed round in order (#1, #2, ...) with its issue title, the vote counts and a consensus mark, without names. Compare it with the issues in Jira, so that no issue is left without points. A re-vote adds its own row with the same title. Rooms are kept in memory only: soon after everybody leaves, the room and its log are gone.</p>
         </section>
 
         <h2>What's on the Roadmap: Jira and CSV Import</h2>
-        <p>To be clear and honest: this tool does <strong>not</strong> yet have a built-in Jira integration. Today you name each issue in the call and type the points into Jira by hand - it is deliberately a no-plugin, no-OAuth setup so you can start in seconds without granting access to your Jira data.</p>
+        <p>To be clear and honest: this tool does <strong>not</strong> yet have a built-in Jira integration. Today you type each issue key into the room and the points into Jira by hand - it is deliberately a no-plugin, no-OAuth setup so you can start in seconds without granting access to your Jira data.</p>
         <p>Tighter integration is planned. On the public roadmap we have direct Jira import (pull a sprint or JQL query straight into a session) and CSV import (bulk-load a backlog exported from any tool). These are community-prioritized features. If a Jira or CSV import would make your sprint planning faster, <a href="https://github.com/alxndr-bnd/planning-poker/issues?q=is%3Aissue+label%3Afeature-vote">vote for it on GitHub</a> - the more votes a feature gets, the sooner it ships.</p>
 
         <h2>Why Teams Choose This Free Planning Poker Tool</h2>
@@ -158,7 +158,7 @@
           <dt>Do my teammates need to sign up or install anything?</dt>
           <dd>No. There is no signup and no install. You share a room link and everyone joins in their browser - no Jira admin rights or marketplace approval required.</dd>
           <dt>Can we estimate Jira story points with it?</dt>
-          <dd>Yes. Read the issue out loud, vote, reach consensus, and type the number into the issue's Story Points field. The <a href="#how-to">step-by-step guide</a> above shows each click.</dd>
+          <dd>Yes. Type the issue key into the room, vote, reach consensus, and type the number into the issue's Story Points field. The <a href="#how-to">step-by-step guide</a> above shows each click.</dd>
           <dt>Does it work with Jira Cloud and Data Center?</dt>
           <dd>Yes. The room never connects to your Jira instance, so the same workflow works with Jira Cloud, Jira Data Center, and any other issue tracker.</dd>
         </dl>

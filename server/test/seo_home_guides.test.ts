@@ -152,11 +152,13 @@ describe("/planning-poker-for-jira: its own how-to (SERBITO-502)", () => {
     }
   });
 
-  // The app has no field for the item being estimated: the guide must not tell
-  // people to paste issues into the room.
-  it("does not promise what the app cannot do", () => {
+  // SERBITO-464: the room has an item title field now. The guide names it as the UI
+  // does and no longer says to read the key aloud because there is no field.
+  it("describes the item title field by its UI name", () => {
     expect(mainOf(html)).not.toMatch(/paste it in as the item|paste the backlog item in|drop in your story keys/i);
-    expect(mainOf(html)).toContain("The room has no field for the issue");
+    expect(mainOf(html)).not.toMatch(/has no field|out loud|read the next key/i);
+    expect(mainOf(html)).toContain(`<em>${EN["room.itemLabel"]}</em>`);
+    expect(mainOf(html)).toContain(`<em>${EN["room.reset"]}</em>`);
   });
 
   it("is linked from the body of every other English guide", () => {
@@ -166,8 +168,9 @@ describe("/planning-poker-for-jira: its own how-to (SERBITO-502)", () => {
   });
 });
 
-// The 8 translations told people to paste the issue key into the room, which has no field
-// for it. They follow the English workflow now: read the key aloud, type the points into Jira.
+// The 8 translations told people to paste the issue key into the room, which had no field
+// for it, then to read the key aloud. SERBITO-464 added the field: they follow the English
+// workflow, type the key into the room's item title field, type the points into Jira.
 describe("translated Jira guides tell the truth", () => {
   const NO_FIELD: Record<string, string> = {
     es: "La sala no tiene un campo para la incidencia",
@@ -194,7 +197,10 @@ describe("translated Jira guides tell the truth", () => {
   it.each(Object.keys(NO_FIELD))("/%s/planning-poker-for-jira", (lang) => {
     const html = guideHtml(`${lang}/planning-poker-for-jira`);
     const main = mainOf(html);
-    expect(main).toContain(NO_FIELD[lang]);
+    expect(main).not.toContain(NO_FIELD[lang]);
+    // The field and the button carry the names the UI shows in this language.
+    expect(main).toContain(`<em>${t(lang as Lang, "room.itemLabel")}</em>`);
+    expect(main).toContain(`<em>${t(lang as Lang, "room.reset")}</em>`);
     expect(main).not.toContain(OLD_STEP[lang]);
     expect(main).not.toContain("PROJ-142");
     // Same shape as the English how-to: a section with the 9 steps, linked from the intro.

@@ -113,19 +113,19 @@
           <li><strong>Pripremite zadatke u Jira.</strong> Otvorite backlog ili filter sa pričama koje želite da procenite, po prioritetu. Podelite taj tab u video pozivu, da svi čitaju isti opis i iste kriterijume prihvatanja.</li>
           <li><strong>Napravite sobu.</strong> Otvorite <a href="https://poker.serbito.rs/?lang=sr">besplatnu planning poker aplikaciju</a>, upišite svoje ime i kliknite na <em>Napravi sobu</em>. Link za poziv ide u vaš klipbord (<em>Pozovi saigrače</em> ga ponovo kopira). Nalepite ga u čet poziva. Kolege otvaraju link, upisuju ime i ulaze. Niko ne pravi nalog.</li>
           <li><strong>Odredite ko samo posmatra.</strong> Product Owner ili zainteresovana strana koja ne procenjuje klikne na kartu sa mikrofonom za <em>Posmatraj (bez glasanja)</em>. Soba prikazuje posmatrače, ali oni nemaju kartu na stolu.</li>
-          <li><strong>Pročitajte zadatak naglas.</strong> Soba nema polje za zadatak, pa voditelj kaže ključ i naslov, na primer „SHOP-142, dodati SSO na prijavu“. Odgovorite na pitanja o obimu pre nego što iko glasa.</li>
+          <li><strong>Navedite zadatak u sobi.</strong> Upišite ključ i naslov u polje <em>Naziv zadatka</em> pored dugmeta <em>Resetuj</em>, na primer „SHOP-142 Dodati SSO na prijavu“, i pritisnite Enter. Svi ga vide na stolu. Odgovorite na pitanja o obimu pre nego što iko glasa.</li>
           <li><strong>Glasajte u isto vreme.</strong> Svaki glasač bira kartu: 1, 2, 3, 5, 8, 13, 21, 34 ili 55. <em>Više</em> otvara vrednosti od 89 do 610, <em>?</em> znači „nisam siguran“, a šolja kafe traži pauzu. Sto prikazuje kvačicu za svakoga ko je izabrao broj, ali nikad sam broj.</li>
           <li><strong>Otkrijte karte.</strong> U svakoj rundi jedan nasumično izabran glasač drži zvezdicu i samo on vidi <em>Otkrij</em>. Posle otkrivanja vidi se svako ime sa svojom kartom i zbir poput „8 × 2, 5 × 1, 13 × 1“. Kada su sve karte iste, soba prikazuje <em>Konsenzus</em>. Proseka namerno nema: tim se dogovara oko broja, aplikacija ga ne računa.</li>
-          <li><strong>Prodiskutujte i glasajte ponovo.</strong> Zamolite onoga sa najvišom i onoga sa najnižom kartom da objasne izbor. Zatim kliknite na <em>Novo glasanje</em> i ponovo procenite isti zadatak dok se brojevi ne slože.</li>
+          <li><strong>Prodiskutujte i glasajte ponovo.</strong> Zamolite onoga sa najvišom i onoga sa najnižom kartom da objasne izbor. Zatim kliknite na <em>Novo glasanje</em> i ponovo procenite isti zadatak dok se brojevi ne slože. Polje zadržava naziv zadatka za novu rundu.</li>
           <li><strong>Upišite procenu u Jira.</strong> Upišite dogovoreni broj u polje zadatka <em>Story point estimate</em> (projekti kojima upravlja tim) ili <em>Story Points</em> (projekti kojima upravlja kompanija). Uradite to pre sledećeg zadatka. Soba ništa ne šalje u Jira.</li>
-          <li><strong>Pređite na sledeći zadatak.</strong> Kliknite na <em>Novo glasanje</em>, pročitajte sledeći ključ i ponovite.</li>
+          <li><strong>Pređite na sledeći zadatak.</strong> Upišite sledeći ključ u polje, kliknite na <em>Novo glasanje</em> i ponovite.</li>
         </ol>
-        <p>Pre nego što završite poziv, otvorite <em>Dnevnik procena</em> ispod stola. On redom navodi svaku otkrivenu rundu (#1, #2, …) sa brojem glasova i oznakom konsenzusa, bez imena. Uporedite ga sa zadacima u Jira, da nijedan zadatak ne ostane bez poena. Svako ponovno glasanje dodaje svoj red, pa je provera laka ako pored svakog ključa zapišete broj runde. Sobe postoje samo u memoriji: ubrzo pošto svi izađu, soba i njen dnevnik nestaju.</p>
+        <p>Pre nego što završite poziv, otvorite <em>Dnevnik procena</em> ispod stola. On redom navodi svaku otkrivenu rundu (#1, #2, …) sa nazivom zadatka, brojem glasova i oznakom konsenzusa, bez imena. Uporedite ga sa zadacima u Jira, da nijedan zadatak ne ostane bez poena. Svako ponovno glasanje dodaje svoj red sa istim nazivom. Sobe postoje samo u memoriji: ubrzo pošto svi izađu, soba i njen dnevnik nestaju.</p>
         <p>Novi ste u ovom formatu? Pročitajte <a href="/sr/what-is-planning-poker">šta je planning poker</a> za detaljniji prikaz tehnike.</p>
         </section>
 
         <h2>Šta je na planu: Jira i CSV uvoz</h2>
-        <p>Da budemo jasni i iskreni: ovaj alat <strong>još uvek</strong> nema ugrađenu Jira integraciju. Danas svaki zadatak navodite u pozivu i ručno upisujete poene u Jira - to je namerno postavka bez dodatka i bez OAuth-a tako da možete da počnete za nekoliko sekundi bez davanja pristupa vašim Jira podacima.</p>
+        <p>Da budemo jasni i iskreni: ovaj alat <strong>još uvek</strong> nema ugrađenu Jira integraciju. Danas ključ svakog zadatka upisujete u sobu, a poene ručno u Jira - to je namerno postavka bez dodatka i bez OAuth-a tako da možete da počnete za nekoliko sekundi bez davanja pristupa vašim Jira podacima.</p>
         <p>Tešnja integracija je u planu. Na javnom planu imamo direktan Jira uvoz (povucite sprint ili JQL upit direktno u sesiju) i CSV uvoz (masovno učitavanje backlog-a izvezenog iz bilo kog alata). Ovo su funkcije koje prioritizuje zajednica. Ako bi vam Jira ili CSV uvoz ubrzao planiranje sprinta, <a href="https://github.com/alxndr-bnd/planning-poker/issues?q=is%3Aissue+label%3Afeature-vote">glasajte za to na GitHub-u</a> - što više glasova funkcija dobije, to će pre biti isporučena.</p>
 
         <h2>Zašto timovi biraju ovaj besplatan Planning Poker alat</h2>
@@ -146,7 +146,7 @@
           <dt>Da li moje kolege treba da se registruju ili nešto instaliraju?</dt>
           <dd>Ne. Nema registracije i nema instalacije. Podelite link sobe i svi se pridružuju u svom pregledaču - nisu potrebna Jira administratorska prava niti odobrenje sa marketplace-a.</dd>
           <dt>Možemo li da procenjujemo Jira story points sa njim?</dt>
-          <dd>Da. Pročitajte zadatak naglas, glasajte, postignite konsenzus i upišite broj u polje Story Points zadatka. <a href="#how-to">Uputstvo korak po korak</a> iznad prikazuje svaki korak.</dd>
+          <dd>Da. Upišite ključ zadatka u sobu, glasajte, postignite konsenzus i upišite broj u polje Story Points zadatka. <a href="#how-to">Uputstvo korak po korak</a> iznad prikazuje svaki korak.</dd>
           <dt>Da li radi sa Jira Cloud i Data Center?</dt>
           <dd>Da. Soba se nikad ne povezuje sa vašom Jira instancom, pa isti postupak radi sa Jira Cloud, Jira Data Center i bilo kojim drugim trekerom zadataka.</dd>
         </dl>
