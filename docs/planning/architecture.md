@@ -13,7 +13,7 @@ prd: 'none — built directly from Product Brief by user decision'
 status: draft
 ---
 
-Jira: follow-up SERBITO-361 (protocol hardening notes) · Status 2026-10-05: build sequence §10 steps 1–6 shipped by v0.7.0. Stale: host role, `summary.average`, `hostId` broadcast (all removed); ESLint/Prettier (§2) never added — [SERBITO-484](https://serbito.atlassian.net/browse/SERBITO-484).
+Jira: follow-up SERBITO-361 (protocol hardening notes) · Status 2026-10-05: build sequence §10 steps 1–6 shipped by v0.7.0. Synced with the code in SERBITO-484: the host role, `summary.average` and `hostId` are gone (the reveal "star" `revealerId` replaced the host); ESLint/Prettier are not used.
 
 # Architecture Decision Document — Planning Poker
 
@@ -49,7 +49,7 @@ process, so in-memory state is always consistent without Redis/pub-sub.
 | Room id | **`nanoid`** (e.g. 10 chars, URL-safe) | Unguessable, short, dependency-light. |
 | Shared types | `/shared` package (or a single `protocol.ts` imported by both) | Single definition of WS messages → no drift. |
 | Tests | **Vitest** (server room-logic unit tests first) | Room state machine is the risk area; cover it. |
-| Lint/format | ESLint + Prettier | Boring baseline. |
+| Lint/format | Not used | `tsc` typecheck (`npm run typecheck`) and Vitest are the checks. |
 
 **No database, no auth, no sessions store** — ephemeral in-memory only, per brief.
 
@@ -104,7 +104,8 @@ interface Room {
   phase: Phase;
   itemTitle: string | null;   // optional current item label
   participants: Map<string, Participant>;
-  hostId: string;             // first joiner; can reveal/reset (soft role)
+  revealerId: string | null;  // holder of the reveal "star": a random connected voter, new each round
+  log: RoundLog[];            // results of every revealed round (no per-person votes)
   createdAt: number;
   lastActivityAt: number;     // for TTL cleanup
 }
@@ -123,8 +124,8 @@ Defined once in `shared/protocol.ts`.
 |---|---|---|
 | `join` | `{ roomId, name, asObserver, clientId }` | creates room if absent; (re)attaches on reconnect by the secret `clientId`, within the same room only. One join per connection |
 | `vote` | `{ value }` | only in `voting` phase; ignored for observers |
-| `reveal` | `{}` | host action → phase `revealed` |
-| `reset` | `{ itemTitle? }` | host action → clears votes, phase `voting` |
+| `reveal` | `{}` | only the star holder (`revealerId`) → phase `revealed`; ignored from anyone else |
+| `reset` | `{ itemTitle? }` | any participant → clears votes, phase `voting`, new random star holder |
 | `setObserver` | `{ isObserver }` | toggle own role |
 | `rename` | `{ name }` | optional |
 | (ping) | — | heartbeat (or rely on WS ping frames) |
@@ -134,7 +135,7 @@ Defined once in `shared/protocol.ts`.
 |---|---|---|
 | `joined` | `{ youId, roomId }` | ack with your **public** participant id (the id in `participants`); the `clientId` is never sent to anyone (SERBITO-361) |
 | `state` | `{ phase, itemTitle, participants:[{id,name,isObserver,connected,hasVoted, vote?}] }` | broadcast on every change. `vote` present **only** when `phase=revealed`; during `voting` only `hasVoted:boolean` is sent (votes stay hidden server-side) |
-| `summary` | `{ distribution, average, consensus }` | sent with/after reveal |
+| `summary` | `{ distribution, consensus }` | sent with/after reveal; no average |
 | `error` | `{ code, message }` | e.g. invalid action for phase |
 
 Every incoming message is type- and size-checked by `parseClientMessage` in
@@ -156,11 +157,12 @@ Every incoming message is type- and size-checked by `parseClientMessage` in
         └──────── new itemTitle?) ◄───┘
 ```
 
-- **voting:** estimators pick a card (`hasVoted` shown, value hidden). Host can `reveal`.
-- **revealed:** named votes + `summary` exposed. Host can `reset` → back to voting.
+- **voting:** estimators pick a card (`hasVoted` shown, value hidden). Only the star holder can `reveal`.
+- **revealed:** named votes + `summary` exposed. Anyone can `reset` → back to voting.
 - Observers never contribute votes and are excluded from `summary`.
-- Host = first joiner; if host leaves, host role transfers to the next connected
-  participant (soft, no auth — internal tool).
+- No host. Each round the server gives the reveal "star" to a random connected voter.
+  If the holder leaves or becomes an observer, the star moves to another voter
+  (soft, no auth — internal tool).
 
 ## 7. Lifecycle, reconnect & cleanup
 
@@ -205,8 +207,8 @@ Every incoming message is type- and size-checked by `parseClientMessage` in
    Run service live at poker.serbito.rs (proves the pipe end-to-end).
 2. **WS echo + presence:** `join` + `state` broadcast → see participants appear live.
 3. **Voting + hidden + reveal:** cards, `hasVoted`, `reveal` shows named votes.
-4. **Summary + reset:** distribution/average/consensus; re-vote loop.
-5. **Observer role + host transfer + reconnect/cleanup polish.**
+4. **Summary + reset:** distribution/consensus; re-vote loop.
+5. **Observer role + reveal-star handoff + reconnect/cleanup polish.**
 6. **Polish:** copy-link UX, empty/edge states, simple styling (agilenatives-simple).
 
 Each step is independently deployable — matches the "small, frequent releases" requirement.

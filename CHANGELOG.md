@@ -14,6 +14,12 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+### Changed
+- The table background loads about half as much data.
+
+### Security
+- The GitHub star badge is now a plain link, so your browser no longer contacts shields.io.
+
 ## [0.61.0] - 2026-10-05
 
 ### Added
