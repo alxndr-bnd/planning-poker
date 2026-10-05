@@ -14,6 +14,9 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+### Security
+- Planning Poker now runs under its own Google Cloud account with access only to its error reporting, nothing else in the cloud project.
+
 ## [0.57.0] - 2026-10-03
 
 ### Security

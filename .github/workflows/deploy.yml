@@ -33,6 +33,9 @@ env:
   AR_IMAGE: europe-west1-docker.pkg.dev/serbito/planning-poker/planning-poker
   WIF_PROVIDER: projects/488744139718/locations/global/workloadIdentityPools/github-pool/providers/github
   DEPLOYER_SA: pp-deployer@serbito.iam.gserviceaccount.com
+  # SERBITO-347: the service runs as its own SA. It can read only planning-poker-sentry-dsn;
+  # pp-deployer has iam.serviceAccountUser on this SA only.
+  RUNTIME_SA: planning-poker-run@serbito.iam.gserviceaccount.com
 
 jobs:
   deploy:
@@ -157,6 +160,7 @@ jobs:
             --region "$REGION" \
             --platform managed \
             --allow-unauthenticated \
+            --service-account "$RUNTIME_SA" \
             --min-instances=0 \
             --max-instances=1 \
             --concurrency=250 \
@@ -174,7 +178,7 @@ jobs:
         # a 5-min cap is safe; it bounds how long a stray socket keeps an instance warm.
         # --set-secrets REPLACES the service's whole secret set: list every secret here.
         # SENTRY_DSN lives in Secret Manager (project serbito); the runtime SA
-        # (default compute SA) has secretAccessor on it.
+        # (RUNTIME_SA, SERBITO-347) has secretAccessor on that secret only.
         # One-time domain mapping (poker.serbito.rs -> service) is configured out-of-band.
 
       # SERBITO-401: smoke check after every deploy (release or refresh). The main page of the
