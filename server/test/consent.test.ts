@@ -1,11 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { readdirSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createContext, runInContext } from "node:vm";
 import { trackEvent } from "../../client/src/analytics.js";
 import { inlineScripts } from "../src/static.js";
 import { renderAnalytics } from "../../client/src/pageAnalytics.js";
+import { allPages } from "./support/pages.js";
 
 // SERBITO-320: GA4 stays, but only with consent. Every page sets the Consent Mode v2
 // default inline, before the gtag "config" (denied unless the visitor accepted within
@@ -19,19 +20,6 @@ const here = dirname(fileURLToPath(import.meta.url)); // server/test
 const clientDir = join(here, "../../client");
 const read = (p: string) => readFileSync(p, "utf-8");
 const CONSENT_JS = read(join(clientDir, "public/consent.js"));
-
-/** client/index.html + every client/public/**\/index.html (36 guides + /privacy). */
-function allPages(): string[] {
-  const walk = (dir: string): string[] =>
-    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
-      e.isDirectory()
-        ? walk(join(dir, e.name))
-        : e.name === "index.html"
-          ? [join(dir, e.name)]
-          : [],
-    );
-  return [join(clientDir, "index.html"), ...walk(join(clientDir, "public")).sort()];
-}
 
 /** The inline consent-default block of a page's <head>. */
 function defaultBlock(html: string): string | undefined {

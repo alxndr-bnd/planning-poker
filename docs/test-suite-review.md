@@ -50,5 +50,5 @@ The one line no longer covered is the body of `reportError` in `sentry.ts`, a on
   - "offers English plus 8 languages" pins the `LANGS` constant.
   - "defaults to English" only reaches the `catch` path, because Node has no `localStorage`.
 - `crosspromo.test` "lists GTD, Javi and Serbito…" pins the marketing copy word for word.
-- `reconnect.test`, observer role: the two remaining cases use a local mirror of the server's join branch. A WebSocket-level test would guard the real code.
-- `consent`, `privacy`, `analytics_gate` and `crosspromo` each walk and re-read the ~38 HTML pages with their own copy of the walker. A shared loader would make them shorter; the time cost is small.
+- ~~`reconnect.test`, observer role: the two remaining cases use a local mirror of the server's join branch.~~ Done (SERBITO-484): they now run through real sockets against `server.ts`.
+- ~~`consent`, `privacy`, `analytics_gate` and `crosspromo` each walk the HTML pages with their own copy of the walker.~~ Done (SERBITO-484): `test/support/pages.ts` holds one walker; `consent`, `privacy`, `analytics_gate` and `self_host_513` use it. `crosspromo` lists its pages by hand on purpose.
