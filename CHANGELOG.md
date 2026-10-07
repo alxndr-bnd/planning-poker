@@ -14,6 +14,8 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+## [0.63.0] - 2026-10-07
+
 ### Fixed
 - Opening poker.serbito.rs/room now takes you to the app instead of a "not found" page.
 
@@ -103,7 +105,8 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 - Room members cannot take over each other's seat, and one client cannot overload the server.
 - Security headers are on, and dependencies are up to date.
 
-[Unreleased]: https://github.com/alxndr-bnd/planning-poker/compare/v0.62.0...HEAD
+[Unreleased]: https://github.com/alxndr-bnd/planning-poker/compare/v0.63.0...HEAD
+[0.63.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.62.0...v0.63.0
 [0.62.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.61.0...v0.62.0
 [0.61.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.60.0...v0.61.0
 [0.60.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.59.0...v0.60.0
