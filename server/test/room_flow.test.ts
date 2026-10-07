@@ -38,7 +38,9 @@ describe("P6: room not found, lone host", () => {
       await page.waitForSelector(".fan .card");
       const created = new URL(page.url()).hash.slice("#/r/".length);
       expect(created).not.toBe(id);
-      expect(getRoom(created)).toBeDefined();
+      // Poll: the cards render before the server has handled the join frame. Under parallel
+      // test files the server can lag by a few ms (SERBITO-551).
+      await expect.poll(() => getRoom(created)).toBeDefined();
     } finally {
       await page.context().close();
     }

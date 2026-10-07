@@ -139,7 +139,7 @@ describe("changelog.ts", () => {
 
 // --- The release script in a throwaway repo: its own bare origin; npm and gh are stubs ---
 
-function throwawayRepo() {
+function throwawayRepo(npmStub = `echo "$@" >> "\${TMP}/npm-calls"`) {
   const tmp = mkdtempSync(join(tmpdir(), "pp-release-"));
   const [work, remote, bin] = ["work", "remote.git", "bin"].map((d) => join(tmp, d));
   mkdirSync(join(work, "scripts"), { recursive: true });
@@ -148,7 +148,8 @@ function throwawayRepo() {
     copyFileSync(join(REPO_ROOT, "scripts", f), join(work, "scripts", f));
   }
   writeFileSync(join(work, "CHANGELOG.md"), withLinks(GOOD, parse(GOOD)));
-  writeFileSync(join(bin, "npm"), `#!/bin/sh\necho "$@" >> "${tmp}/npm-calls"\n`); // gate passes
+  // gate passes; npmStub may also change the tree
+  writeFileSync(join(bin, "npm"), `#!/bin/sh\nTMP="${tmp}"\n${npmStub}\n`);
   writeFileSync(join(bin, "gh"), `#!/bin/sh\nprintf "%s\\n" "$@" > "${tmp}/gh-args"\n`);
   for (const f of ["npm", "gh"]) chmodSync(join(bin, f), 0o755);
   // No GIT_* from the caller: in a pre-commit hook GIT_DIR and GIT_INDEX_FILE point at this
@@ -166,6 +167,10 @@ function throwawayRepo() {
   };
   git(["init", "-q", "--bare", remote], tmp, env);
   git(["init", "-q", "-b", "main"], work, env);
+  // A stand-in for the pre-commit hook: it records which hooks the commit asked it to skip.
+  const hook = join(work, ".git", "hooks", "pre-commit");
+  writeFileSync(hook, `#!/bin/sh\necho "SKIP=$SKIP" >> "${tmp}/hook-calls"\n`);
+  chmodSync(hook, 0o755);
   for (const d of [work, remote]) {
     // git writes to the throwaway repos, never to this one
     const gitDir = realpathSync(git(["rev-parse", "--absolute-git-dir"], d, env));
@@ -231,6 +236,28 @@ describe("scripts/release_minor.sh", () => {
       "--notes",
     ]);
     expect(args.slice(7).join("\n").startsWith("### Added\n- Three")).toBe(true);
+    // SERBITO-551: the gate ran the tests on this tree, so the release commit skips them.
+    expect(readFileSync(join(tmp, "hook-calls"), "utf-8").trim().split("\n").at(-1)).toBe(
+      "SKIP=vitest,typecheck",
+    );
+  }, 60_000);
+
+  it("runs the hook tests again when the gate changed the tree", () => {
+    // `npm run build` leaves a new file behind: the commit is not what the gate tested.
+    const { tmp, work, env, run } = throwawayRepo(
+      `echo "$@" >> "\${TMP}/npm-calls"; [ "$1 $2" = "run build" ] && echo x > built.txt; exit 0`,
+    );
+    const log = join(work, "CHANGELOG.md");
+    writeFileSync(
+      log,
+      readFileSync(log, "utf-8").replace("## [Unreleased]\n", "## [Unreleased]\n\n### Added\n- Three\n"),
+    );
+    git(["commit", "-qam", "entry"], work, env);
+    const r = run();
+    expect(r.status, r.stdout + r.stderr).toBe(0);
+    expect(r.stdout).toContain("the gate changed the tree");
+    expect(readFileSync(join(tmp, "hook-calls"), "utf-8").trim().split("\n").at(-1)).toBe("SKIP=");
+    expect(git(["ls-files", "built.txt"], work, env)).toBe("built.txt");
   }, 60_000);
 });
 

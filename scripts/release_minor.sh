@@ -37,6 +37,9 @@ echo "==> npm run sitemap"
 npm run sitemap
 
 # --- gate: tests + typecheck + client build must pass before we tag ---
+# The tree is staged first, so after the gate we can tell whether it still is what was tested.
+git add .
+gated_tree="$(git write-tree)"
 echo "==> npm test"
 npm test
 echo "==> npm run typecheck"
@@ -44,11 +47,19 @@ npm run typecheck
 echo "==> npm run build"
 npm run build
 
+# One test run per release (SERBITO-551): the pre-commit hook runs the same tests and typecheck.
+# Skip them only when the gate above passed on exactly the tree we commit.
 git add .
-if git diff --cached --quiet && git diff --quiet; then
-  git commit --allow-empty -m "$msg"
+skip_hooks=""
+if [[ "$(git write-tree)" == "$gated_tree" ]]; then
+  skip_hooks="vitest,typecheck"
 else
-  git commit -m "$msg"
+  echo "==> the gate changed the tree: the pre-commit hook runs the tests again"
+fi
+if git diff --cached --quiet && git diff --quiet; then
+  SKIP="$skip_hooks" git commit --allow-empty -m "$msg"
+else
+  SKIP="$skip_hooks" git commit -m "$msg"
 fi
 
 git tag "$next_tag"

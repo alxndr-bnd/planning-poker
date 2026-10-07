@@ -17,7 +17,11 @@ const ORIGIN = "http://localhost:5173";
 const servers: Server[] = [];
 
 afterEach(async () => {
-  for (const s of servers.splice(0)) await new Promise<void>((r) => s.close(() => r()));
+  for (const s of servers.splice(0)) {
+    // Drop the keep-alive socket from get(): without it close() waits ~4 s for it to time out.
+    s.closeAllConnections();
+    await new Promise<void>((r) => s.close(() => r()));
+  }
 });
 
 async function listen(s: Server): Promise<number> {
