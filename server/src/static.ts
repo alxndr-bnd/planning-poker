@@ -158,6 +158,14 @@ export function serveStatic(
     return true;
   }
 
+  // `/room` is only the GA virtual page for a room (client/src/analytics.ts), but Google
+  // reads the string in the inline gtag snippet and crawls it (SERBITO-527: a 404 in
+  // Search Console). Send it, and a person who types it, to the app.
+  if (urlPath === "/room" || urlPath === "/room/") {
+    res.writeHead(301, { location: "/" }).end();
+    return true;
+  }
+
   // A guide language root (/ru, /ru/) has no page of its own: open the app in that
   // language (SERBITO-355; it was a 404). Only for a language that has guides in dist.
   const langRoot = /^\/([a-z]{2})\/?$/.exec(urlPath)?.[1];

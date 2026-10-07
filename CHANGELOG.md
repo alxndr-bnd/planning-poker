@@ -14,6 +14,9 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+### Fixed
+- Opening poker.serbito.rs/room now takes you to the app instead of a "not found" page.
+
 ## [0.62.0] - 2026-10-05
 
 ### Changed
