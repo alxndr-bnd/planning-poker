@@ -1,5 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { afterAll, beforeAll, describe, it, expect } from "vitest";
+import type { AddressInfo } from "node:net";
+import type { Server } from "node:http";
+import { WebSocket } from "ws";
+import type { ParticipantView, ServerMessage } from "@pp/shared";
 import { Room } from "../src/room.js";
+import { createPokerServer } from "../src/server.js";
+import { getRoom } from "../src/rooms.js";
 
 // 2026-06-26: "my vote disappears". The WS reconnects every ~30-100s (Cloudflare idle
 // timeout); each reconnect used to come back as a brand-new participant with no vote.
@@ -62,43 +68,98 @@ describe("reconnect keeps the vote", () => {
 // in-memory rooms) re-adds the user fresh. The server keeps the role only when it can
 // re-attach; otherwise it relies on the client carrying `asObserver`. The old client
 // didn't send it on reconnect, so observers silently became voters.
+// These cases run through real sockets against the real join branch in server.ts
+// (SERBITO-484; they used to test a local copy of that branch).
 describe("reconnect keeps the observer role", () => {
-  // Mirror the server's join branch (server.ts): re-attach if the participant is still
-  // around, otherwise add fresh with whatever role the client carried in `asObserver`.
-  function joinOrReattach(room: Room, id: string, name: string, asObserver: boolean) {
-    return (
-      room.reattachParticipant(id, name) ?? room.addParticipant(id, name, asObserver)
-    );
+  /** Browsers always send Origin on a WebSocket; the server refuses one without it. */
+  const ORIGIN = "http://localhost:5173";
+  const CLIENT = "observer-client-01";
+  let server: Server;
+  let wsUrl: string;
+
+  beforeAll(async () => {
+    server = createPokerServer("/nonexistent");
+    await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+    wsUrl = `ws://127.0.0.1:${(server.address() as AddressInfo).port}/ws`;
+  });
+
+  afterAll(async () => {
+    server.closeAllConnections();
+    await new Promise<void>((resolve) => server.close(() => resolve()));
+  });
+
+  /** Join `roomId` and resolve with the open socket and this participant as the room sees it. */
+  function join(
+    roomId: string,
+    clientId: string,
+    asObserver?: boolean,
+  ): Promise<{ ws: WebSocket; me: ParticipantView }> {
+    const ws = new WebSocket(wsUrl, { origin: ORIGIN });
+    let youId: string | undefined;
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error("ws test timeout")), 5000);
+      ws.on("error", reject);
+      ws.on("open", () =>
+        ws.send(JSON.stringify({ type: "join", roomId, name: "Obs", clientId, asObserver })),
+      );
+      ws.on("message", (raw) => {
+        const m = JSON.parse(raw.toString()) as ServerMessage;
+        if (m.type === "joined") youId = m.youId;
+        const me = m.type === "state" ? m.participants.find((p) => p.id === youId) : undefined;
+        if (me) {
+          clearTimeout(timer);
+          resolve({ ws, me });
+        }
+      });
+    });
   }
 
-  function purge(room: Room, id: string) {
-    room.markDisconnected(id);
-    room.participants.get(id)!.disconnectedAt = Date.now() - 5 * 60 * 1000; // 5m ago
+  /** Close the socket and wait until the server has marked the participant as disconnected. */
+  async function drop(ws: WebSocket, roomId: string, clientId: string): Promise<void> {
+    ws.close();
+    for (let i = 0; i < 100; i++) {
+      if (getRoom(roomId)?.participants.get(clientId)?.connected === false) return;
+      await new Promise((r) => setTimeout(r, 20));
+    }
+    throw new Error("server never marked the participant disconnected");
+  }
+
+  /** The grace runs out: the server forgets the participant, as after 2 minutes or a deploy. */
+  function expire(roomId: string, clientId: string): void {
+    const room = getRoom(roomId)!;
+    room.participants.get(clientId)!.disconnectedAt = Date.now() - 5 * 60 * 1000;
     room.purgeDisconnected(2 * 60 * 1000);
+    expect(room.participants.has(clientId)).toBe(false);
   }
 
-  it("re-attach within grace keeps observer even if the client omits the role", () => {
-    const room = new Room("abcdef");
-    room.addParticipant("o", "Obs", true);
-    room.markDisconnected("o"); // socket dropped, still within grace
-    const p = joinOrReattach(room, "o", "Obs", false); // asObserver ignored on re-attach
-    expect(p.isObserver).toBe(true);
+  it("re-attach within grace keeps observer even if the client omits the role", async () => {
+    const roomId = "reconobs01";
+    const anchor = await join(roomId, "anchor-client-01", false); // keeps the room alive
+    const first = await join(roomId, CLIENT, true);
+    expect(first.me.isObserver).toBe(true);
+    await drop(first.ws, roomId, CLIENT);
+    const again = await join(roomId, CLIENT); // no asObserver: re-attach ignores it
+    expect(again.me.isObserver).toBe(true);
+    expect(again.me.id).toBe(first.me.id); // the same participant, not a new one
+    again.ws.close();
+    anchor.ws.close();
   });
 
-  it("after purge, rejoining WITHOUT carrying the role drops observer (the bug)", () => {
-    const room = new Room("abcdef");
-    room.addParticipant("o", "Obs", true);
-    purge(room, "o");
-    expect(room.participants.has("o")).toBe(false);
-    const p = joinOrReattach(room, "o", "Obs", false); // pre-fix client: no asObserver
-    expect(p.isObserver).toBe(false); // regressed to a voter
-  });
-
-  it("after purge, rejoining WITH the carried role restores observer (the fix)", () => {
-    const room = new Room("abcdef");
-    room.addParticipant("o", "Obs", true);
-    purge(room, "o");
-    const p = joinOrReattach(room, "o", "Obs", true); // fixed client carries asObserver
-    expect(p.isObserver).toBe(true);
+  it("after the grace, the role comes from what the client carries", async () => {
+    const roomId = "reconobs02";
+    const anchor = await join(roomId, "anchor-client-02", false);
+    const first = await join(roomId, CLIENT, true);
+    await drop(first.ws, roomId, CLIENT);
+    expire(roomId, CLIENT);
+    // The fixed client carries asObserver on every reconnect: the role comes back.
+    const fixed = await join(roomId, CLIENT, true);
+    expect(fixed.me.isObserver).toBe(true);
+    await drop(fixed.ws, roomId, CLIENT);
+    expire(roomId, CLIENT);
+    // The pre-fix client sent no role: the server adds a voter (the bug the client fix closes).
+    const old = await join(roomId, CLIENT);
+    expect(old.me.isObserver).toBe(false);
+    old.ws.close();
+    anchor.ws.close();
   });
 });

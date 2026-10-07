@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import type { AddressInfo } from "node:net";
 import type { Server } from "node:http";
-import { readdirSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { WebSocket } from "ws";
@@ -17,6 +17,7 @@ import {
   GA_PLACEHOLDER,
   renderAnalytics,
 } from "../../client/src/pageAnalytics.js";
+import { allPages } from "./support/pages.js";
 
 // SERBITO-513: a self-hosted copy works on its own domain. The WebSocket origins come from
 // ALLOWED_ORIGINS (default: the live site only), and the pages carry GA4 and the Cloudflare
@@ -29,20 +30,9 @@ const clientDir = join(root, "client");
 const LIVE_GA = "G-B5CQC4JJV0";
 const LIVE_CF = "baa4373b14044e0b83a55a7d437c6019";
 
-/** client/index.html + every client/public/**\/index.html. */
-function allPages(): { file: string; html: string }[] {
-  const walk = (dir: string): string[] =>
-    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
-      e.isDirectory()
-        ? walk(join(dir, e.name))
-        : e.name === "index.html"
-          ? [join(dir, e.name)]
-          : [],
-    );
-  return [join(clientDir, "index.html"), ...walk(join(clientDir, "public")).sort()].map(
-    (f) => ({ file: relative(clientDir, f), html: readFileSync(f, "utf-8") }),
-  );
-}
+/** client/index.html + every client/public/**\/index.html, read. */
+const readPages = (): { file: string; html: string }[] =>
+  allPages().map((f) => ({ file: relative(clientDir, f), html: readFileSync(f, "utf-8") }));
 
 // --------------------------------------------------------------------------- #
 // WebSocket origins
@@ -160,7 +150,7 @@ describe("analytics config", () => {
 });
 
 describe("pages without analytics config (a self-hosted build)", () => {
-  const pages = allPages();
+  const pages = readPages();
 
   it("covers the app shell, the guides and /privacy", () => {
     expect(pages.length).toBeGreaterThanOrEqual(38);
@@ -194,7 +184,7 @@ describe("pages without analytics config (a self-hosted build)", () => {
 });
 
 describe("pages with the live analytics config", () => {
-  const pages = allPages();
+  const pages = readPages();
   const cfg = { gaMeasurementId: LIVE_GA, cfBeaconToken: LIVE_CF };
 
   it("carry the static gtag.js tag, the consent banner and the beacon, with no placeholder left", () => {

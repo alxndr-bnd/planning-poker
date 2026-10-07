@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import { allPages } from "./support/pages.js";
 
 // SERBITO-307: /privacy says what poker stores and what analytics receive. It must be
 // linked from every page's footer and keep naming what the code actually does (funnel
@@ -11,19 +12,6 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url)); // server/test
 const clientDir = join(here, "../../client");
 const privacy = readFileSync(join(clientDir, "public/privacy/index.html"), "utf-8");
-
-/** client/index.html + every client/public/**\/index.html (incl. /privacy itself). */
-function allPages(): string[] {
-  const walk = (dir: string): string[] =>
-    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
-      e.isDirectory()
-        ? walk(join(dir, e.name))
-        : e.name === "index.html"
-          ? [join(dir, e.name)]
-          : [],
-    );
-  return [join(clientDir, "index.html"), ...walk(join(clientDir, "public")).sort()];
-}
 
 describe("/privacy page (SERBITO-307)", () => {
   it("is linked from the footer of every page, in every language", () => {

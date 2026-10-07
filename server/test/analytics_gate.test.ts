@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join, relative } from "node:path";
 import {
@@ -9,6 +9,7 @@ import {
   trackPageView,
 } from "../../client/src/analytics.js";
 import { renderAnalytics } from "../../client/src/pageAnalytics.js";
+import { publicPages } from "./support/pages.js";
 
 // 2026-06-24: GA4 (G-B5CQC4JJV0) to count users via analytics.google.com.
 // Must be the STANDARD static <script src=...gtag/js> snippet — Google's "verify your
@@ -24,25 +25,11 @@ const STATIC_TAG = new RegExp(
   `<script[^>]*src="https://www\\.googletagmanager\\.com/gtag/js\\?id=${MEASUREMENT_ID}"`,
 );
 
-/** Every prerendered page under client/public (the SEO landing pages). */
-function guidePages(): string[] {
-  const out: string[] = [];
-  const walk = (dir: string) => {
-    for (const e of readdirSync(dir, { withFileTypes: true })) {
-      const p = join(dir, e.name);
-      if (e.isDirectory()) walk(p);
-      else if (e.name === "index.html") out.push(p);
-    }
-  };
-  walk(join(clientDir, "public"));
-  return out.sort();
-}
-
 describe("GA4 analytics", () => {
   // 2026-08-20: the prerendered guide pages carried no tag at all, so every visit that
   // landed on the SEO cluster from search was missing from GA4 entirely.
   it("tags the app shell and every prerendered guide page with the static gtag.js", () => {
-    const pages = guidePages();
+    const pages = publicPages();
     expect(pages.length).toBeGreaterThan(30); // 4 guides x 9 languages
     const untagged = [join(clientDir, "index.html"), ...pages]
       .filter(
