@@ -14,6 +14,11 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+### Fixed
+- On a phone, the footer no longer covers the vote cards in a room, and the room header is shorter.
+- Reveal, New vote and Invite buttons are easier to read: their text now has enough contrast.
+- After you vote, the other cards stay readable, and screen readers announce which card is your vote.
+
 ## [0.67.0] - 2026-10-07
 
 ### Changed

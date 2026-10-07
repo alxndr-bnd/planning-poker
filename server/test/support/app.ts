@@ -108,8 +108,10 @@ export interface Net {
 }
 
 export interface OpenOptions {
-  /** Page viewport width (height 844). */
+  /** Page viewport width. */
   width?: number;
+  /** Page viewport height (default 844). */
+  height?: number;
   /** localStorage before the first script runs. Default: a name and a cookie choice. */
   storage?: Record<string, string>;
   /** Browser UI language (navigator.language). */
@@ -136,7 +138,7 @@ const CONSENT = JSON.stringify({ choice: "denied", date: new Date().toISOString(
 
 export async function openPage(app: App, opts: OpenOptions): Promise<Opened> {
   const context = await app.browser.newContext({
-    viewport: { width: opts.width ?? 390, height: 844 },
+    viewport: { width: opts.width ?? 390, height: opts.height ?? 844 },
     locale: opts.locale ?? "en-US",
     hasTouch: opts.touch ?? (opts.width ?? 390) < 600,
     isMobile: opts.touch ?? (opts.width ?? 390) < 600,

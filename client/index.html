@@ -264,6 +264,25 @@
       html[data-ppc-open] .pp-crosspromo {
         padding-bottom: 1rem;
       }
+      /* A room on a phone (SERBITO-569): the footer wraps to 2-4 lines (85-102 px) and,
+         fixed, covered the vote cards at the bottom of the 100vh room. There it goes
+         back into the page flow, at the very end of the page: the deck is never under
+         it, at any scroll position. The safe-area inset keeps its last line clear of
+         the home indicator once the page uses viewport-fit=cover. consent.js reads
+         the computed position, so focus checks treat it as not fixed; scroll padding
+         drops its height. Lobby and desktop keep the fixed footer. */
+      @media (max-width: 600px) {
+        body:has(.room) .pp-foot {
+          position: static;
+          padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px)) !important;
+        }
+        body:has(.room) .pp-crosspromo {
+          padding-bottom: 1rem;
+        }
+        html:has(.room) {
+          scroll-padding-bottom: var(--ppc-h, 0px);
+        }
+      }
     </style>
   </head>
   <body>
