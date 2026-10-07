@@ -12,6 +12,8 @@
 // The same git date is each guide's Article JSON-LD "dateModified" (SERBITO-504): the
 // script rewrites it first, so the page and the sitemap never disagree.
 //
+// It also writes each guide's FAQPage JSON-LD from its visible FAQ (SERBITO-482).
+//
 // Usage:  node scripts/sitemap.ts            regenerate (fails without git history)
 //         node scripts/sitemap.ts --if-git   regenerate, or keep the committed file
 import { execFileSync } from "node:child_process";
@@ -188,6 +190,87 @@ export function generateSitemap(clientDir: string = CLIENT_DIR): string {
   return renderSitemap(buildEntries(clientDir));
 }
 
+// --------------------------------------------------------------------------- #
+// FAQPage JSON-LD on the guides (SERBITO-482)
+// --------------------------------------------------------------------------- #
+// The visible <section id="faq"> is the source: each <h3> question and the <p> answer after
+// it. The JSON-LD repeats that text word for word, as Google requires, and this script
+// rewrites it, so the two can't drift (server/test/seo_content_482.test.ts checks it).
+// Google shows FAQ rich results only for a few authoritative sites, so this is not for a
+// Google snippet: Bing and AI answer engines read FAQPage markup, at ~1 KB a page.
+
+export interface FaqPair {
+  question: string;
+  answer: string;
+}
+
+const ENTITIES: Record<string, string> = { amp: "&", quot: '"', apos: "'", "#39": "'", lt: "<", gt: ">", nbsp: " " };
+
+/** Visible text of an HTML fragment: tags dropped, entities decoded, spaces collapsed. */
+export const plain = (html: string): string =>
+  html
+    .replace(/<[^>]+>/g, "")
+    .replace(/&(amp|quot|apos|#39|lt|gt|nbsp);/g, (_, e: string) => ENTITIES[e])
+    .replace(/\s+/g, " ")
+    .trim();
+
+/** Question/answer pairs of the page's visible FAQ section; [] when it has none. */
+export function faqPairs(html: string): FaqPair[] {
+  const at = html.indexOf('<section id="faq">');
+  if (at < 0) return [];
+  const faq = html.slice(at, html.indexOf("</section>", at));
+  return [...faq.matchAll(/<h3>([\s\S]+?)<\/h3>\s*<p>([\s\S]+?)<\/p>/g)].map(([, q, a]) => ({
+    question: plain(q),
+    answer: plain(a),
+  }));
+}
+
+/** The FAQPage JSON-LD object for these pairs. */
+export function faqSchema(pairs: FaqPair[], lang: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    inLanguage: lang,
+    mainEntity: pairs.map(({ question, answer }) => ({
+      "@type": "Question",
+      name: question,
+      acceptedAnswer: { "@type": "Answer", text: answer },
+    })),
+  };
+}
+
+// One <script> block per schema, indented as the other blocks in the guides' <head>.
+const FAQ_BLOCK = /\n {2}<script type="application\/ld\+json">\n {4}\{"@context":"https:\/\/schema\.org","@type":"FAQPage"[^\n]*\n {2}<\/script>/;
+
+/** The page with its FAQPage block added or replaced (or removed when it has no FAQ). */
+export function withFaqSchema(html: string): string {
+  const stripped = html.replace(FAQ_BLOCK, "");
+  const pairs = faqPairs(stripped);
+  if (!pairs.length) return stripped;
+  const lang = stripped.match(/<html lang="([^"]+)"/)?.[1] ?? "en";
+  // "<" escaped so no answer text can close the <script> element.
+  const json = JSON.stringify(faqSchema(pairs, lang)).replace(/</g, "\\u003c");
+  const block = `\n  <script type="application/ld+json">\n    ${json}\n  </script>`;
+  const end = stripped.lastIndexOf("</script>", stripped.indexOf("</head>"));
+  if (end < 0) throw new Error("no JSON-LD block in <head> to put the FAQPage after");
+  const cut = end + "</script>".length;
+  return stripped.slice(0, cut) + block + stripped.slice(cut);
+}
+
+/** Rewrite every guide page whose FAQPage block is missing or stale. Returns the files. */
+export function syncFaqSchema(clientDir: string = CLIENT_DIR): string[] {
+  const changed: string[] = [];
+  // The home page (client/index.html) keeps its own hand-written FAQPage block.
+  for (const { file } of listPages(clientDir).slice(1)) {
+    const html = readFileSync(file, "utf-8");
+    const next = withFaqSchema(html);
+    if (next === html) continue;
+    writeFileSync(file, next);
+    changed.push(relative(REPO_ROOT, file));
+  }
+  return changed;
+}
+
 function main(argv: string[]): void {
   if (!gitHistoryAvailable()) {
     if (argv.includes("--if-git")) {
@@ -197,6 +280,8 @@ function main(argv: string[]): void {
     console.error("sitemap: needs a git checkout with full history (lastmod = last commit)");
     process.exit(1);
   }
+  const faqs = syncFaqSchema();
+  if (faqs.length) console.log(`sitemap: wrote FAQPage JSON-LD in ${faqs.length} page(s) — commit them`);
   const dated = syncDateModified();
   if (dated.length) console.log(`sitemap: set Article dateModified in ${dated.length} page(s) — commit them`);
   const xml = generateSitemap();

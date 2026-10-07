@@ -22,7 +22,7 @@ Jira: implemented by SERBITO-305 (sitemap), SERBITO-435 (Search Console access) 
       *2026-10-05: property is in SERBITO-435; sitemap last fetched in June — SERBITO-463.*
 - [x] **OG image** 1200×630 PNG (`/og-image.png`) + `og:image`/`twitter:image` and switch
       `twitter:card` to `summary_large_image`. (Needs a designed asset — competitors all have one.)
-- [ ] **Prerender the public pages** (Vite SSG / `vite-plugin-prerender` / a build step) so the
+- [x] **Prerender the public pages** (Vite SSG / `vite-plugin-prerender` / a build step) so the
       rendered DOM — not just the raw shell — carries content. Today React replaces `#root`;
       first-wave crawl sees content, but prerender makes it bulletproof and unlocks per-page
       meta for cluster pages. *Done: static prerendered pages under `client/public` — v0.14.0 (263f385).*
@@ -47,11 +47,11 @@ hidden simultaneous vote → reveal (reveal "star"), basic **round history** (`R
 Candidate gaps (each a GitHub `feature-vote` issue — ship by votes). *Item title per round shipped in v0.60.0 (SERBITO-464); it is not an import.*
 - [ ] **Multiple / custom card decks** (#3; owner decision by votes — SERBITO-482) — T-shirt (XS–XXL), powers-of-two, sequential, custom
       values (currently Fibonacci-only). Render deck names as indexable text.
-- [ ] ~~**Median** (and min/max) added to round stats (currently average only).~~ Dropped: no average or median, owner decision 2026-10-02 (SERBITO-355). Close issue #4 — SERBITO-482.
+- [ ] ~~**Median** (and min/max) added to round stats (currently average only).~~ Dropped: no average or median, owner decision 2026-10-02 (SERBITO-355). Issue #4 closed as not planned on 2026-10-07 — SERBITO-482.
 - [ ] **Export round results** (CSV / JSON). (#5 — SERBITO-482)
 - [ ] **Invite by QR code** (alongside the link). (#6 — SERBITO-482)
 - [ ] **Issue/story import** — CSV + GitHub issues first; later Jira / Linear / Trello. (#7 — SERBITO-482)
-- [x] **More UI languages** (i18n + hreflang) — serbito already does i18n; EN + Serbian first. *8 languages — v0.16.0 (e192946), v0.17.0 (ee24e33). Close issue #8 — SERBITO-482.*
+- [x] **More UI languages** (i18n + hreflang) — serbito already does i18n; EN + Serbian first. *8 languages — v0.16.0 (e192946), v0.17.0 (ee24e33). Issue #8 closed as completed on 2026-10-07 — SERBITO-482.*
 - [ ] **Persistent / named rooms** (rooms are currently swept after idle). (#9 — SERBITO-482)
 - [ ] (host controls, async voting, etc. — add as issues if users ask)
 
@@ -72,7 +72,7 @@ Candidate gaps (each a GitHub `feature-vote` issue — ship by votes). *Item tit
 - [x] **Keyword-cluster landing pages** (copy the winners, but ship with FAQ + SoftwareApplication
       schema they lack): `/planning-poker-for-jira`, `/planning-poker-for-remote-teams`,
       `/planning-poker-vs-estimation-meetings`, `/best-planning-poker-tools`.
-      *Jira and remote-teams pages — v0.14.0 (263f385). The other two — SERBITO-482 (branch `poker-482`, English only).*
+      *Jira and remote-teams pages — v0.14.0 (263f385). The other two — v0.61.0, SERBITO-482 (English only).*
 - [x] **Glossary** (`/glossary`): story points, velocity, Fibonacci, T-shirt sizing, anchoring,
       consensus, sprint planning — internal-link hub none of the rivals have.
 - [ ] **Blog topic cluster** (start ~5 posts, grow): "Why Fibonacci in estimation", "Agile story
@@ -80,7 +80,7 @@ Candidate gaps (each a GitHub `feature-vote` issue — ship by votes). *Item tit
       sizing", "Run better sprint planning". Each links to the tool. *Owner decision — SERBITO-482.*
 - [x] **hreflang multilingual** — EN + Serbian first (serbito already does i18n), then RU/DE/ES/FR;
       per-language URLs + `x-default`. Only the SEO leader does this — clear wedge. *8 languages — v0.16.0, v0.17.0.*
-- [x] **FAQ on every landing page.** *SERBITO-482: all 36 guides have a `<section id="faq">` with question `<h3>`s and short answers (the glossary pages got new ones). No `FAQPage` JSON-LD on guides: it brings no Google rich result for this site, so it is left out on purpose. The home page keeps its existing block.*
+- [x] **FAQ on every landing page.** *SERBITO-482: all 36 guides have a `<section id="faq">` with question `<h3>`s and short answers — v0.61.0. `FAQPage` JSON-LD on every page with a FAQ (36 guides + 3 comparison pages) — branch `poker-482b`, not released. `npm run sitemap` writes it from the visible FAQ; a test keeps the two equal. Google shows no FAQ rich result for this site; the markup is for Bing and AI answer engines. The home page keeps its hand-written block.*
 
 ## Phase 3 — Trust & distribution (off-page authority) — HIGH impact, owner-driven
 
@@ -92,7 +92,7 @@ Candidate gaps (each a GitHub `feature-vote` issue — ship by votes). *Item tit
       "best free planning poker" roundups (e.g. Ludi) — these rank and link. *AlternativeTo link is on the landing; the rest — SERBITO-482.*
 - [x] **Comparison/alternative pages** targeting rival brand + "free / no-ads / open-source"
       (e.g. "free PlanningPokerOnline alternative", "Scrum Poker Online without ads").
-      *SERBITO-482: `/planningpokeronline-alternative`, `/scrum-poker-online-without-ads`, `/best-planning-poker-tools`. English only; competitor facts dated 2026-10-05 with links to the vendors' pages. Re-check the facts every 6 months.*
+      *SERBITO-482, v0.61.0: `/planningpokeronline-alternative`, `/scrum-poker-online-without-ads`, `/best-planning-poker-tools`. English only; competitor facts dated 2026-10-05 with links to the vendors' pages. Re-check the facts every 6 months.*
 - [ ] **Reviews/ratings** → add `AggregateRating` schema once legitimately earned (benchmark
       planningpoker.live = 4.5★/1000+). *Blocked — SERBITO-484.*
 - [x] **Trust signals on-site:** GitHub stars badge, "privacy-first — no data stored/sold",
@@ -128,18 +128,18 @@ This is defensible against all five competitors at once:
 
 ---
 
-## SERBITO-482: status and owner actions (2026-10-05)
+## SERBITO-482: status and owner actions (2026-10-05, updated 2026-10-07)
 
-Shipped on branch `poker-482` (not released): FAQ sections on all 36 guides, 4 English comparison pages, links from the home page, the English guide footers and `/llms.txt`, and the home-page roadmap text without median and languages.
+Released in v0.61.0: FAQ sections on all 36 guides, 4 English comparison pages, links from the home page, the English guide footers and `/llms.txt`, and the home-page roadmap text without median and languages. Branch `poker-482b` (not released): `FAQPage` JSON-LD from the visible FAQs.
 
-### Stale GitHub issues (owner: close or keep)
+### Stale GitHub issues
 
-Reaction counts read on 2026-10-05. Nothing was changed on GitHub.
+Reaction counts read on 2026-10-05. #8 and #4 closed with a comment on 2026-10-07.
 
 | Issue | 👍 | State in the app | Suggested action |
 |---|---|---|---|
-| #8 More UI languages (i18n) | 1 | Shipped: 9 languages (v0.16.0, v0.17.0), browser language (v0.55.0) | Close as completed, link the release |
-| #4 Median (and min/max) in round stats | 0 | Contradicts SERBITO-355: no average or median by design | Close as not planned, give the reason |
+| #8 More UI languages (i18n) | 1 | Shipped: 9 languages (v0.16.0, v0.17.0), browser language (v0.55.0) | ✅ Closed as completed (2026-10-07) |
+| #4 Median (and min/max) in round stats | 0 | Contradicts SERBITO-355: no average or median by design | ✅ Closed as not planned (2026-10-07) |
 | #3 Custom & multiple card decks | 1 | Not built | Keep open |
 | #5 Export round results | 0 | Not built | Keep open |
 | #6 Join a room by QR code | 0 | Not built; the remote-teams guide says "not yet" | Keep open |
@@ -152,7 +152,7 @@ No candidate has more than one vote, so the vote gate holds: build none of them 
 
 Drafts and the target list are in `05-outreach-drafts-2026-10-05.md`. Order:
 
-1. Release `poker-482`. In Search Console, re-submit `sitemap.xml` and request indexing for the 4 new URLs (with SERBITO-463).
+1. ~~Release `poker-482`~~ (v0.61.0). In Search Console, re-submit `sitemap.xml` and request indexing for the 4 new URLs (with SERBITO-463).
 2. Fix the AlternativeTo listing: the title says "Panning", and two claims are wrong (§1 of the drafts).
 3. Submit the listings in §3 (kollabe, freetier.co, SaaSHub, PeerPush, Scrum Expert follow-up). Link `/best-planning-poker-tools` where a form asks for a comparison page.
 4. Product Hunt with the kit in §4, on a weekday, from the owner's account.

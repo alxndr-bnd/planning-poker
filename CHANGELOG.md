@@ -14,6 +14,9 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+### Changed
+- The answers in each guide's FAQ are now also marked up for search engines and AI assistants.
+
 ## [0.64.0] - 2026-10-07
 
 ### Changed
