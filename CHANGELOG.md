@@ -14,6 +14,8 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+## [0.68.0] - 2026-10-08
+
 ### Fixed
 - On a phone, the footer no longer covers the vote cards in a room, and the room header is shorter.
 - Reveal, New vote and Invite buttons are easier to read: their text now has enough contrast.
@@ -130,7 +132,8 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 - Room members cannot take over each other's seat, and one client cannot overload the server.
 - Security headers are on, and dependencies are up to date.
 
-[Unreleased]: https://github.com/alxndr-bnd/planning-poker/compare/v0.67.0...HEAD
+[Unreleased]: https://github.com/alxndr-bnd/planning-poker/compare/v0.68.0...HEAD
+[0.68.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.67.0...v0.68.0
 [0.67.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.66.0...v0.67.0
 [0.66.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.65.0...v0.66.0
 [0.65.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.64.0...v0.65.0
