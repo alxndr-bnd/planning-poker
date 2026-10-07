@@ -4,12 +4,13 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { FIBONACCI_DECK } from "@pp/shared";
 import { Room } from "../src/room.js";
-import { ORIGIN, listPages } from "../../scripts/sitemap.js";
+import { ORIGIN, faqPairs, listPages } from "../../scripts/sitemap.js";
 
 // SERBITO-482: finish the SEO roadmap content.
 // 1. Every guide answers common questions as plain HTML Q&A: a question-style <h3> and a
-//    short direct answer. No FAQPage JSON-LD on guides: Google shows no FAQ rich result
-//    for this site, so the markup adds weight and nothing else.
+//    short direct answer. The same Q&A is in FAQPage JSON-LD, word for word: Google shows
+//    no FAQ rich result for this site, but Bing and AI answer engines read the markup.
+//    scripts/sitemap.ts writes it from the visible FAQ (`npm run sitemap`).
 // 2. Comparison pages for comparison-intent searches. English only (the 2026-10-05 audit:
 //    no new translations until the English pages are indexed). Every competitor fact is
 //    dated and has a source link to the competitor's own page.
@@ -31,6 +32,9 @@ const text = (html: string) =>
     .replace(/&[a-z]+;/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+const attr = (html: string, re: RegExp) => html.match(re)?.[1] ?? "";
+const schemas = (html: string) =>
+  [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]));
 const words = (s: string) => s.split(/\s+/).filter((w) => /\w/.test(w)).length;
 /** Short for CJK, where words have no spaces: count characters instead. */
 const short = (lang: string, answer: string) =>
@@ -61,12 +65,28 @@ describe("guide FAQ: question headings with short answers (SERBITO-482)", () => 
     });
   }
 
-  it("no guide page carries FAQPage JSON-LD (only the home page keeps its one)", () => {
+  it("every page with a visible FAQ has FAQPage JSON-LD with the same text (run `npm run sitemap`)", () => {
     for (const { loc, file } of listPages(clientDir)) {
+      if (loc === `${ORIGIN}/`) continue; // the home page keeps its own hand-written block
       const html = read(file);
-      const has = html.includes('"FAQPage"');
-      expect(has, loc).toBe(loc === `${ORIGIN}/`);
+      const lang = attr(html, /<html lang="([^"]+)"/);
+      const blocks = schemas(html).filter((s) => s["@type"] === "FAQPage");
+      const visible = faqPairs(html);
+      if (!visible.length) {
+        expect(blocks, loc).toHaveLength(0);
+        continue;
+      }
+      expect(blocks, loc).toHaveLength(1);
+      expect(blocks[0].inLanguage, loc).toBe(lang);
+      const marked = blocks[0].mainEntity.map((q: any) => ({ question: q.name, answer: q.acceptedAnswer.text }));
+      expect(marked, loc).toEqual(visible);
     }
+  });
+
+  it("all 36 guides (4 topics x 9 languages) carry FAQPage JSON-LD", () => {
+    const pages = FAQ_TOPICS.flatMap((t) => LANGS.map((l) => page(l + t)));
+    expect(pages).toHaveLength(36);
+    for (const html of pages) expect(schemas(html).some((s) => s["@type"] === "FAQPage")).toBe(true);
   });
 });
 
@@ -103,7 +123,6 @@ const FACTS: Record<string, { fact: RegExp; source: string }[]> = {
 };
 
 const head = (html: string) => html.slice(0, html.indexOf("</head>"));
-const attr = (html: string, re: RegExp) => html.match(re)?.[1] ?? "";
 /** Row label -> our cell, from every table whose first data column is this app. */
 const ourColumn = (html: string): Record<string, string> => {
   const out: Record<string, string> = {};
@@ -138,10 +157,9 @@ describe("comparison pages (SERBITO-482)", () => {
     );
     expect(alternates).toEqual([`en ${url}`, `x-default ${url}`]);
     expect(html.match(/<h1\b/g)).toHaveLength(1);
-    const schema = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) =>
-      JSON.parse(m[1]),
-    );
-    expect(schema.map((s) => s["@type"]).sort()).toEqual(["Article", "BreadcrumbList"]);
+    const schema = schemas(html);
+    const faq = faqPairs(html).length ? ["FAQPage"] : [];
+    expect(schema.map((s) => s["@type"]).sort()).toEqual(["Article", "BreadcrumbList", ...faq].sort());
     const article = schema.find((s) => s["@type"] === "Article");
     expect(article.inLanguage).toBe("en");
     expect(article.mainEntityOfPage["@id"]).toBe(url);
