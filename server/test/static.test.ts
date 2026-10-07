@@ -126,6 +126,16 @@ describe("static file serving containment", () => {
     expect((await get("/ru/nope")).status).toBe(404);
   });
 
+  // SERBITO-527: "/room" (the GA virtual page) was a 404 in Search Console.
+  it("sends /room to the app; a room-looking path stays a 404", async () => {
+    for (const path of ["/room", "/room/"]) {
+      const res = await get(path);
+      expect(res.status, path).toBe(301);
+      expect(res.headers.location, path).toBe("/");
+    }
+    expect((await get("/room/abc123")).status).toBe(404);
+  });
+
   it("still serves / with a query string (e.g. ?ui=v2)", async () => {
     const r = await get("/?ui=v2");
     expect(r.status).toBe(200);
