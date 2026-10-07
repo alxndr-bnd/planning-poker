@@ -14,6 +14,8 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+## [0.64.0] - 2026-10-07
+
 ### Changed
 - Behind-the-scenes cleanup of the build and release checks. Players see no change.
 
@@ -108,7 +110,8 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 - Room members cannot take over each other's seat, and one client cannot overload the server.
 - Security headers are on, and dependencies are up to date.
 
-[Unreleased]: https://github.com/alxndr-bnd/planning-poker/compare/v0.63.0...HEAD
+[Unreleased]: https://github.com/alxndr-bnd/planning-poker/compare/v0.64.0...HEAD
+[0.64.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.63.0...v0.64.0
 [0.63.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.62.0...v0.63.0
 [0.62.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.61.0...v0.62.0
 [0.61.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.60.0...v0.61.0
