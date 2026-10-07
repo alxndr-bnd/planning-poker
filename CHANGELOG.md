@@ -14,6 +14,9 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+### Changed
+- Every English guide now ends with related guides, and the guides link to the tool comparisons where they help.
+
 ## [0.66.0] - 2026-10-07
 
 ### Changed
