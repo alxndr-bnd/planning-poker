@@ -14,6 +14,9 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+### Changed
+- Behind-the-scenes: fixes reach you sooner because the release checks run faster. Players see no change.
+
 ## [0.65.0] - 2026-10-07
 
 ### Changed
