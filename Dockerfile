@@ -1,3 +1,7 @@
+# check=skip=SecretsUsedInArgOrEnv;error=true
+# Build checks fail the build (error=true). The one skipped rule flags ARG CF_BEACON_TOKEN by
+# its name only: the value is the public Cloudflare Web Analytics site id that every page
+# ships in its HTML, not a secret (see the ARG below).
 # ---- build stage: install deps & build the SPA ----
 FROM node:24-slim AS build
 WORKDIR /app

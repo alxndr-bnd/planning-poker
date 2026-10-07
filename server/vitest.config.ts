@@ -15,5 +15,9 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     fileParallelism: false,
+    // Fresh modules per test file: tests set env and module state (rooms, analytics
+    // gates) and must not leak into the next file. Set explicitly — when it is left at
+    // the default, vitest prints an "isolate: false is faster" hint on every run.
+    isolate: true,
   },
 });
