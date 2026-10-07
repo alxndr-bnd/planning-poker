@@ -15,6 +15,13 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # actions/checkout runs `git init`; with no default branch configured, git prints a
+  # multi-line "Using 'master'" hint into the log. Set it for every git call (zero-noise logs).
+  GIT_CONFIG_COUNT: "1"
+  GIT_CONFIG_KEY_0: init.defaultBranch
+  GIT_CONFIG_VALUE_0: main
+
 jobs:
   verify:
     runs-on: ubuntu-24.04 # explicit: ubuntu-latest moves to 26.04 on 2026-10-19
@@ -52,3 +59,7 @@ jobs:
         run: npm run typecheck
       - name: npm run build
         run: npm run build
+      # Dockerfile build checks (lint) without building the image: the Dockerfile sets
+      # `check=error=true`, so any check warning fails the PR, not the release.
+      - name: Dockerfile build checks
+        run: docker build --check .

@@ -25,6 +25,11 @@ concurrency:
   cancel-in-progress: false
 
 env:
+  # actions/checkout runs `git init`; with no default branch configured, git prints a
+  # multi-line "Using 'master'" hint into the log. Set it for every git call (zero-noise logs).
+  GIT_CONFIG_COUNT: "1"
+  GIT_CONFIG_KEY_0: init.defaultBranch
+  GIT_CONFIG_VALUE_0: main
   PROJECT_ID: serbito
   REGION: europe-west1
   SERVICE: planning-poker
