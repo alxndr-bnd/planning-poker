@@ -14,6 +14,8 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+## [0.67.0] - 2026-10-07
+
 ### Changed
 - Every English guide now ends with related guides, and the guides link to the tool comparisons where they help.
 
@@ -123,7 +125,8 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 - Room members cannot take over each other's seat, and one client cannot overload the server.
 - Security headers are on, and dependencies are up to date.
 
-[Unreleased]: https://github.com/alxndr-bnd/planning-poker/compare/v0.66.0...HEAD
+[Unreleased]: https://github.com/alxndr-bnd/planning-poker/compare/v0.67.0...HEAD
+[0.67.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.66.0...v0.67.0
 [0.66.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.65.0...v0.66.0
 [0.65.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.64.0...v0.65.0
 [0.64.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.63.0...v0.64.0
