@@ -883,6 +883,7 @@ function Deck({
     <button
       key={v}
       className={`card ${selected === v ? "selected" : selected ? "dim" : ""}`}
+      aria-pressed={selected === v}
       onClick={() => onPick(v)}
     >
       {v}
@@ -894,6 +895,7 @@ function Deck({
       {numbers.map(renderCard)}
       <button
         className="card toggle"
+        aria-expanded={showExtended}
         onClick={() => setExpanded((e) => !e)}
         title={showExtended ? tr("deck.hideHighTitle") : tr("deck.showHighTitle")}
       >

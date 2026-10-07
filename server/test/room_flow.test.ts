@@ -93,6 +93,8 @@ describe("P8: rejoin after an idle disconnect", () => {
   }, 30_000);
 });
 
+// On a phone, while the table shows its own Invite, the header hides its copy
+// (SERBITO-569): these tests press the one on the table, the same copyLink().
 describe("P9a: Copied only when the link was copied", () => {
   const BROKEN_CLIPBOARD = `Object.defineProperty(navigator, "clipboard", {
     value: { writeText: () => Promise.reject(new DOMException("denied", "NotAllowedError")) },
@@ -106,7 +108,7 @@ describe("P9a: Copied only when the link was copied", () => {
       await page.waitForTimeout(300);
       expect(await page.getByText("Invite link copied to clipboard").count()).toBe(0);
 
-      await page.locator(".room-top").getByRole("button", { name: "Invite teammates" }).click();
+      await page.locator(".empty-room").getByRole("button", { name: "Invite teammates" }).click();
       const field = page.getByRole("textbox", { name: "Couldn't copy the link. Copy it from here:" });
       await field.waitFor();
       expect(await field.inputValue()).toBe(page.url());
@@ -121,8 +123,8 @@ describe("P9a: Copied only when the link was copied", () => {
     try {
       await page.getByRole("button", { name: "Create room" }).click();
       await page.getByText("Invite link copied to clipboard").waitFor();
-      await page.locator(".room-top").getByRole("button", { name: "Invite teammates" }).click();
-      await page.locator(".room-top").getByRole("button", { name: "Copied!" }).waitFor();
+      await page.locator(".empty-room").getByRole("button", { name: "Invite teammates" }).click();
+      await page.locator(".empty-room").getByRole("button", { name: "Copied!" }).waitFor();
       expect(await page.evaluate("navigator.clipboard.readText()")).toBe(page.url());
       expect(await page.locator(".copy-fallback").count()).toBe(0);
     } finally {
