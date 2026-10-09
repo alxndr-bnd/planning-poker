@@ -6,10 +6,12 @@ import { fileURLToPath } from "node:url";
 import {
   CROSSPROMO_MARKER,
   CROSSPROMO_UTM,
+  JAVI_UTM,
   MADE_BY,
   OTHER_PROJECTS,
   injectCrossPromo,
   pageLang,
+  projectHref,
   renderCrossPromo,
 } from "../../client/src/crosspromo.js";
 import { LANGS, t } from "../../client/src/i18n.js";
@@ -38,11 +40,15 @@ describe('"Other projects" cross-promo block (SERBITO-264)', () => {
     const html = renderCrossPromo("en");
     expect(hrefs(html)).toEqual([
       `https://gtd.serbito.rs/?${CROSSPROMO_UTM}`,
-      `https://javi.serbito.rs/?${CROSSPROMO_UTM}`,
+      `https://javi.serbito.rs/?${JAVI_UTM}`,
       `https://serbito.rs/?${CROSSPROMO_UTM}`,
       `https://www.linkedin.com/company/nohandoff/?${CROSSPROMO_UTM}`,
     ]);
     expect(CROSSPROMO_UTM).toBe("utm_source=poker&utm_medium=crosspromo&utm_campaign=footer");
+    // SERBITO-598: Javi has its own campaign.
+    expect(JAVI_UTM).toBe(
+      "utm_source=poker&utm_medium=crosslink&utm_campaign=javi&utm_content=footer",
+    );
     expect(html).toContain("Other projects:");
     expect(html).toContain("GTD</a> — Free GTD task manager with a Telegram bot");
     expect(html).toContain("Javi</a> — Delivery notifications for small businesses in Serbia");
@@ -89,7 +95,7 @@ describe('"Other projects" cross-promo block (SERBITO-264)', () => {
       expect(out, page).toContain(renderCrossPromo(pageLang(src)));
       for (const p of OTHER_PROJECTS) {
         expect(out, `${page} -> ${p.name}`).toContain(
-          `href="${p.url}?${CROSSPROMO_UTM.replace(/&/g, "&amp;")}"`,
+          `href="${projectHref(p).replace(/&/g, "&amp;")}"`,
         );
       }
     }

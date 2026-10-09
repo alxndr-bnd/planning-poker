@@ -12,9 +12,18 @@ export const CROSSPROMO_MARKER = "<!-- crosspromo -->";
 /** Every link in the block carries these, so the sibling sites can attribute the visit. */
 export const CROSSPROMO_UTM = "utm_source=poker&utm_medium=crosspromo&utm_campaign=footer";
 
-export const OTHER_PROJECTS: readonly { name: string; url: string; blurb: StringKey }[] = [
+/** Javi grows through a passive funnel (SERBITO-598): its link has its own campaign, so GA
+ *  sees visits from poker apart from the general cross-promo. */
+export const JAVI_UTM = "utm_source=poker&utm_medium=crosslink&utm_campaign=javi&utm_content=footer";
+
+export const OTHER_PROJECTS: readonly {
+  name: string;
+  url: string;
+  blurb: StringKey;
+  utm?: string;
+}[] = [
   { name: "GTD", url: "https://gtd.serbito.rs/", blurb: "crosspromo.gtd" },
-  { name: "Javi", url: "https://javi.serbito.rs/", blurb: "crosspromo.javi" },
+  { name: "Javi", url: "https://javi.serbito.rs/", blurb: "crosspromo.javi", utm: JAVI_UTM },
   { name: "Serbito", url: "https://serbito.rs/", blurb: "crosspromo.serbito" },
 ];
 
@@ -26,8 +35,12 @@ export const MADE_BY = {
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-const link = (url: string, text: string) =>
-  `<a href="${esc(`${url}?${CROSSPROMO_UTM}`)}" rel="noopener">${esc(text)}</a>`;
+/** The link target of a product: its own UTM if it has one, else the footer cross-promo UTM. */
+export const projectHref = (p: { url: string; utm?: string }) =>
+  `${p.url}?${p.utm ?? CROSSPROMO_UTM}`;
+
+const link = (href: string, text: string) =>
+  `<a href="${esc(href)}" rel="noopener">${esc(text)}</a>`;
 
 /** `<html lang="pt-BR">` -> "pt"; anything unknown -> "en". */
 export function pageLang(html: string): Lang {
@@ -39,13 +52,13 @@ export function pageLang(html: string): Lang {
 export function renderCrossPromo(lang: Lang): string {
   const title = t(lang, "crosspromo.title");
   const items = OTHER_PROJECTS.map(
-    (p) => `${link(p.url, p.name)} — ${esc(t(lang, p.blurb))}`,
+    (p) => `${link(projectHref(p), p.name)} — ${esc(t(lang, p.blurb))}`,
   ).join(" · ");
   const [before, after] = t(lang, "crosspromo.madeBy").split("{name}");
   return (
     `<nav class="crosspromo" aria-label="${esc(title)}">` +
     `${esc(title)}: ${items}<br />` +
-    `${esc(before)}${link(MADE_BY.url, MADE_BY.name)}${esc(after ?? "")}` +
+    `${esc(before)}${link(projectHref(MADE_BY), MADE_BY.name)}${esc(after ?? "")}` +
     `</nav>`
   );
 }
