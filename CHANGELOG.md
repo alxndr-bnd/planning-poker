@@ -14,6 +14,8 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+## [0.70.0] - 2026-10-12
+
 ### Changed
 - The remote-teams guide shows how to keep follow-up actions from a session on your own list, with a weekly review checklist. New guide pages also reach Bing and Yandex sooner.
 
@@ -140,7 +142,8 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 - Room members cannot take over each other's seat, and one client cannot overload the server.
 - Security headers are on, and dependencies are up to date.
 
-[Unreleased]: https://github.com/alxndr-bnd/planning-poker/compare/v0.69.0...HEAD
+[Unreleased]: https://github.com/alxndr-bnd/planning-poker/compare/v0.70.0...HEAD
+[0.70.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.69.0...v0.70.0
 [0.69.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.68.0...v0.69.0
 [0.68.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.67.0...v0.68.0
 [0.67.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.66.0...v0.67.0
