@@ -2,15 +2,18 @@ name: CI
 
 # SERBITO-400: the PR gate for Dependabot auto-merge (dependabot-automerge.yml).
 # The same checks as scripts/release_minor.sh: npm test, typecheck, build.
-# Pull requests only: a release still runs the gate locally, and deploy.yml runs on tags.
-# Dependabot PRs get no repo secrets, and this job uses none.
+# Pull requests and pushes to main (SERBITO-613): scripts/ci_gate.sh refuses a release unless
+# this run is green for the released commit, and ci-red.yml opens a Jira issue when it is red.
+# deploy.yml runs on tags. Dependabot PRs get no repo secrets, and this job uses none.
 on:
   pull_request:
+  push:
+    branches: [main]
 
 permissions:
   contents: read
 
-# A new push to the same PR cancels the old run.
+# A new push to the same PR (or to main) cancels the old run of that ref.
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -48,17 +51,28 @@ jobs:
 
       - name: Install dependencies (lockfile)
         run: npm ci
+      # SERBITO-613: a known high or critical advisory in any dependency fails the run.
+      - name: npm audit (high and above)
+        run: npm audit --audit-level=high
 
       # server/test drives Chromium through playwright-core (consent_focus uses full Chromium).
       - name: Chromium for the browser tests
         run: npx playwright-core install --with-deps chromium
 
+      # SERBITO-613: warnings are failures. A Node deprecation warning throws (tests, typecheck,
+      # build); the client and server builds fail on any bundler warning themselves.
       - name: npm test
         run: npm test
+        env:
+          NODE_OPTIONS: --throw-deprecation
       - name: npm run typecheck
         run: npm run typecheck
+        env:
+          NODE_OPTIONS: --throw-deprecation
       - name: npm run build
         run: npm run build
+        env:
+          NODE_OPTIONS: --throw-deprecation
       # Dockerfile build checks (lint) without building the image: the Dockerfile sets
       # `check=error=true`, so any check warning fails the PR, not the release.
       - name: Dockerfile build checks

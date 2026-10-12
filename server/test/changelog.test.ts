@@ -137,6 +137,30 @@ describe("changelog.ts", () => {
   });
 });
 
+/** `gh run list --json` output: one run per [workflow, status, conclusion]. */
+function runsJson(runs: [string, string, string][]): string {
+  return JSON.stringify(
+    runs.map(([workflowName, status, conclusion], i) => ({
+      workflowName,
+      status,
+      conclusion: status === "completed" ? conclusion : "",
+      createdAt: `2026-10-12T10:00:0${i}Z`,
+      url: `https://github.com/alxndr-bnd/planning-poker/actions/runs/${i + 1}`,
+    })),
+  );
+}
+
+/** A CHANGELOG entry for the next version, committed and (by default) pushed to main. */
+function addEntry(work: string, env: NodeJS.ProcessEnv, push = true) {
+  const log = join(work, "CHANGELOG.md");
+  writeFileSync(
+    log,
+    readFileSync(log, "utf-8").replace("## [Unreleased]\n", "## [Unreleased]\n\n### Added\n- Three\n"),
+  );
+  git(["commit", "-qam", "entry"], work, env);
+  if (push) git(["push", "-q", "origin", "main"], work, env);
+}
+
 // --- The release script in a throwaway repo: its own bare origin; npm and gh are stubs ---
 
 function throwawayRepo(npmStub = `echo "$@" >> "\${TMP}/npm-calls"`) {
@@ -144,13 +168,29 @@ function throwawayRepo(npmStub = `echo "$@" >> "\${TMP}/npm-calls"`) {
   const [work, remote, bin] = ["work", "remote.git", "bin"].map((d) => join(tmp, d));
   mkdirSync(join(work, "scripts"), { recursive: true });
   mkdirSync(bin);
-  for (const f of ["release_minor.sh", "changelog.ts"]) {
+  for (const f of ["release_minor.sh", "changelog.ts", "ci_gate.sh"]) {
     copyFileSync(join(REPO_ROOT, "scripts", f), join(work, "scripts", f));
   }
+  chmodSync(join(work, "scripts", "ci_gate.sh"), 0o755);
   writeFileSync(join(work, "CHANGELOG.md"), withLinks(GOOD, parse(GOOD)));
   // gate passes; npmStub may also change the tree
   writeFileSync(join(bin, "npm"), `#!/bin/sh\nTMP="${tmp}"\n${npmStub}\n`);
-  writeFileSync(join(bin, "gh"), `#!/bin/sh\nprintf "%s\\n" "$@" > "${tmp}/gh-args"\n`);
+  // gh: `gh run list` (the CI gate) answers with runs-<call>.json if present, else runs.json
+  // (green CI by default); every other call (the GitHub Release) records its arguments.
+  writeFileSync(join(tmp, "runs.json"), runsJson([["CI", "completed", "success"]]));
+  writeFileSync(
+    join(bin, "gh"),
+    `#!/bin/sh
+TMP="${tmp}"
+if [ "$1" = run ]; then
+  n=$(($(cat "$TMP/run-calls" 2>/dev/null || echo 0) + 1)); echo "$n" > "$TMP/run-calls"
+  printf "%s\\n" "$@" > "$TMP/run-args"
+  if [ -f "$TMP/runs-$n.json" ]; then cat "$TMP/runs-$n.json"; else cat "$TMP/runs.json"; fi
+  exit 0
+fi
+printf "%s\\n" "$@" > "$TMP/gh-args"
+`,
+  );
   for (const f of ["npm", "gh"]) chmodSync(join(bin, f), 0o755);
   // No GIT_* from the caller: in a pre-commit hook GIT_DIR and GIT_INDEX_FILE point at this
   // repo, and git commands in the throwaway repo would then write here.
@@ -158,6 +198,7 @@ function throwawayRepo(npmStub = `echo "$@" >> "\${TMP}/npm-calls"`) {
   const env: NodeJS.ProcessEnv = {
     ...Object.fromEntries(clean),
     PATH: [bin, dirname(process.execPath), process.env.PATH].join(delimiter),
+    CI_GATE_INTERVAL: "0",
     GIT_CONFIG_GLOBAL: "/dev/null",
     GIT_CONFIG_NOSYSTEM: "1",
     GIT_AUTHOR_NAME: "t",
@@ -209,14 +250,22 @@ describe("scripts/release_minor.sh", () => {
   it("dates the entry in the release commit and uses it for the GitHub Release", () => {
     const { tmp, work, remote, env, run } = throwawayRepo();
     const log = join(work, "CHANGELOG.md");
-    writeFileSync(
-      log,
-      readFileSync(log, "utf-8").replace("## [Unreleased]\n", "## [Unreleased]\n\n### Added\n- Three\n"),
-    );
-    git(["commit", "-qam", "entry"], work, env);
+    addEntry(work, env);
     const r = run();
     expect(r.status, r.stdout + r.stderr).toBe(0);
-    expect(readFileSync(join(tmp, "npm-calls"), "utf-8")).toContain("test");
+    // SERBITO-613: the CI gate asked GitHub for the push runs on main of exactly this commit.
+    const runArgs = readFileSync(join(tmp, "run-args"), "utf-8").split("\n");
+    expect(runArgs.slice(0, 2)).toEqual(["run", "list"]);
+    for (const [flag, value] of [
+      ["--branch", "main"],
+      ["--commit", git(["rev-parse", "HEAD~1"], work, env)],
+      ["--event", "push"],
+    ]) {
+      expect(runArgs[runArgs.indexOf(flag) + 1], flag).toBe(value);
+    }
+    expect(r.stdout).toContain("CI gate: green");
+    const npmCalls = readFileSync(join(tmp, "npm-calls"), "utf-8").split("\n");
+    expect(npmCalls).toEqual(expect.arrayContaining(["audit --audit-level=high", "test"]));
     const rel = parse(readFileSync(log, "utf-8"))[1];
     const d = new Date();
     const today = [d.getFullYear(), d.getMonth() + 1, d.getDate()]
@@ -247,17 +296,106 @@ describe("scripts/release_minor.sh", () => {
     const { tmp, work, env, run } = throwawayRepo(
       `echo "$@" >> "\${TMP}/npm-calls"; [ "$1 $2" = "run build" ] && echo x > built.txt; exit 0`,
     );
-    const log = join(work, "CHANGELOG.md");
-    writeFileSync(
-      log,
-      readFileSync(log, "utf-8").replace("## [Unreleased]\n", "## [Unreleased]\n\n### Added\n- Three\n"),
-    );
-    git(["commit", "-qam", "entry"], work, env);
+    addEntry(work, env);
     const r = run();
     expect(r.status, r.stdout + r.stderr).toBe(0);
     expect(r.stdout).toContain("the gate changed the tree");
     expect(readFileSync(join(tmp, "hook-calls"), "utf-8").trim().split("\n").at(-1)).toBe("SKIP=");
     expect(git(["ls-files", "built.txt"], work, env)).toBe("built.txt");
+  }, 60_000);
+});
+
+// --- SERBITO-613: the CI gate. A red pipeline on main stops the release before anything changes ---
+
+describe("scripts/release_minor.sh: CI gate", () => {
+  /** The release was refused before the CHANGELOG, the local gate, the commit and the tag. */
+  function refusedUntouched(tmp: string, work: string, remote: string, env: NodeJS.ProcessEnv) {
+    expect(existsSync(join(tmp, "npm-calls"))).toBe(false);
+    expect(git(["status", "--porcelain"], work, env)).toBe("");
+    expect(git(["tag"], work, env)).not.toContain("v0.3.0");
+    expect(git(["tag"], remote, env)).not.toContain("v0.3.0");
+    expect(existsSync(join(tmp, "gh-args"))).toBe(false);
+  }
+
+  it.each([
+    ["CI red", [["CI", "completed", "failure"]], "CI: failure"],
+    ["CI cancelled", [["CI", "completed", "cancelled"]], "CI: cancelled"],
+    ["CodeQL red, CI green", [["CI", "completed", "success"], ["CodeQL", "completed", "failure"]], "CodeQL: failure"],
+  ] as [string, [string, string, string][], string][])("refuses on %s", (_, runs, line) => {
+    const { tmp, work, remote, env, run } = throwawayRepo();
+    addEntry(work, env);
+    writeFileSync(join(tmp, "runs.json"), runsJson(runs));
+    const r = run();
+    expect(r.status, r.stdout + r.stderr).toBe(1);
+    expect(r.stderr).toContain("red run on main");
+    expect(r.stderr).toContain(line);
+    expect(r.stderr).toContain("release refused (SERBITO-613)");
+    refusedUntouched(tmp, work, remote, env);
+  }, 60_000);
+
+  it("refuses when HEAD is not origin/main (no CI run for it)", () => {
+    const { tmp, work, remote, env, run } = throwawayRepo();
+    addEntry(work, env, false);
+    const r = run();
+    expect(r.status, r.stdout + r.stderr).toBe(1);
+    expect(r.stderr).toContain("is not origin/main");
+    expect(existsSync(join(tmp, "run-calls"))).toBe(false);
+    refusedUntouched(tmp, work, remote, env);
+  }, 60_000);
+
+  it("refuses when main has no CI run for HEAD", () => {
+    const { tmp, work, remote, env, run } = throwawayRepo();
+    addEntry(work, env);
+    writeFileSync(join(tmp, "runs.json"), runsJson([["CodeQL", "completed", "success"]]));
+    const r = spawnSync("bash", ["scripts/release_minor.sh", "Release"], {
+      cwd: work,
+      env: { ...env, CI_GATE_NO_RUN_GRACE: "0" },
+      encoding: "utf-8",
+      timeout: 60_000,
+    });
+    expect(r.status, r.stdout + r.stderr).toBe(1);
+    expect(r.stderr).toContain('no "CI" run on main');
+    refusedUntouched(tmp, work, remote, env);
+  }, 60_000);
+
+  it("waits while CI runs, then releases when it is green", () => {
+    const { tmp, work, remote, env, run } = throwawayRepo();
+    addEntry(work, env);
+    writeFileSync(join(tmp, "runs-1.json"), runsJson([["CI", "queued", ""]]));
+    writeFileSync(join(tmp, "runs-2.json"), runsJson([["CI", "in_progress", ""]]));
+    const r = run();
+    expect(r.status, r.stdout + r.stderr).toBe(0);
+    expect(r.stdout).toContain("waiting 0s: CI (queued)");
+    expect(r.stdout).toContain("waiting 0s: CI (in_progress)");
+    expect(r.stdout).toContain("CI gate: green");
+    expect(readFileSync(join(tmp, "run-calls"), "utf-8").trim()).toBe("3");
+    expect(git(["tag"], remote, env).split("\n")).toContain("v0.3.0");
+  }, 60_000);
+
+  it("refuses when CI is still running at the timeout", () => {
+    const { tmp, work, remote, env, run } = throwawayRepo();
+    addEntry(work, env);
+    writeFileSync(join(tmp, "runs.json"), runsJson([["CI", "in_progress", ""]]));
+    const r = spawnSync("bash", ["scripts/release_minor.sh", "Release"], {
+      cwd: work,
+      env: { ...env, CI_GATE_TIMEOUT: "0" },
+      encoding: "utf-8",
+      timeout: 60_000,
+    });
+    expect(r.status, r.stdout + r.stderr).toBe(1);
+    expect(r.stderr).toContain("CI still running");
+    refusedUntouched(tmp, work, remote, env);
+  }, 60_000);
+
+  it("the newest run of a workflow counts: a green re-run after a red run passes", () => {
+    const { tmp, work, env, run } = throwawayRepo();
+    addEntry(work, env);
+    writeFileSync(
+      join(tmp, "runs.json"),
+      runsJson([["CI", "completed", "failure"], ["CI", "completed", "success"]]),
+    );
+    const r = run();
+    expect(r.status, r.stdout + r.stderr).toBe(0);
   }, 60_000);
 });
 

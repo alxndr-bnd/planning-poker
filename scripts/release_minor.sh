@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Release helper for planning-poker (adapted from the serbito release_minor.sh).
-# CHANGELOG -> gate -> commit -> next minor tag -> push -> GitHub Release. The v*.*.* tag
+# CI gate -> CHANGELOG -> gate -> commit -> next minor tag -> push -> GitHub Release. The v*.*.* tag
 # triggers the Cloud Run deploy workflow. The test + build gate is zero-tolerance.
 # Entries for players go into CHANGELOG.md under "## [Unreleased]" before the release. This
 # script turns them into "## [X.Y.0] - date" in the release commit and refuses to release
@@ -14,12 +14,16 @@ if [[ -z "$msg" ]]; then
   exit 1
 fi
 
+# --- CI gate (SERBITO-613): a red pipeline stops the line. No release unless HEAD is origin/main
+# and its GitHub runs on main (CI, CodeQL) are green. Waits up to 20 min for running checks ---
+scripts/ci_gate.sh
+
 latest_tag="$(git tag --list 'v*.*.*' --sort=-v:refname | head -n 1)"
 if [[ -z "$latest_tag" ]]; then
   next_tag="v0.1.0"
 else
   version="${latest_tag#v}"
-  IFS='.' read -r major minor patch <<<"$version"
+  IFS="." read -r major minor _ <<<"$version"
   next_minor=$((minor + 1))
   next_tag="v${major}.${next_minor}.0"
 fi
@@ -37,9 +41,13 @@ echo "==> npm run sitemap"
 npm run sitemap
 
 # --- gate: tests + typecheck + client build must pass before we tag ---
+# Warnings are failures, as in CI (SERBITO-613): a Node deprecation warning throws.
+export NODE_OPTIONS="--throw-deprecation${NODE_OPTIONS:+ $NODE_OPTIONS}"
 # The tree is staged first, so after the gate we can tell whether it still is what was tested.
 git add .
 gated_tree="$(git write-tree)"
+echo "==> npm audit (high and above)"
+npm audit --audit-level=high
 echo "==> npm test"
 npm test
 echo "==> npm run typecheck"

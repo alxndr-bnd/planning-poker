@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { defineConfig, type Plugin } from "vite";
+import { createLogger, defineConfig, type Logger, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import { injectCrossPromo } from "./src/crosspromo.js";
 import { analyticsFromEnv, renderAnalytics } from "./src/pageAnalytics.js";
@@ -40,10 +40,28 @@ function renderPages(): Plugin {
   };
 }
 
+// Zero-warning builds (SERBITO-613): a warning from Vite (chunk size, a missing asset) or
+// from the bundler (an unresolved import, an eval) fails `vite build`, so CI and the release
+// gate stop on it. The dev server only prints them.
+function failOnWarning(base: Logger): Logger {
+  const fail = (msg: string): never => {
+    throw new Error(`client build: warnings are errors (SERBITO-613):\n${msg}`);
+  };
+  return { ...base, warn: fail, warnOnce: fail };
+}
+
 // Dev server proxies the WebSocket to the local Node server on :8080,
 // so the client talks to the same-origin `/ws` path in dev and in prod.
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [react(), renderPages()],
+  ...(command === "build" && { customLogger: failOnWarning(createLogger()) }),
+  build: {
+    rolldownOptions: {
+      onwarn(warning) {
+        throw new Error(`client build: warnings are errors (SERBITO-613): ${warning.message}`);
+      },
+    },
+  },
   server: {
     port: 5173,
     proxy: {
@@ -53,4 +71,4 @@ export default defineConfig({
     // allow importing the workspace `shared` package source from outside client/
     fs: { allow: [".."] },
   },
-});
+}));
