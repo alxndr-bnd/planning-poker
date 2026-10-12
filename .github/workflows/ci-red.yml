@@ -1,0 +1,107 @@
+name: CI red alert
+
+# SERBITO-613: a red run on main or on a release tag stops the line. This workflow opens ONE
+# Jira issue in project SERBITO per repo + workflow (or comments on the open one), so the red
+# run is the first task. It covers every workflow below: CI, deploy, weekly rebuild, cleanup.
+#
+# - workflow_run needs the workflow names. A new workflow must be added to the list
+#   (a test in this repo checks that the list matches .github/workflows).
+# - Only failures on main (push, schedule, dispatch) and on tags vX.Y.Z. Pull request runs
+#   are excluded: their head branch can be any name, also "main" from a fork.
+# - Secrets JIRA_EMAIL and JIRA_API_TOKEN (Jira API token of the owner or a bot account).
+#   Without them the job prints a notice and ends green: no false red from the alert itself.
+# - No checkout, no third-party actions: only gh, curl and jq of the runner image.
+on:
+  workflow_run:
+    workflows: [CI, CodeQL, Deploy to Cloud Run]
+    types: [completed]
+
+permissions: {}
+
+# Two red runs of one workflow at once: the second waits, then finds the issue of the first.
+concurrency:
+  group: ci-red-${{ github.event.workflow_run.name }}
+  cancel-in-progress: false
+
+jobs:
+  jira:
+    if: >-
+      github.event.workflow_run.conclusion == 'failure'
+      && github.event.workflow_run.event != 'pull_request'
+      && github.event.workflow_run.head_repository.full_name == github.repository
+      && (github.event.workflow_run.head_branch == 'main'
+          || startsWith(github.event.workflow_run.head_branch, 'v'))
+    runs-on: ubuntu-24.04 # explicit: ubuntu-latest moves to 26.04 on 2026-10-19
+    timeout-minutes: 10
+    permissions:
+      actions: read # jobs and logs of the red run
+    steps:
+      - name: Create or update the SERBITO Jira issue
+        env:
+          JIRA_SITE: https://serbito.atlassian.net
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          WORKFLOW: ${{ github.event.workflow_run.name }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          EVENT: ${{ github.event.workflow_run.event }}
+        run: |
+          set -euo pipefail
+          if [ -z "$JIRA_EMAIL" ] || [ -z "$JIRA_API_TOKEN" ]; then
+            echo "::notice::JIRA_EMAIL / JIRA_API_TOKEN are not set: no Jira issue. Red run: $RUN_URL"
+            exit 0
+          fi
+
+          # Failing jobs and their failing steps.
+          failed="$(gh api "repos/$REPO/actions/runs/$RUN_ID/attempts/$RUN_ATTEMPT/jobs?per_page=100" \
+            --jq '.jobs[] | select(.conclusion == "failure")
+                  | "\(.name) / \([.steps[]? | select(.conclusion == "failure") | .name] | join(", "))"')"
+          [ -n "$failed" ] || failed="(no failed job reported)"
+
+          # The first error lines of the failed steps: tab-separated "job step line",
+          # the line starts with a timestamp. Drop both, and the ANSI colours.
+          gh run view "$RUN_ID" --repo "$REPO" --log-failed > failed.log 2>/dev/null || true
+          cut -f3- failed.log | sed -E 's/^[0-9T:.-]+Z ?//; s/\x1b\[[0-9;]*m//g' > clean.log
+          errors="$(grep -iE 'error|fail|assert|traceback|exception|denied|not found' clean.log | head -n 30 || true)"
+          [ -n "$errors" ] || errors="$(tail -n 30 clean.log)"
+          [ -n "$errors" ] || errors="(no log lines: open the run)"
+          errors="$(printf '%s\n' "$errors" | sed 's/{noformat}/(noformat)/g' | cut -c1-400)"
+
+          repo_name="${REPO#*/}"
+          summary="CI red: $repo_name / $WORKFLOW"
+          text="$(printf '%s\n' \
+            "*Red run:* [$WORKFLOW #$RUN_ID|$RUN_URL] (attempt $RUN_ATTEMPT)" \
+            "*Repo:* $REPO" \
+            "*Ref:* $HEAD_BRANCH @ ${HEAD_SHA:0:12} ($EVENT)" \
+            "*Failed job / step:* $failed" \
+            "" \
+            "*First error lines:*" \
+            "{noformat}" "$errors" "{noformat}" \
+            "" \
+            "Andon rule (SERBITO-613): stop other work, fix, re-run, wait for green.")"
+
+          auth="$JIRA_EMAIL:$JIRA_API_TOKEN"
+          jql='project = SERBITO AND labels = "ci-red" AND statusCategory != Done ORDER BY created DESC'
+          found="$(jq -n --arg jql "$jql" '{jql: $jql, fields: ["summary"], maxResults: 100}' \
+            | curl -sS --fail-with-body -u "$auth" -H 'Content-Type: application/json' \
+                --data @- "$JIRA_SITE/rest/api/3/search/jql")"
+          key="$(jq -r --arg s "$summary" '[.issues[] | select(.fields.summary == $s) | .key][0] // empty' <<<"$found")"
+
+          if [ -n "$key" ]; then
+            jq -n --arg body "$(printf 'Red again.\n\n%s' "$text")" '{body: $body}' \
+              | curl -sS --fail-with-body -o /dev/null -u "$auth" -H 'Content-Type: application/json' \
+                  --data @- "$JIRA_SITE/rest/api/2/issue/$key/comment"
+            echo "::notice::Red run added to $JIRA_SITE/browse/$key"
+          else
+            key="$(jq -n --arg s "$summary" --arg d "$text" '{fields: {
+                project: {key: "SERBITO"}, issuetype: {name: "Bug"}, priority: {name: "Highest"},
+                labels: ["ci-red", "bug"], summary: $s, description: $d}}' \
+              | curl -sS --fail-with-body -u "$auth" -H 'Content-Type: application/json' \
+                  --data @- "$JIRA_SITE/rest/api/2/issue" | jq -r .key)"
+            echo "::notice::Red run opened $JIRA_SITE/browse/$key"
+          fi

@@ -66,10 +66,15 @@ docker run -p 8080:8080 planning-poker   # http://localhost:8080
 
 1. With every change players notice, add an English line `- ...` under `## [Unreleased]` in
    [CHANGELOG.md](CHANGELOG.md) (`### Added` / `Changed` / `Fixed` / `Security`).
-2. `scripts/release_minor.sh "message"` refuses to release when `[Unreleased]` is empty. Otherwise it
-   dates the entries as `## [X.Y.0]`, runs the gate, tags, pushes and creates the GitHub Release.
+2. `scripts/release_minor.sh "message"` first runs the CI gate (`scripts/ci_gate.sh`, SERBITO-613): HEAD must be
+   `origin/main`, and its GitHub runs on main (CI, CodeQL) must be green. It waits up to 20 min for running checks
+   and refuses on a red, cancelled or missing run. Then it refuses to release when `[Unreleased]` is empty.
+   Otherwise it dates the entries as `## [X.Y.0]`, runs the local gate (npm audit, tests, typecheck, build; warnings
+   fail), tags, pushes and creates the GitHub Release.
 3. The deploy fails for a tag without its `## [X.Y.Z]` section in CHANGELOG.md.
-4. Weekly OS refresh (SERBITO-401): every Wednesday 03:00 UTC (or *Run workflow*) the deploy rebuilds the newest
+4. A red run on main or on a tag (CI, CodeQL, deploy) opens or updates one SERBITO Jira issue (`ci-red`, Highest,
+   `.github/workflows/ci-red.yml`; needs the repo secrets `JIRA_EMAIL` and `JIRA_API_TOKEN`). Fix it first.
+5. Weekly OS refresh (SERBITO-401): every Wednesday 03:00 UTC (or *Run workflow*) the deploy rebuilds the newest
    `vX.Y.Z` tag with fresh Debian packages and redeploys it (same version, image `<sha>-r<YYYYMMDD>`). If the main
    page is not 200 after any deploy, traffic goes back to the previous revision and the run fails.
 
