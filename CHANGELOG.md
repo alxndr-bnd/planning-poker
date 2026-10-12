@@ -14,6 +14,9 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+### Security
+- A development tool used to build the site is updated to a version without a known security issue. Players see no change.
+
 ## [0.68.0] - 2026-10-08
 
 ### Fixed
