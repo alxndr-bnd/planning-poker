@@ -14,6 +14,9 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+### Changed
+- The remote-teams guide shows how to keep follow-up actions from a session on your own list, with a weekly review checklist. New guide pages also reach Bing and Yandex sooner.
+
 ## [0.69.0] - 2026-10-12
 
 ### Security

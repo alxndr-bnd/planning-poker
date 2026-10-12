@@ -72,6 +72,11 @@ docker run -p 8080:8080 planning-poker   # http://localhost:8080
 4. Weekly OS refresh (SERBITO-401): every Wednesday 03:00 UTC (or *Run workflow*) the deploy rebuilds the newest
    `vX.Y.Z` tag with fresh Debian packages and redeploys it (same version, image `<sha>-r<YYYYMMDD>`). If the main
    page is not 200 after any deploy, traffic goes back to the previous revision and the run fails.
+5. IndexNow (SERBITO-558): after a tag deploy passes the smoke check, `scripts/indexnow.mjs` sends every URL in
+   `/sitemap.xml` to `api.indexnow.org` (Bing, Yandex and other IndexNow engines; Google does not use it). The key
+   is the file `client/public/<key>.txt`, served at `/<key>.txt`; IndexNow keys are public by design. A network
+   error or a non-2xx answer prints a warning and does not fail the deploy. The weekly refresh does not ping.
+   To ping by hand: `node scripts/indexnow.mjs` (`--dry-run` prints the request and does not send it).
 
 ## Self-hosting
 
