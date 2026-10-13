@@ -14,6 +14,9 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+### Changed
+- The "Other projects" line links to our task manager by its full name, Serbito GTD.
+
 ## [0.70.0] - 2026-10-12
 
 ### Changed
