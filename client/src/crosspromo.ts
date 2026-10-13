@@ -22,7 +22,7 @@ export const OTHER_PROJECTS: readonly {
   blurb: StringKey;
   utm?: string;
 }[] = [
-  { name: "GTD", url: "https://gtd.serbito.rs/", blurb: "crosspromo.gtd" },
+  { name: "Serbito GTD", url: "https://gtd.serbito.rs/", blurb: "crosspromo.gtd" },
   { name: "Javi", url: "https://javi.serbito.rs/", blurb: "crosspromo.javi", utm: JAVI_UTM },
   { name: "Serbito", url: "https://serbito.rs/", blurb: "crosspromo.serbito" },
 ];

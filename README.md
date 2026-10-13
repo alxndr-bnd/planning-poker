@@ -144,7 +144,7 @@ MIT
 
 ## Other projects
 
-- **GTD** — free GTD task manager with a Telegram bot:
+- **Serbito GTD** — free GTD task manager with a Telegram bot:
   [gtd.serbito.rs](https://gtd.serbito.rs/?utm_source=github&utm_medium=crosspromo&utm_campaign=readme)
   · [source](https://github.com/alxndr-bnd/gtd)
 - **Javi** — delivery notifications for small businesses in Serbia:

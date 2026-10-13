@@ -50,7 +50,7 @@ describe('"Other projects" cross-promo block (SERBITO-264)', () => {
       "utm_source=poker&utm_medium=crosslink&utm_campaign=javi&utm_content=footer",
     );
     expect(html).toContain("Other projects:");
-    expect(html).toContain("GTD</a> — Free GTD task manager with a Telegram bot");
+    expect(html).toContain(">Serbito GTD</a> — Free GTD task manager with a Telegram bot");
     expect(html).toContain("Javi</a> — Delivery notifications for small businesses in Serbia");
     expect(html).toContain("Serbito</a> — Classifieds in Serbia");
     expect(html).toContain(`Made by <a href="${MADE_BY.url}?`);
