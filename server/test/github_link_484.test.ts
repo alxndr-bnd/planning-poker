@@ -34,7 +34,11 @@ describe("GitHub link without shields.io", () => {
       await link.waitFor();
       expect(await link.getAttribute("href")).toBe(REPO);
       expect(await page.locator('img[src*="shields.io"]').count()).toBe(0);
-      expect(external.filter((u) => u.includes("shields.io"))).toEqual([]);
+      const shields = (u: string) => {
+        const host = new URL(u).hostname;
+        return host === "shields.io" || host.endsWith(".shields.io");
+      };
+      expect(external.filter(shields)).toEqual([]);
     } finally {
       await page.context().close();
     }

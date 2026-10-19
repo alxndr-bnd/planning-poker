@@ -222,7 +222,7 @@ describe("translated Jira guides tell the truth", () => {
 // --------------------------------------------------------------------------- #
 const sitemapXml = read(join(publicDir, "sitemap.xml"));
 const lastmodOf = (loc: string) =>
-  sitemapXml.match(new RegExp(`<loc>${loc.replace(/[.?]/g, "\\$&")}</loc>\\s*<lastmod>([^<]+)</lastmod>`))?.[1];
+  sitemapXml.match(new RegExp(`<loc>${loc.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</loc>\\s*<lastmod>([^<]+)</lastmod>`))?.[1];
 const articles = listPages(clientDir)
   .map((p) => ({ ...p, html: read(p.file) }))
   .map((p) => ({
