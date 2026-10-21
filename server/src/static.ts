@@ -103,7 +103,8 @@ export function securityHeaders(dist: string): Record<string, string> {
     "default-src 'self'",
     `script-src 'self' ${inlineScriptHashes(dist).join(" ")} ${GA} ${CF_BEACON}`.replace(/ +/g, " "),
     "style-src 'self' 'unsafe-inline'",
-    `img-src 'self' data: ${GA} ${GA_COLLECT}`,
+    // foundrlist.com: the FoundrList badge image in the lobby (client/src/App.tsx)
+    `img-src 'self' data: ${GA} ${GA_COLLECT} https://www.foundrlist.com`,
     `connect-src 'self' wss://poker.serbito.rs ${GA} ${GA_COLLECT} https://cloudflareinsights.com`,
     "font-src 'self'",
     "manifest-src 'self'",

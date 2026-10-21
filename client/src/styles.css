@@ -301,6 +301,7 @@ input[type="text"], input:not([type]) {
 
 /* UI v2 preview: "Find us on AlternativeTo" featured link (lobby + room header). */
 .altto-row { text-align: center; margin-top: 0.25rem; }
+.foundr-badge { display: block; width: 150px; margin: 0.75rem auto 0; line-height: 0; }
 .altto-link {
   display: inline-flex;
   align-items: center;

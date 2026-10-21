@@ -33,6 +33,9 @@ const REPO = "alxndr-bnd/planning-poker";
 const REPO_URL = `https://github.com/${REPO}`;
 const ALTERNATIVETO_URL =
   "https://alternativeto.net/software/estimation-poker-serbito/about/";
+const FOUNDRLIST_URL =
+  "https://www.foundrlist.com/product/planningpoker?utm_source=badge&utm_medium=embed";
+const FOUNDRLIST_BADGE = "https://www.foundrlist.com/api/badge/planningpoker";
 
 // Per-language URL prefix for the prerendered guide pages (EN at root, others under
 // /<lang>/). A constant lookup keyed by the validated `Lang` union — the resolved value
@@ -105,6 +108,22 @@ function AlternativeToLink() {
       rel="noopener noreferrer"
     >
       {tr("altto.featured")}
+    </a>
+  );
+}
+
+// Lobby only: the FoundrList listing badge. Unlike the other links it is a third-party
+// image (cf. SERBITO-484), so the CSP img-src allows foundrlist.com and /privacy names it.
+function FoundrListBadge() {
+  return (
+    <a className="foundr-badge" href={FOUNDRLIST_URL} target="_blank" rel="noopener">
+      <img
+        src={FOUNDRLIST_BADGE}
+        alt="Featured on FoundrList"
+        width={150}
+        height={48}
+        loading="lazy"
+      />
     </a>
   );
 }
@@ -296,6 +315,7 @@ function Lobby({
         <GitHubBadge />
         <SerbitoSponsor />
       </div>
+      <FoundrListBadge />
       {uiV2 && (
         <div className="altto-row">
           <AlternativeToLink />

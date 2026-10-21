@@ -14,6 +14,9 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+### Added
+- The start page shows the "Featured on FoundrList" badge. The privacy page says what FoundrList receives when the badge loads.
+
 ## [0.71.0] - 2026-10-13
 
 ### Changed
