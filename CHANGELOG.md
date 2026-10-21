@@ -14,6 +14,8 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 
 ## [Unreleased]
 
+## [0.72.0] - 2026-10-21
+
 ### Added
 - The start page shows the "Featured on FoundrList" badge. The privacy page says what FoundrList receives when the badge loads.
 
@@ -150,7 +152,8 @@ tags `vX.Y.Z`. `scripts/changelog.ts` parses this file for the release script, a
 - Room members cannot take over each other's seat, and one client cannot overload the server.
 - Security headers are on, and dependencies are up to date.
 
-[Unreleased]: https://github.com/alxndr-bnd/planning-poker/compare/v0.71.0...HEAD
+[Unreleased]: https://github.com/alxndr-bnd/planning-poker/compare/v0.72.0...HEAD
+[0.72.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.71.0...v0.72.0
 [0.71.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.70.0...v0.71.0
 [0.70.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.69.0...v0.70.0
 [0.69.0]: https://github.com/alxndr-bnd/planning-poker/compare/v0.68.0...v0.69.0
